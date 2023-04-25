@@ -148,15 +148,17 @@ function Card(): JSX.Element {
     }
     
     return (
-        <div>
+        <div className="card-page">
             {data.length > 0 && answered < data.length ? (
                 <div>
                     <p>{data[randomQuestion].question}</p>
-                    <ul>
                         {data[randomQuestion].options.map((option, index) => (
-                            <li key={index}><button onClick={() => handleNextQuestion(index)}>{option}</button></li>
+                            <div key={index}>
+                                <div className="button-container">
+                                    <button className="button" onClick={() => handleNextQuestion(index)}>{option}</button>
+                                </div>
+                            </div>
                         ))}
-                    </ul>
                 </div>
             ) : (
                 <div>

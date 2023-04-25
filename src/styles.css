@@ -1,11 +1,18 @@
 /* styles.css */
 
 .login-page {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
 .button-container {
   display: flex;
@@ -15,6 +22,7 @@
 
 .button {
   background-color: rgb(109, 104, 255);
+  text-decoration: none;
   color: white;
   padding: 10px;
   font-size: 18px;
@@ -23,6 +31,11 @@
   cursor: pointer;
 }
   
+.button-link {
+  text-decoration: none;
+  color: white;
+}
+
 .error-message {
   color: red;
 }
@@ -85,8 +98,11 @@ input {
 }
 
 .login-header {
-  background-color: rgb(255, 221, 104);
-  color: rgb(255, 255, 255);
+  color: #ffe14f; /* complementary color */
+  text-shadow: 2px 2px 2px #000; /* add a text shadow */
+  stroke: black; /* add a stroke */
+  /* background-color: rgb(255, 221, 104); */
+  /* color: rgb(255, 255, 255); */
   padding: 10px;
   text-align: center;
   border-radius: 5px 5px 0 0;

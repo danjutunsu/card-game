@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import bcrypt from "bcryptjs"; 
 import axios from "axios";
 import { url } from "../Config";
+import { Link } from "react-router-dom";
 
 interface CreateFormProps {
     onLogin: (username: string, password: string) => void;
@@ -42,28 +43,36 @@ interface CreateFormProps {
       }
 
     return (
-      <form onSubmit={handleSubmit}>
-        <h1>
-          Create Account:
-        </h1>
-        <br />
-        <label>
-          Username:
-          <input type="text" value={username} onChange={e => setUsername(e.target.value)} />
-        </label>
-        <br />
-        <label>
-          Password:
-          <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
-        </label>
-        <br />
-        <label>
-          Confirm Password:
-          <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
-        </label>
-        <br />
-        <button type="submit">Submit</button>
-      </form>
+      <><form onSubmit={handleSubmit}>
+            <h1>
+                Create Account:
+            </h1>
+            <br />
+            <label>
+                Username:
+                <input type="text" value={username} onChange={e => setUsername(e.target.value)} />
+            </label>
+            <br />
+            <label>
+                Password:
+                <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+            </label>
+            <br />
+            <label>
+                Confirm Password:
+                <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+            </label>
+            <br />
+            <div className='button-container'>
+                <button type="submit" className="button">
+                    Submit
+                </button>
+            </div>
+        </form><div className='button-container'>
+                <button className="button">
+                    <Link to="/login" className="button-link">Already registered? Sign in</Link>
+                </button>
+            </div></> 
     );
   };
   
