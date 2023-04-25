@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import axios from "axios";
 import { url } from "../Config";
 import CreateForm from "./CreateForm";
+import '../styles.css';
+
 
 interface LoginFormProps {
     onLogin: (username: string, password: string) => void;
@@ -47,20 +49,24 @@ interface LoginFormProps {
         setShowAccountCreation(true);
       };
 
-    return (
-      <form onSubmit={handleSubmit}>
-        <label>
-          Username:
-          <input type="text" value={username} onChange={e => setUsername(e.target.value)} />
+      return (
+        <div className="form-container">
+        <form onSubmit={handleSubmit}>
+        <label className="form-label">
+        <span className="label-text">Username:</span>
+        <input type="text" className="form-input" value={username} onChange={e => setUsername(e.target.value)} />
         </label>
         <br />
-        <label>
-          Password:
-          <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+        <label className="form-label">
+        <span className="label-text">Password:</span>
+        <input className="form-input" type="password" value={password} onChange={e => setPassword(e.target.value)} />
         </label>
         <br />
-        <button type="submit">Login</button>
-      </form>
+        <div className="button-container">
+        <button className="button" type="submit">Login</button>
+        </div>
+        </form>
+        </div>
     );
   };
   

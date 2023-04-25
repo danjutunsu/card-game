@@ -1,0 +1,101 @@
+/* styles.css */
+
+.login-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.button {
+  background-color: rgb(109, 104, 255);
+  color: white;
+  padding: 10px;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+  
+.error-message {
+  color: red;
+}
+
+.form-label {
+  font-weight: bold;
+  text-align: center;
+}
+
+.label-text {
+  margin-bottom: 5px;
+}
+
+.form-input {
+  display: block;
+  margin: 0 auto;
+  padding: 10px;
+  width: 80%;
+  max-width: 400px;
+  border: 1px solid gray;
+  border-radius: 5px;
+  font-size: 16px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px;
+  border: 1px solid gray;
+  border-radius: 5px;
+  font-size: 16px;
+  text-align: center;
+  box-sizing: border-box;
+  margin-top: 5px;
+}
+
+.login-header {
+  background-color: rgb(255, 221, 104);
+  color: rgb(255, 255, 255);
+  padding: 10px;
+  text-align: center;
+  border-radius: 5px 5px 0 0;
+  font-size: 36px;
+  font-weight: bold;
+  -webkit-text-stroke: 1px black;
+  text-stroke: 1px black;
+}
+
+body {
+  background-color: #f2f2f2; /* set the background color to a light gray */
+}

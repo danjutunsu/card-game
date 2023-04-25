@@ -3,6 +3,7 @@ import { useState } from "react";
 import LoginForm from "./LoginForm";
 import { url } from "../Config";
 import Card from "../Card";
+import '../styles.css';
 
 const LoginPage: React.FC = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -30,8 +31,8 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1>Login</h1>
+    <div className="login-page">
+      <h1 className="login-header">Login</h1>
       {!loggedIn && <LoginForm onLogin={handleLogin} />}
       {loggedIn && (
         <div>
@@ -41,7 +42,7 @@ const LoginPage: React.FC = () => {
       )}
       {loginFailed && (
         <div>
-            <h2>Wrong Credentials</h2>
+            <p className="error-message">Username/password combination not valid. Please try again or create a new account.</p>
         </div>
       )}      
     </div>

@@ -5,6 +5,7 @@ import Card from './Card';
 import LoginForm from './Components/LoginForm';
 import LoginPage from './Components/LoginPage';
 import CreateForm from './Components/CreateForm';
+import './styles.css';
 
 function App() {
   const [showLogin, setShowLogin] = useState(true);
@@ -22,7 +23,9 @@ function App() {
             throw new Error('Function not implemented.');
           } } />
       )}
-      <button onClick={handleClick}>{showLogin ? 'Create Account' : 'Already Registered? Sign In'}</button>
+      <div className='button-container'>
+        <button className="button" onClick={handleClick}>{showLogin ? 'Create Account' : 'Already Registered? Sign In'}</button>
+      </div>
     </div>
   );
 }
