@@ -12,6 +12,7 @@ import axios from 'axios';
 import { url } from './Config';
 import UserContext, { UserContextType } from './Components/UserContext';
 import io from 'socket.io-client';
+import { AppState } from './store';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -20,6 +21,8 @@ function App() {
   const [userPoints, setUserPoints] = useState(Object);
   // const userContext = useContext<UserContextType>(UserContext);
   const [message, setMessage] = useState('');
+  const storeId = ((state: AppState) => state.userId);
+
 
   const socket = io('http://localhost:3002', { transports : ['websocket'] });
   socket.emit('message', message);
@@ -72,7 +75,7 @@ function App() {
           throw new Error('Function not implemented.');
         } } />} />
         <Route path="/stats" element={<Statistics
-          user={useContext(UserContext).user}
+          user={storeId.toString()}
           points={userPoints.points}
           correctlyAnswered={userPoints.correct_round}
           totalQuestions={userPoints.total_round}

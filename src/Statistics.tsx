@@ -19,7 +19,8 @@ interface StatisticsProps {
 
 const MyComponent = (props: StatisticsProps) => {
   const percentCorrect = props.correctlyAnswered / props.totalQuestions * 100;
-  const [username, setUserName] = useState('');
+  const storeId = useSelector((state: AppState) => state.userId);
+  const [username, setUserName] = useState(storeId);
   const { user, setUser } = useContext(UserContext);
   const userId = useSelector((state: AppState) => state.userId);
 
