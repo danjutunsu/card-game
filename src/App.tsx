@@ -19,14 +19,21 @@ function App() {
   const [userId, setUserId] = useState(1)
   const [userPoints, setUserPoints] = useState(Object);
   // const userContext = useContext<UserContextType>(UserContext);
-  const socket = io('http://localhost:3002');
   const [message, setMessage] = useState('');
+
+  const socket = io('http://localhost:3002', { transports : ['websocket'] });
   socket.emit('message', message);
+// emit an event to the server
+  socket.emit('hello', 'world');
+
+  // listen for an event from the server
+  socket.on('greeting', (message) => {
+    console.log(message);
+  });
 
   useEffect(() => {
     getUserPoints(userId)
   })
-
 
   // Emit a 'message' event when the form is submitted
   const handleSubmit = (e: { preventDefault: () => void; }) => {
@@ -40,8 +47,6 @@ function App() {
       console.log(`Received message: ${data}`);
     });
   }, []);
-
-
   const getUserPoints = async (uid: number) => {
     try {
         const response = await axios.get(`${url}/api/points`, {
