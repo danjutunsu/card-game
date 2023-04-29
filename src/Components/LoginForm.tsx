@@ -7,9 +7,10 @@ import '../styles.css';
 import { Link } from "react-router-dom";
 
 
-interface LoginFormProps {
+type LoginFormProps = {
     onLogin: (username: string, password: string) => void;
   }
+  
   
   const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
     const [username, setUsername] = useState('');

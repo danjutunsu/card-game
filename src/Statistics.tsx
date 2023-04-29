@@ -4,6 +4,8 @@ import './styles.css'
 import { useContext, useEffect, useState } from "react";
 import { useLocation } from 'react-router-dom';
 import UserContext from "./Components/UserContext";
+import { useSelector } from "react-redux";
+import { AppState } from './store'
 
 interface StatisticsProps {
   user: string;
@@ -19,6 +21,7 @@ const MyComponent = (props: StatisticsProps) => {
   const percentCorrect = props.correctlyAnswered / props.totalQuestions * 100;
   const [username, setUserName] = useState('');
   const { user, setUser } = useContext(UserContext);
+  const userId = useSelector((state: AppState) => state.userId);
 
   async function getUname(id: string) {
     try {
@@ -28,8 +31,6 @@ const MyComponent = (props: StatisticsProps) => {
         },
       });
       
-      console.log("USER ID: " + user)
-      console.log("CONTEXT USER: " + user)
       setUserName(response.data.rows[0].username)
       console.log(`User Data: ${response.data.userId}`); // handle the response from the backend
     } catch (error) {
@@ -44,7 +45,7 @@ const MyComponent = (props: StatisticsProps) => {
   return (
     <div className="stats-page">
       <p className="stats-header">User: {username}</p>
-      <button onClick={() => console.log('Swag ')}>{useContext(UserContext).user}</button>
+      <button>{userId}</button>
       <p className="stats-row">Points: {props.points}</p>
       <p className="stats-row"># Correct This Round: {props.correctlyAnswered} of {props.totalQuestions}</p>
       <p className="stats-row">{percentCorrect}%</p>
@@ -59,11 +60,12 @@ const MyComponent = (props: StatisticsProps) => {
 }
 
 const Statistics = (props: StatisticsProps) => {
+  const userId = useSelector((state: AppState) => state.userId);
 
   return (
     // <UserContext.Provider value={{ user: "7", setUser: () => {} }}>
       <MyComponent
-        user={useContext(UserContext).user}
+        user={userId}
         points={props.points}
         correctlyAnswered={props.correctlyAnswered}
         totalQuestions={props.totalQuestions}

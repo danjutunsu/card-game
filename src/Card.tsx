@@ -4,7 +4,9 @@ import Statistics from "./Statistics";
 import axios from "axios";
 import { Hash } from "crypto";
 import LoginForm from "./Components/LoginForm";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
+// const navigate = useNavigate();
 
 interface CardProps {
     id: number,
@@ -13,7 +15,7 @@ interface CardProps {
     answer: number
 }
 
-function Card(): JSX.Element {
+const Card: React.FC = () => {
     const [data, setData] = useState<CardProps[]>([]);
     const [randomQuestion, setRandomQuestion] = useState<number>(0);
     const [visited, setVisited] = useState<number[]>([]);
@@ -22,6 +24,9 @@ function Card(): JSX.Element {
     const [totalQuestions, setTotalQuestions] = useState<number>(0);
     const [user, setUser] = useState<string>('');
     const [userPoints, setUserPoints] = useState(Object);
+    const location = useLocation();
+    const [userId, setUserId] = useState(1);
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function fetchData() {
@@ -44,6 +49,7 @@ function Card(): JSX.Element {
     //initialze with a random question
     //update state upon initialization
     useEffect(() => {
+        ResetRound(userId)
         if (data.length > 0) {
           const initialIndex = Math.floor(Math.random() * data.length);
           setTotalQuestions(data.length)
@@ -65,13 +71,25 @@ function Card(): JSX.Element {
         });
         console.log(`Total: ${total}`)
     }
+
+    const ResetRound = async (userId: number) => {
+        try {
+          const response = await axios.post(`${url}/api/reset`, {
+            userId: userId
+          });
+          console.log(response.data); // handle the response from the backend
+        } catch (error) {
+          console.error(error);
+        }
+    } 
       
     function getRandomQuestion() {
         if (visited.length === data.length) 
         {
             // all questions have been visited
             console.log("Finished Guessing")
-            getUserPoints(1)
+            getUserPoints(userId)
+            navigate('/stats');
             return null; // return the current question
         }
     
@@ -92,13 +110,10 @@ function Card(): JSX.Element {
             userGuess: userGuess
           });
           console.log(response.data); // handle the response from the backend
-          
         } catch (error) {
           console.error(error);
         }
     } 
-
-    
 
     const getUserPoints = async (uid: number) => {
         try {
@@ -132,7 +147,7 @@ function Card(): JSX.Element {
     function handleNextQuestion(index: number) {
         const questionId = data[randomQuestion].id;
         const userGuess = index;
-        // addGuess(1, questionId, userGuess);
+        addGuess(userId, questionId, userGuess);
         if (index === data[randomQuestion].answer)
         {
             console.log("CORRECT")
@@ -149,9 +164,9 @@ function Card(): JSX.Element {
     
     return (
         <div className="card-page">
-            {data.length > 0 && answered < data.length ? (
-                <div>
-                    <p>{data[randomQuestion].question}</p>
+                {data.length > 0 && answered < data.length ? (
+                    <div>
+                        <p>{data[randomQuestion].question}</p>
                         {data[randomQuestion].options.map((option, index) => (
                             <div key={index}>
                                 <div className="button-container">
@@ -159,23 +174,20 @@ function Card(): JSX.Element {
                                 </div>
                             </div>
                         ))}
-                </div>
-            ) : (
-                <div>
-                    <Statistics user = {userPoints?.user_id} points = {userPoints?.points} correctlyAnswered = {correctlyAnswered} totalQuestions = {totalQuestions}
-                    totalCorrect={userPoints?.total_correct} totalIncorrect={userPoints?.total_incorrect} totalHistorical={userPoints?.total_guess}/>
-                </div>
-            )}
-        </div>
+                    </div>
+                ) : (
+                    <div>
+                        <Statistics user={""}
+                         points={0} 
+                         correctlyAnswered={0} 
+                         totalQuestions={0} 
+                         totalCorrect={0} 
+                         totalIncorrect={0}
+                         totalHistorical={0} />
+                    </div>
+                )}
+            </div>
     )
 }
-
-// useEffect(() => {
-//     console.log(`User ID: ${userPoints?.user_id}`);
-//     console.log(`Points: ${userPoints?.points}`);
-//     console.log(`Total Guess: ${userPoints?.total_guess}`);
-//     console.log(`Total Correct: ${userPoints?.total_correct}`);
-//     console.log(`Total Incorrect: ${userPoints?.total_incorrect}`);
-//   }, [userPoints]); 
 
 export default Card;
