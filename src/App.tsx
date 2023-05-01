@@ -1,8 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import Card from './Card';
-import LoginForm from './Components/LoginForm';
 import LoginPage from './Components/LoginPage';
 import CreateForm from './Components/CreateForm';
 import './styles.css';
@@ -10,8 +8,6 @@ import { BrowserRouter, Route, Routes, Link, useLocation } from 'react-router-do
 import Statistics from './Statistics';
 import axios from 'axios';
 import { url } from './Config';
-import UserContext, { UserContextType } from './Components/UserContext';
-import io from 'socket.io-client';
 import { AppState } from './store';
 
 function App() {
@@ -19,37 +15,13 @@ function App() {
   const [user, setUser] = useState('0');
   const [userId, setUserId] = useState(1)
   const [userPoints, setUserPoints] = useState(Object);
-  // const userContext = useContext<UserContextType>(UserContext);
   const [message, setMessage] = useState('');
   const storeId = ((state: AppState) => state.userId);
-
-
-  const socket = io('http://localhost:3002', { transports : ['websocket'] });
-  socket.emit('message', message);
-// emit an event to the server
-  socket.emit('hello', 'world');
-
-  // listen for an event from the server
-  socket.on('greeting', (message) => {
-    console.log(message);
-  });
 
   useEffect(() => {
     getUserPoints(userId)
   })
 
-  // Emit a 'message' event when the form is submitted
-  const handleSubmit = (e: { preventDefault: () => void; }) => {
-    e.preventDefault();
-    socket.emit('message', message);
-  };
-
-  // Listen for the 'message' event
-  useEffect(() => {
-    socket.on('message', (data) => {
-      console.log(`Received message: ${data}`);
-    });
-  }, []);
   const getUserPoints = async (uid: number) => {
     try {
         const response = await axios.get(`${url}/api/points`, {
@@ -83,12 +55,7 @@ function App() {
           totalIncorrect={userPoints.total_incorrect}
           totalHistorical={userPoints.total_guess} />} />
       </Routes>
-    </BrowserRouter><div>
-        <form onSubmit={handleSubmit}>
-          <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} />
-          <button type="submit">Send</button>
-        </form>
-      </div></>
+    </BrowserRouter></>
   );
 }
 
