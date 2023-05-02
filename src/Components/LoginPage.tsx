@@ -43,10 +43,10 @@
           socket.send('Hello Server!');
         });
 
-        // Listen for messages
-        socket.addEventListener('message', function (event) {
-          console.log('Message from server ', event.data);
-        });
+        // // Listen for messages
+        // socket.addEventListener('message', function (event) {
+        //   console.log('Message from server ', event.data);
+        // });
 
         // Connection closed
         socket.addEventListener('close', function (event) {
@@ -68,7 +68,7 @@
         // Dispatch an action to set the user ID in the Redux store
         dispatch({ type: 'SET_USER_ID', payload: loggedInUser });
 
-          navigate('/card', { state: { id: user } });
+          navigate('/card', { state: { id: userId } });
         }, 1000);
       } else {
         // if the login fails, display an error message

@@ -6,17 +6,25 @@ export type AppState = {
   userId: string;
 };
 
-const initialState: AppState = {
-  userId: '',
+const getInitialState = () => {
+  const savedState = localStorage.getItem('appState');
+  if (savedState) {
+    return JSON.parse(savedState);
+  }
+  return {
+    userId: '',
+  };
 };
 
-const rootReducer = (state = initialState, action: any) => {
+const rootReducer = (state: AppState = getInitialState(), action: any) => {
   switch (action.type) {
     case 'SET_USER_ID':
-      return {
+      const newState = {
         ...state,
         userId: action.payload,
       };
+      localStorage.setItem('appState', JSON.stringify(newState));
+      return newState;
     default:
       return state;
   }

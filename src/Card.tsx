@@ -5,6 +5,8 @@ import axios from "axios";
 import { Hash } from "crypto";
 import LoginForm from "./Components/LoginForm";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { AppState } from "./store";
 
 // const navigate = useNavigate();
 
@@ -25,7 +27,8 @@ const Card: React.FC = () => {
     const [user, setUser] = useState<string>('');
     const [userPoints, setUserPoints] = useState(Object);
     const location = useLocation();
-    const [userId, setUserId] = useState(1);
+    const userId = useSelector((state: AppState) => state.userId);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -49,7 +52,7 @@ const Card: React.FC = () => {
     //initialze with a random question
     //update state upon initialization
     useEffect(() => {
-        ResetRound(userId)
+        ResetRound(parseInt(userId))
         if (data.length > 0) {
           const initialIndex = Math.floor(Math.random() * data.length);
           setTotalQuestions(data.length)
@@ -88,7 +91,7 @@ const Card: React.FC = () => {
         {
             // all questions have been visited
             console.log("Finished Guessing")
-            getUserPoints(userId)
+            getUserPoints(parseInt(userId))
             navigate('/stats');
             return null; // return the current question
         }
@@ -147,7 +150,7 @@ const Card: React.FC = () => {
     function handleNextQuestion(index: number) {
         const questionId = data[randomQuestion].id;
         const userGuess = index;
-        addGuess(userId, questionId, userGuess);
+        addGuess(parseInt(userId), questionId, userGuess);
         if (index === data[randomQuestion].answer)
         {
             console.log("CORRECT")

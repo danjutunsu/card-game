@@ -1,9 +1,7 @@
 import axios from "axios";
 import { url } from "./Config";
 import './styles.css'
-import { useContext, useEffect, useState } from "react";
-import { useLocation } from 'react-router-dom';
-import UserContext from "./Components/UserContext";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { AppState } from './store'
 
@@ -21,7 +19,6 @@ const MyComponent = (props: StatisticsProps) => {
   const percentCorrect = props.correctlyAnswered / props.totalQuestions * 100;
   const storeId = useSelector((state: AppState) => state.userId);
   const [username, setUserName] = useState(storeId);
-  const { user, setUser } = useContext(UserContext);
   const userId = useSelector((state: AppState) => state.userId);
 
   async function getUname(id: string) {
@@ -40,13 +37,13 @@ const MyComponent = (props: StatisticsProps) => {
   }
 
   useEffect(() => {
-    getUname(props.user)
-  }, [props.user])
+    getUname(storeId)
+  }, [storeId])
 
   return (
     <div className="stats-page">
       <p className="stats-header">User: {username}</p>
-      <button>{userId}</button>
+      <button>{storeId}</button>
       <p className="stats-row">Points: {props.points}</p>
       <p className="stats-row"># Correct This Round: {props.correctlyAnswered} of {props.totalQuestions}</p>
       <p className="stats-row">{percentCorrect}%</p>

@@ -9,16 +9,18 @@ import Statistics from './Statistics';
 import axios from 'axios';
 import { url } from './Config';
 import { AppState } from './store';
+import { useSelector } from 'react-redux';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState('0');
-  const [userId, setUserId] = useState(1)
   const [userPoints, setUserPoints] = useState(Object);
-  const [message, setMessage] = useState('');
-  const storeId = ((state: AppState) => state.userId);
+  const [message, setMessage] = useState('1');
+  const storeId = useSelector((state: AppState) => state.userId);
+  const userId = parseInt(storeId)
+
 
   useEffect(() => {
+    console.log('uids ' + storeId)
     getUserPoints(userId)
   })
 
@@ -48,12 +50,12 @@ function App() {
         } } />} />
         <Route path="/stats" element={<Statistics
           user={storeId.toString()}
-          points={userPoints.points}
-          correctlyAnswered={userPoints.correct_round}
-          totalQuestions={userPoints.total_round}
-          totalCorrect={userPoints.total_correct}
-          totalIncorrect={userPoints.total_incorrect}
-          totalHistorical={userPoints.total_guess} />} />
+          points={userPoints?.points}
+          correctlyAnswered={userPoints?.correct_round}
+          totalQuestions={userPoints?.total_round}
+          totalCorrect={userPoints?.total_correct}
+          totalIncorrect={userPoints?.total_incorrect}
+          totalHistorical={userPoints?.total_guess} />} />
       </Routes>
     </BrowserRouter></>
   );
