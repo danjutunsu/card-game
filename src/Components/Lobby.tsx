@@ -6,44 +6,56 @@ import { AppState } from "../store";
 import { useNavigate } from "react-router-dom";
 
 interface User {
-  id: number;
+  user_id: string;
   username: string;
   status: string;
 }
 
+
 const Lobby = () => {
   const [users, setUsers] = useState<User[]>([]);
   const userId = useSelector((state: AppState) => state.userId);
-  const [username, setUserName] = useState()
+  const [username, setUserName] = useState('')
   const navigate = useNavigate();
+  const [status, setStatus] = useState('')
+
+  const fetchUsers = async () => {
+    const response = await axios.get(`${url}/api/lobby`);
+    const data = response.data;
+    setUsers(data);
+    getUname(userId)
+  }; 
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      const response = await axios.get(`${url}/api/lobby`);
-      const data = response.data;
-      setUsers(data);
-      getUname(userId)
-    };    
     fetchUsers();
-  }, [users]);  
+  }, [status]);  
 
-  const handleReady = () => {
-    console.log("READY")
-  }
-
+  const handleReady = async (id: string) => {
+    try {
+      const response = await axios.put(`${url}/api/lobby?userId=${id}`);
+      const updatedUser = response.data; // Get updated user object with new status
+      setStatus(updatedUser.status);
+    } catch (error) {
+      console.error(error);
+    }
+  }  
+  
   function UserList() {
     return (
       <ul>
         {Array.isArray(users) && users.map((user) => (
-          <li key={user.id} className="lobby-row" style={{listStyle: 'none'}}>
+          <li key={user.user_id} className="lobby-row" style={{listStyle: 'none'}}>
             <div className="lobby-column lobby-column-stroke"> {toPascalCase(user.username)} </div>
             <div className="lobby-column lobby-column-stroke"> {user.status} </div>
-            <div className="lobby-column"> <button className="ready-button" onClick={handleReady}>Ready</button> </div>
+            <div className="lobby-column"> 
+              <button className="ready-button" onClick={() => handleReady(user.user_id)}>Ready?</button> 
+            </div>
           </li>
         ))}
       </ul>
     );
   }
+  
   
   
   function toPascalCase(str: string): string {
@@ -78,16 +90,22 @@ const Lobby = () => {
 
   return (
     <div className="stats-page">
-    <button className="logout-button" onClick={() => handleLogout(userId)}>Logout</button>
-    <p className="stats-header">Logged In As: {username}</p>
-    <p className="stats-header">Users In Lobby:</p>
-    <UserList />
-    <p className="stats-row"></p>
-    <p className="stats-header"></p>
-    <button className="button" onClick={() => {navigate('/card')}}>Start Game</button>
-    <p className="stats-row"></p>
+      <button className="logout-button" onClick={() => handleLogout(userId)}>Logout</button>
+      <div className="user-info">
+      <span>
+    <p className="stats-header">Logged In As: </p>
+    <p className="lobby-username">{toPascalCase(username)}</p>
+    </span>
+      </div>
+      <p className="stats-header">Users In Lobby:</p>
+      <UserList />
+      <p className="stats-row"></p>
+      {/* <p className="stats-header"></p> */}
+      <button className="button" onClick={() => {navigate('/card')}}>Start Game</button>
+      <p className="stats-row"></p>
     </div>
   );
+  
 };
 
 export default Lobby;

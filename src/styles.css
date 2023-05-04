@@ -160,6 +160,21 @@ body {
   text-stroke: 1px black;
 }
 
+.lobby-username {
+  display: inline-block;
+  width: 200px;
+  color: #6d68ff; /* complementary color */
+  text-shadow: 2px 2px 2px #000; /* add a text shadow */
+  stroke: black; /* add a stroke */
+  padding: 5px;
+  text-align: center;
+  font-size: 36px;
+  font-weight: bold;
+  -webkit-text-stroke: 1px black;
+  text-stroke: 1px black;
+}
+
+
 
 .stats-row {
   color: #ff704d; 
@@ -191,6 +206,12 @@ body {
   border-radius: 5px 5px 0 0;
   font-size: 22px;
   font-weight: bold;
+}
+
+.user-info span p {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0;
 }
 
 .lobby-column {
