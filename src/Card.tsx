@@ -87,6 +87,12 @@ const Card: React.FC = () => {
     } 
       
     function getRandomQuestion() {
+        let index = Math.floor(Math.random() * data.length);
+        while (visited.includes(index)) {
+            index = Math.floor(Math.random() * data.length);
+        }
+        setRandomQuestion(index);
+        setVisited([...visited, index]);
         if (visited.length === data.length) 
         {
             // all questions have been visited
@@ -96,12 +102,6 @@ const Card: React.FC = () => {
             return null; // return the current question
         }
     
-        let index = Math.floor(Math.random() * data.length);
-        while (visited.includes(index)) {
-            index = Math.floor(Math.random() * data.length);
-        }
-        setRandomQuestion(index);
-        setVisited([...visited, index]);
         return index;
     }
 

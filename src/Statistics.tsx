@@ -46,8 +46,7 @@ const MyComponent = (props: StatisticsProps) => {
       <button>{storeId}</button>
       <p className="stats-row">Points: {props.points}</p>
       <p className="stats-row"># Correct This Round: {props.correctlyAnswered} of {props.totalQuestions}</p>
-      <p className="stats-row">{percentCorrect}%</p>
-
+      <p className="stats-row">{props.totalQuestions ? `${percentCorrect}%` : "No Guesses this round"}</p>
       <p className="stats-header">========== Historical Stats ==========</p>
       <p className="stats-row">Total Correct: {props.totalCorrect}</p>
       <p className="stats-row">Total Wrong: {props.totalIncorrect}</p>

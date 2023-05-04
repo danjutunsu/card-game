@@ -33,7 +33,9 @@
 
       if (response.status === 200) {
         console.log('userID: ' + response.data.userId)
-
+        // const res = await axios.post(`${url}/api/lobby`, {
+        //   userId: userId
+        // })
         // Associates the UserId with the socket. 
         // -- Passes the userId parameter to the socket to be stored in the array.
         const socket = new WebSocket(`ws://localhost:3002?userId=${response.data.userId}`)
@@ -52,6 +54,7 @@
         socket.addEventListener('close', function (event) {
           console.log('WebSocket connection closed');
         });
+
         setUserId(response.data.userId)
         // continue with your code
         localStorage.setItem("token", response.data.token);
@@ -68,7 +71,8 @@
         // Dispatch an action to set the user ID in the Redux store
         dispatch({ type: 'SET_USER_ID', payload: loggedInUser });
 
-          navigate('/card', { state: { id: userId } });
+          // navigate('/card', { state: { id: userId } });
+          navigate('/lobby')
         }, 1000);
       } else {
         // if the login fails, display an error message

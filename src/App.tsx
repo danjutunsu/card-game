@@ -10,6 +10,7 @@ import axios from 'axios';
 import { url } from './Config';
 import { AppState } from './store';
 import { useSelector } from 'react-redux';
+import Lobby from './Components/Lobby';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -22,7 +23,7 @@ function App() {
   useEffect(() => {
     console.log('uids ' + storeId)
     getUserPoints(userId)
-  })
+  }, [userId])
 
   const getUserPoints = async (uid: number) => {
     try {
@@ -44,6 +45,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/card" element={<Card />} />
+        <Route path="/lobby" element={<Lobby />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/create" element={<CreateForm onLogin={function (username: string, password: string): void {
           throw new Error('Function not implemented.');

@@ -37,6 +37,32 @@
   border-radius: 5px;
   cursor: pointer;
 }
+
+.logout-button {
+  position: absolute;
+  top: 0;
+  right: 20px;
+  margin: 10px;
+  background-color: #6d68ff;
+  text-decoration: none;
+  color: white;
+  padding: 10px;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.ready-button {
+  background-color: #50c878;
+  text-decoration: none;
+  color: #ffe14f;
+  padding: 5px;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
   
 .button-link {
   text-decoration: none;
@@ -145,4 +171,44 @@ body {
   font-weight: bold;
   -webkit-text-stroke: 1px black;
   text-stroke: 1px black;
+}
+
+.status-text {
+  color: #6d68ff; 
+  text-shadow: 1px 1px 1px #000;
+  stroke: black;
+  text-align: center;
+  border-radius: 5px 5px 0 0;
+  font-size: 22px;
+  font-weight: bold;
+  -webkit-text-stroke: 1px black;
+  text-stroke: 1px black;
+}
+
+.lobby-row {
+  color: #ff704d; 
+  text-align: center;
+  border-radius: 5px 5px 0 0;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.lobby-column {
+  text-align: center;
+  border-radius: 5px 5px 0 0;
+  width: 33.33%;
+  float: left;
+  box-sizing: border-box;
+  padding: 8px;
+}
+
+.lobby-column-stroke {
+  -webkit-text-stroke: 1px black;
+  text-stroke: 1px black;
+}
+
+ul {
+  margin: 0 auto;
+  width: 50%; /* adjust the width as needed */
+  padding-left: 0;
 }
