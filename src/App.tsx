@@ -11,6 +11,7 @@ import { url } from './Config';
 import { AppState } from './store';
 import { useSelector } from 'react-redux';
 import Lobby from './Components/Lobby';
+import WaitingRoom from './Components/WaitingRoom';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -47,6 +48,7 @@ function App() {
         <Route path="/card" element={<Card />} />
         <Route path="/lobby" element={<Lobby />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/waiting" element={<WaitingRoom />} />
         <Route path="/create" element={<CreateForm onLogin={function (username: string, password: string): void {
           throw new Error('Function not implemented.');
         } } />} />

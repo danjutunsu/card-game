@@ -11,7 +11,6 @@ interface User {
   status: string;
 }
 
-
 const Lobby = () => {
   const [users, setUsers] = useState<User[]>([]);
   const userId = useSelector((state: AppState) => state.userId);
@@ -20,25 +19,74 @@ const Lobby = () => {
   const [status, setStatus] = useState('')
 
   const fetchUsers = async () => {
-    const response = await axios.get(`${url}/api/lobby`);
-    const data = response.data;
-    setUsers(data);
-    getUname(userId)
-  }; 
-
-  useEffect(() => {
-    fetchUsers();
-  }, [status]);  
-
-  const handleReady = async (id: string) => {
     try {
-      const response = await axios.put(`${url}/api/lobby?userId=${id}`);
-      const updatedUser = response.data; // Get updated user object with new status
-      setStatus(updatedUser.status);
+      const response = await axios.get(`${url}/api/lobby`);
+      setUsers(response.data.users);
+      getUname(userId)
+      console.log('userid: ' + userId)
+      setAllUsersReady(response.data.allUsersReady); // Set flag based on response
+      console.log(`Ready? ${allUsersReady}`)
     } catch (error) {
       console.error(error);
     }
-  }  
+  };
+
+const [allUsersReady, setAllUsersReady] = useState(false);
+
+function handleStartGame(readyCheck: boolean, user: string): void {
+    if (readyCheck && user.toString() === '1') {
+        navigate('/card')
+    } else {
+        console.log(allUsersReady)
+        console.log(userId)
+        navigate('/waiting')
+    }
+}
+
+useEffect(() => {
+    fetchUsers();
+  }, [status]); 
+  
+//   useEffect(() => {
+//     if (allUsersReady) {
+//         navigate('/card')
+//     }
+//   }, [allUsersReady]); 
+
+const handleReady = async (id: string) => {
+    try {
+      const response = await axios.put(`${url}/api/lobby?userId=${id}`);
+      const updatedUser = response.data; // Get updated user object with new status
+      if (updatedUser.status === 'Ready') {
+        try {
+          setStatus('Idle');
+          console.log("status change");
+          await axios.put(`${url}/api/lobby`); // Update status of all users
+          const response = await axios.get(`${url}/api/lobby`);
+          setUsers(response.data.users);
+          setAllUsersReady(response.data.allUsersReady); // Update flag based on response
+          console.log("Status of users in lobby:")
+          users.forEach((element: any) => {
+            console.log(`${element.username} status: ${element.status}`)
+          });
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        console.log("Status of users in lobby:")
+        users.forEach((element: any) => {
+          console.log(`${element.username} status: ${element.status}`)
+        });
+        setStatus('Ready');
+        console.log("status change");
+        const allReady = users.every(user => user.status === 'Ready');
+        setAllUsersReady(allReady); // Update flag based on current state of users
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  
   
   function UserList() {
     return (
@@ -55,8 +103,6 @@ const Lobby = () => {
       </ul>
     );
   }
-  
-  
   
   function toPascalCase(str: string): string {
     return str.replace(/(\w)(\w*)/g, function(_, firstChar, rest) {
@@ -101,7 +147,7 @@ const Lobby = () => {
       <UserList />
       <p className="stats-row"></p>
       {/* <p className="stats-header"></p> */}
-      <button className="button" onClick={() => {navigate('/card')}}>Start Game</button>
+      <button className="button" onClick={() => handleStartGame(allUsersReady, userId)}>Start Game</button>
       <p className="stats-row"></p>
     </div>
   );
