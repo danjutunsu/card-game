@@ -17,6 +17,7 @@ const Lobby = () => {
   const [username, setUserName] = useState('')
   const navigate = useNavigate();
   const [status, setStatus] = useState('')
+  //create random user to the game db and save
 
   const fetchUsers = async () => {
     try {
@@ -33,8 +34,19 @@ const Lobby = () => {
 
 const [allUsersReady, setAllUsersReady] = useState(false);
 
-function handleStartGame(readyCheck: boolean, user: string): void {
-    if (readyCheck && user.toString() === '1') {
+    async function handleStartGame(readyCheck: boolean, user: string): Promise<void> {
+    if (readyCheck && user.toString()) {
+        try {
+            const response = await axios.get(`${url}/api/games`, {
+                params: {
+                    userId: user
+                }                
+            });
+            console.log('HERE')
+        }
+        catch (err) {
+            console.log(err)
+        }        
         navigate('/card')
     } else {
         console.log(allUsersReady)
