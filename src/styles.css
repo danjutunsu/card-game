@@ -38,6 +38,11 @@
   cursor: pointer;
 }
 
+button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .logout-button {
   position: absolute;
   top: 0;

@@ -17,6 +17,7 @@ const Lobby = () => {
   const [username, setUserName] = useState('')
   const navigate = useNavigate();
   const [status, setStatus] = useState('')
+  const [userIdList, setUserIdList] = useState([])
   //create random user to the game db and save
 
   const fetchUsers = async () => {
@@ -34,15 +35,17 @@ const Lobby = () => {
 
 const [allUsersReady, setAllUsersReady] = useState(false);
 
-    async function handleStartGame(readyCheck: boolean, user: string): Promise<void> {
-    if (readyCheck && user.toString()) {
+async function handleStartGame(readyCheck: boolean, user: string, player1: string, player2: string): Promise<void> {
+    console.log(`Player 1: ${player1} - Player 2: ${player2}`)
+    
+    if (readyCheck && user.toString() === '2') {
         try {
-            const response = await axios.get(`${url}/api/games`, {
+            const response = await axios.get(`${url}/api/games/id`, {
                 params: {
-                    userId: user
-                }                
-            });
-            console.log('HERE')
+                    player1: player1,
+                    player2: player2
+                }
+            })
         }
         catch (err) {
             console.log(err)
@@ -148,7 +151,7 @@ const handleReady = async (id: string) => {
 
   return (
     <div className="stats-page">
-      <button className="logout-button" onClick={() => handleLogout(userId)}>Logout</button>
+      <button id="logout" className="logout-button" onClick={() => handleLogout(userId)}>Logout</button>
       <div className="user-info">
       <span>
     <p className="stats-header">Logged In As: </p>
@@ -159,7 +162,7 @@ const handleReady = async (id: string) => {
       <UserList />
       <p className="stats-row"></p>
       {/* <p className="stats-header"></p> */}
-      <button className="button" onClick={() => handleStartGame(allUsersReady, userId)}>Start Game</button>
+      <button disabled={!allUsersReady} className="button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
       <p className="stats-row"></p>
     </div>
   );
