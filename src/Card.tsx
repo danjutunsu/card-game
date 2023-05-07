@@ -85,11 +85,12 @@ const Card: React.FC = () => {
         }
     } 
       
-    function getRandomQuestion() {
+    async function getRandomQuestion() {
         if (visited.length === data.length) {
           // all questions have been visited
           console.log("Finished Guessing")
           getUserPoints(parseInt(userId))
+          await axios.put(`${url}/api/games/turn`,)
           navigate('/lobby');
           return null; // return the current question
         }
