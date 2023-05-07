@@ -18,6 +18,8 @@ const Lobby = () => {
   const navigate = useNavigate();
   const [status, setStatus] = useState('')
   const [userIdList, setUserIdList] = useState([])
+  const [gameId, setGameId] = useState(0)
+  const [turn, setTurn] = useState(0)
   //create random user to the game db and save
 
   const fetchUsers = async () => {
@@ -35,28 +37,64 @@ const Lobby = () => {
 
 const [allUsersReady, setAllUsersReady] = useState(false);
 
+async function getGame(player1: string, player2: string) {
+    try {
+        const response = await axios.get(`${url}/api/games/id`, {
+            params: {
+                player1: player1,
+                player2: player2
+            }
+        })
+        console.log('data: ' + response.data.id) // add this line to log the response
+        setGameId(response.data.id)
+        getTurn(response.data.id)
+
+        console.log("GAME ID IS :  " + response.data.id)
+
+    }
+    catch (err) {
+        console.log(err)
+        console.log("Error getting Game ID")
+    }   
+}
+
+// useEffect(() => {
+//     getTurn(gameId);
+//   }, [gameId]);
+
+// useEffect(() => {
+//     console.log("using gameid: " + gameId)
+//     getTurn(gameId)
+// }, [gameId])
+
+async function getTurn(gameId: number) {
+    try {
+        console.log("TRYING GAME ID: " + gameId)
+        const response = await axios.get(`${url}/api/games/turn`, {
+        params: {
+          gameId: gameId
+        }
+      });
+      setTurn(response.data.turn_id);
+      console.log(`Turn IDee: ${response.data.turn_id}`);
+      if (allUsersReady && response.data.turn_id === userId) {
+            navigate('/card')
+        } else {
+            console.log(allUsersReady)
+            console.log(userId)
+            navigate('/waiting')
+        }
+    } catch (err) {
+      console.log(err);
+      console.log("Error getting turn ID");
+    }
+  }
+
 async function handleStartGame(readyCheck: boolean, user: string, player1: string, player2: string): Promise<void> {
     console.log(`Player 1: ${player1} - Player 2: ${player2}`)
-    
-    if (readyCheck && user.toString() === '2') {
-        try {
-            const response = await axios.get(`${url}/api/games/id`, {
-                params: {
-                    player1: player1,
-                    player2: player2
-                }
-            })
-        }
-        catch (err) {
-            console.log(err)
-        }        
-        navigate('/card')
-    } else {
-        console.log(allUsersReady)
-        console.log(userId)
-        navigate('/waiting')
-    }
+    await getGame(player1, player2)
 }
+
 
 useEffect(() => {
     fetchUsers();
