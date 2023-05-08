@@ -1,5 +1,122 @@
 /* styles.css */
 
+@media (max-width:480px) {
+  .lobby-username {
+    width: 100% !important;
+    font-weight: normal !important;
+  }
+
+  .form-label {
+    font-weight: normal !important;
+    text-align: center;
+  }
+  label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+    font-weight: normal !important;
+  }
+  
+  .lobby-column {
+    text-align: center;
+    border-radius: 5px 5px 0 0;
+    width: 100% !important;
+    float: left;
+    box-sizing: border-box;
+    padding: 8px;
+  }
+  .login-header {
+    color: #ffe14f; /* complementary color */
+    text-shadow: 2px 2px 2px #000; /* add a text shadow */
+    stroke: black; /* add a stroke */
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px 5px 0 0;
+    font-size: 36px;
+    font-weight: normal !important;
+    -webkit-text-stroke: 1px black;
+    text-stroke: 1px black;
+  }
+  .stats-header {
+    color: #ffe14f; /* complementary color */
+    text-shadow: 2px 2px 2px #000; /* add a text shadow */
+    stroke: black; /* add a stroke */
+    padding: 5px;
+    text-align: center;
+    /* border-radius: 5px 5px 0 0; */
+    font-size: 36px;
+    font-weight: normal !important;
+    -webkit-text-stroke: 1px black;
+    text-stroke: 1px black;
+  }
+  
+  .lobby-username {
+    display: inline-block;
+    color: #6d68ff; /* complementary color */
+    text-shadow: 2px 2px 2px #000; /* add a text shadow */
+    stroke: black; /* add a stroke */
+    text-align: center;
+    font-size: 36px;
+    font-weight: normal !important;
+    -webkit-text-stroke: 1px black;
+    text-stroke: 1px black;
+  }
+  
+  .stats-row {
+    color: #44302b; 
+    text-shadow: 1px 1px 1px #111111;
+    stroke: black;
+    text-align: center;
+    border-radius: 5px 5px 0 0;
+    font-size: 22px;
+    font-weight: normal !important;
+    -webkit-text-stroke: 1px black;
+    text-stroke: 1px black;
+  }
+  
+  .status-text {
+    color: #6d68ff; 
+    text-shadow: 1px 1px 1px #000;
+    stroke: black;
+    text-align: center;
+    border-radius: 5px 5px 0 0;
+    font-size: 22px;
+    font-weight: normal !important;
+    -webkit-text-stroke: 1px black;
+    text-stroke: 1px black;
+  }
+  
+  .lobby-row {
+    color: #ff704d; 
+    text-align: center;
+    border-radius: 5px 5px 0 0;
+    font-size: 22px;
+    font-weight: normal !important;
+  }
+
+  .button {
+    background-color: rgb(109, 104, 255);
+    text-decoration: none;
+    color: white;
+    padding: 10px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .ready-button {
+    background-color: #50c878;
+    text-decoration: none;
+    color: #ffe14f;
+    padding: 10px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+}
+
 .login-page {
   display: flex;
   flex-direction: column;
@@ -32,7 +149,7 @@
   text-decoration: none;
   color: white;
   padding: 10px;
-  font-size: 18px;
+  font-size: 28px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -62,8 +179,8 @@ button[disabled] {
   background-color: #50c878;
   text-decoration: none;
   color: #ffe14f;
-  padding: 5px;
-  font-size: 18px;
+  padding: 10px;
+  font-size: 28px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -167,11 +284,9 @@ body {
 
 .lobby-username {
   display: inline-block;
-  width: 200px;
   color: #6d68ff; /* complementary color */
   text-shadow: 2px 2px 2px #000; /* add a text shadow */
   stroke: black; /* add a stroke */
-  padding: 5px;
   text-align: center;
   font-size: 36px;
   font-weight: bold;
@@ -179,11 +294,9 @@ body {
   text-stroke: 1px black;
 }
 
-
-
 .stats-row {
   color: #ff704d; 
-  text-shadow: 1px 1px 1px #000;
+  text-shadow: 1px 1px 1px #111111;
   stroke: black;
   text-align: center;
   border-radius: 5px 5px 0 0;
@@ -209,7 +322,7 @@ body {
   color: #ff704d; 
   text-align: center;
   border-radius: 5px 5px 0 0;
-  font-size: 22px;
+  font-size: 36px;
   font-weight: bold;
 }
 
@@ -222,7 +335,7 @@ body {
 .lobby-column {
   text-align: center;
   border-radius: 5px 5px 0 0;
-  width: 33.33%;
+  width: 50%;
   float: left;
   box-sizing: border-box;
   padding: 8px;

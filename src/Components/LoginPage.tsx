@@ -38,12 +38,12 @@
         // })
         // Associates the UserId with the socket. 
         // -- Passes the userId parameter to the socket to be stored in the array.
-        const socket = new WebSocket(`ws://localhost:3002?userId=${response.data.userId}`)
+        // const socket = new WebSocket(`ws://localhost:3002?userId=${response.data.userId}`)
 
         // Connection opened
-        socket.addEventListener('open', function (event) {
+        // socket.addEventListener('open', function (event) {
           // socket.send('Sello Server!');
-        });
+        // });
 
         // // Listen for messages
         // socket.addEventListener('message', function (event) {
@@ -51,9 +51,9 @@
         // });
 
         // Connection closed
-        socket.addEventListener('close', function (event) {
-          console.log('WebSocket connection closed');
-        });
+        // socket.addEventListener('close', function (event) {
+        //   console.log('WebSocket connection closed');
+        // });
 
         setUserId(response.data.userId)
         // continue with your code
