@@ -42,7 +42,7 @@
 
         // Connection opened
         socket.addEventListener('open', function (event) {
-          socket.send('Hello Server!');
+          // socket.send('Sello Server!');
         });
 
         // // Listen for messages

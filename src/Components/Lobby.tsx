@@ -20,7 +20,34 @@ const Lobby = () => {
   const [userIdList, setUserIdList] = useState([])
   const [gameId, setGameId] = useState(0)
   const [turn, setTurn] = useState(0)
+  const [waiting, setWaiting] = useState(false)
   //create random user to the game db and save
+  const socket = new WebSocket(`ws://localhost:3002?userId=${userId}`)
+
+  // Connection opened
+  socket.addEventListener('open', function (event) {
+    // socket.send('Fello Server!');
+  });
+  
+// // Listen for messages
+socket.addEventListener('message', function (event) {
+  const data = JSON.parse(event.data)
+  if (data.consoleMessage) {
+    console.log(data.consoleMessage.userId)
+  }
+});
+
+  // // Listen for messages
+  socket.addEventListener('message', function (event) {
+    const data = JSON.parse(event.data)
+    if (data.user_status_update) {
+      console.log("sheeeeit")
+      const { userId, status } = data;
+      handleUserStatusUpdate(userId, status);
+    }
+    else {
+    }
+  });
 
   const fetchUsers = async () => {
     try {
@@ -48,9 +75,6 @@ async function getGame(player1: string, player2: string) {
         console.log('data: ' + response.data.id) // add this line to log the response
         setGameId(response.data.id)
         getTurn(response.data.id)
-
-        console.log("GAME ID IS :  " + response.data.id)
-
     }
     catch (err) {
         console.log(err)
@@ -82,8 +106,13 @@ async function getTurn(gameId: number) {
         } else {
             console.log(allUsersReady)
             console.log(userId)
-            navigate('/waiting')
+            // navigate('/waiting')
+            setWaiting(true)
         }
+        // Connection closed
+        socket.addEventListener('close', function (event) {
+          console.log('WebSocket connection closed');
+  });
     } catch (err) {
       console.log(err);
       console.log("Error getting turn ID");
@@ -113,7 +142,6 @@ const handleReady = async (id: string) => {
       if (updatedUser.status === 'Ready') {
         try {
           setStatus('Idle');
-          console.log("status change");
           await axios.put(`${url}/api/lobby`); // Update status of all users
           const response = await axios.get(`${url}/api/lobby`);
           setUsers(response.data.users);
@@ -131,17 +159,27 @@ const handleReady = async (id: string) => {
           console.log(`${element.username} status: ${element.status}`)
         });
         setStatus('Ready');
-        console.log("status change");
         const allReady = users.every(user => user.status === 'Ready');
         setAllUsersReady(allReady); // Update flag based on current state of users
       }
-    } catch (error) {
+      // Connection opened
+      socket.send(JSON.stringify({
+        type: 'user_status_update',
+        payload: {
+          user_id: userId,
+          new_status: status
+        }
+      }));    } catch (error) {
       console.error(error);
     }
   }
+  interface UserListProps {
+    users: User[];
+    handleReady: (id: string) => Promise<void>;
+    handleStatusUpdate: (user_id: string, newStatus: string) => void;
+  }
   
-  
-  function UserList() {
+  function UserList(props: UserListProps) {
     return (
       <ul>
         {Array.isArray(users) && users.map((user) => (
@@ -187,6 +225,14 @@ const handleReady = async (id: string) => {
     }
   };
 
+  const handleUserStatusUpdate = (user_id: string, status: string) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.user_id === user_id ? { ...user, status: status } : user
+      )
+    );
+  };
+
   return (
     <div className="stats-page">
       <button id="logout" className="logout-button" onClick={() => handleLogout(userId)}>Logout</button>
@@ -197,11 +243,12 @@ const handleReady = async (id: string) => {
     </span>
       </div>
       <p className="stats-header">Users In Lobby:</p>
-      <UserList />
+      <UserList users={users} handleReady={handleReady} handleStatusUpdate={handleUserStatusUpdate}/>
       <p className="stats-row"></p>
       {/* <p className="stats-header"></p> */}
       <button disabled={!allUsersReady} className="button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
       <p className="stats-row"></p>
+      {waiting && <div><h1>Waiting for other player to finish</h1></div>}
     </div>
   );
   
