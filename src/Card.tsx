@@ -7,6 +7,7 @@ import LoginForm from "./Components/LoginForm";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { AppState } from "./store";
+import { json } from "stream/consumers";
 
 // const navigate = useNavigate();
 
@@ -28,25 +29,40 @@ const Card: React.FC = () => {
     const [userPoints, setUserPoints] = useState(Object);
     const location = useLocation();
     const userId = useSelector((state: AppState) => state.userId);
+    const userId2 = useSelector((state: AppState) => state.userId2);
+    const [gameStatus, setGameStatus] = useState()
 
     const navigate = useNavigate();
 
     useEffect(() => {
         async function fetchData() {
-            const response = await fetch(`${url}/api/questions`);
-            const jsonData = await response.json();
+            const response = await axios.get(`${url}/api/questions`);
+            const jsonData = response.data;
             setData(jsonData);
         }
         fetchData();
+        getGameStatus(userId, userId2)
     }, []);
 
-    useEffect(() => {
-        console.log(`User ID: ${userPoints?.user_id}`);
-        console.log(`Points: ${userPoints?.points}`);
-        console.log(`Total Guess: ${userPoints?.total_guess}`);
-        console.log(`Total Correct: ${userPoints?.total_correct}`);
-        console.log(`Total Incorrect: ${userPoints?.total_incorrect}`);
-      }, [userPoints]); 
+    const getGameStatus = async (player1: string, player2: string) => 
+    {
+      console.log("EXECUTING-_______________")
+      console.log(`Player1: ${userId}`)
+      console.log(`Player2: ${userId2}`)
+      const response = await axios.get(`${url}/api/games/status`, {
+        params: {
+          player1: player1,
+          player2: player2
+        }
+      })
+      const jsonData = response.data.game_status;
+
+      setGameStatus(jsonData)
+      if (jsonData === "0") {
+        // console.log("ANSWERING")
+      }
+      return jsonData;
+    }
 
     //initialze with a random question
     //update state upon initialization
@@ -86,35 +102,34 @@ const Card: React.FC = () => {
     } 
       
     async function getRandomQuestion() {
+      if (visited.length === data.length) {
+        // all questions have been visited
+        console.log("Finished Guessing")
+        getUserPoints(parseInt(userId))
+        await axios.put(`${url}/api/games/turn`,)
+        navigate('/lobby');
+        return null; // return the current question
+      }
+    
+      let index = Math.floor(Math.random() * data.length);
+    
+      while (visited.includes(index)) {
+        index = Math.floor(Math.random() * data.length);
+        console.log('while')
         if (visited.length === data.length) {
           // all questions have been visited
-          console.log("Finished Guessing")
           getUserPoints(parseInt(userId))
-          await axios.put(`${url}/api/games/turn`,)
-          navigate('/lobby');
-          return null; // return the current question
+          return index; // return the last index
         }
-      
-        let index = Math.floor(Math.random() * data.length);
-      
-        while (visited.includes(index)) {
-          index = Math.floor(Math.random() * data.length);
-          console.log('while')
-          if (visited.length === data.length) {
-            // all questions have been visited
-            getUserPoints(parseInt(userId))
-            return index; // return the last index
-          }
-        }
-      
-        console.log("WORKS")
-        setRandomQuestion(index);
-        setVisited([...visited, index]);
-        console.log(`Visited: ${visited.length}`)
-        console.log(`Data: ${data.length}`)
-      
-        return index;
       }
+    
+      setRandomQuestion(index);
+      setVisited([...visited, index]);
+      console.log(`Visited: ${visited.length}`)
+      console.log(`Data: ${data.length}`)
+    
+      return index;
+    }
 
     const nextRound = async (currentUser: number) => {
         try {
@@ -193,57 +208,66 @@ const Card: React.FC = () => {
     } 
       
     function handleAnswerNextQuestion(index: number) {
-        const questionId = data[randomQuestion].id;
-        const userAnswer = index;
-        addAnswer(parseInt(userId), questionId, userAnswer, answered, data.length);
-        setAnswered(answered+1)
-        getRandomQuestion();
+      console.log("ANSWERING")
+      const questionId = data[randomQuestion].id;
+      const userAnswer = index;
+      addAnswer(parseInt(userId), questionId, userAnswer, answered, data.length);
+      setAnswered(answered+1)
+      getRandomQuestion();
     }
 
-    // function handleNextQuestion(index: number) {
-    //     const questionId = data[randomQuestion].id;
-    //     const userGuess = index;
-    //     addGuess(parseInt(userId), questionId, userGuess);
-    //     if (index === data[randomQuestion].answer)
-    //     {
-    //         console.log("CORRECT")
-            // setCorrectlyAnswered(correctlyAnswered+1)
-    //         getRandomQuestion();
-    //     }
-    //     else
-    //     {
-    //         console.log("INCORRECT")
-    //         getRandomQuestion();
-    //     }
-    //     setAnswered(answered+1)
-    // }
+    function handleNextQuestion(index: number) {
+      console.log("GUESSING")
+      const questionId = data[randomQuestion].id;
+      const userGuess = index;
+      addGuess(parseInt(userId), questionId, userGuess);
+      if (index === data[randomQuestion].answer)
+      {
+          console.log("CORRECT")
+          setCorrectlyAnswered(correctlyAnswered+1)
+          getRandomQuestion();
+      }
+      else
+      {
+          console.log("INCORRECT")
+          getRandomQuestion();
+      }
+      setAnswered(answered+1)
+    }
     
     return (
-        <div className="card-page">
-                {data.length > 0 && answered < data.length ? (
-                    <div>
-                        <p className="card-header">{data[randomQuestion].question}</p>
-                        {data[randomQuestion].options.map((option, index) => (
-                            <div key={index}>
-                                <div className="button-container">
-                                    <button className="button" onClick={() => handleAnswerNextQuestion(index)}>{option}</button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div>
-                        <Statistics user={""}
-                         points={0} 
-                         correctlyAnswered={0} 
-                         totalQuestions={0} 
-                         totalCorrect={0} 
-                         totalIncorrect={0}
-                         totalHistorical={0} />
-                    </div>
-                )}
+      <div className="card-page">
+        {gameStatus === '0' ? (
+        <div>
+        {data[randomQuestion] && (
+          <p className="card-header">{data[randomQuestion].question}</p>)}
+          {data[randomQuestion]?.options?.map((option, index) => (
+            <div key={index}>
+              <div className="button-container">
+                <button className="button" onClick={() => handleAnswerNextQuestion(index)}>
+                  {option}
+                </button>
+              </div>
             </div>
-    )
+          ))}
+        </div>
+        ) :
+        <div>
+        {data[randomQuestion] && (
+          <p className="card-header">{data[randomQuestion].question}</p>)}
+          {data[randomQuestion]?.options?.map((option, index) => (
+            <div key={index}>
+              <div className="button-container">
+                <button className="button" onClick={() => handleNextQuestion(index)}>
+                  {option}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+        }
+      </div>
+    );    
 }
 
 export default Card;

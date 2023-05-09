@@ -53,7 +53,7 @@ function App() {
           throw new Error('Function not implemented.');
         } } />} />
         <Route path="/stats" element={<Statistics
-          user={storeId.toString()}
+          user={storeId}
           points={userPoints?.points}
           correctlyAnswered={userPoints?.correct_round}
           totalQuestions={userPoints?.total_round}

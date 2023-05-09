@@ -4,6 +4,7 @@ import { createStore } from 'redux';
 
 export type AppState = {
   userId: string;
+  userId2: string
 };
 
 const getInitialState = () => {
@@ -13,18 +14,26 @@ const getInitialState = () => {
   }
   return {
     userId: '',
+    userId2: ''
   };
 };
 
 const rootReducer = (state: AppState = getInitialState(), action: any) => {
   switch (action.type) {
     case 'SET_USER_ID':
-      const newState = {
+      const newUserIdState = {
         ...state,
         userId: action.payload,
       };
-      localStorage.setItem('appState', JSON.stringify(newState));
-      return newState;
+      localStorage.setItem('userIdState', JSON.stringify(newUserIdState));
+      return newUserIdState;
+    case 'SET_USER_ID_2':
+      const newUserId2State = {
+        ...state,
+        userId2: action.payload,
+      };
+      localStorage.setItem('userId2State', JSON.stringify(newUserId2State));
+      return newUserId2State;
     default:
       return state;
   }

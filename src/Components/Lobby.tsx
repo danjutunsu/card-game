@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { url } from "../Config";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../store";
 import { useNavigate } from "react-router-dom";
 
@@ -14,6 +14,7 @@ interface User {
 const Lobby = () => {
   const [users, setUsers] = useState<User[]>([]);
   const userId = useSelector((state: AppState) => state.userId);
+  const userId2 = useSelector((state: AppState) => state.userId2);
   const [username, setUserName] = useState('')
   const navigate = useNavigate();
   const [status, setStatus] = useState('')
@@ -21,32 +22,25 @@ const Lobby = () => {
   const [gameId, setGameId] = useState(0)
   const [turn, setTurn] = useState(0)
   const [waiting, setWaiting] = useState(false)
+  const dispatch = useDispatch();
 
   //create new socket
   const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
   
-  // // // Listen for messages
-  // socket.addEventListener('message', function (event) {
-  //   const data = JSON.parse(event.data)
-  //   if (data.consoleMessage) {
-  //     console.log(data.consoleMessage.userId)
-  //   }
-  // });
 
-// // Listen for messages
-socket.addEventListener('message', function (event) {
-  const data = JSON.parse(event.data)
-  if (data.user_status_update) {
-    const { userId, status} = data.user_status_update.userId;
-    console.log(`USER ID: ${data.user_status_update.userId}`);
+  // // Listen for messages
+  socket.addEventListener('message', function (event) {
+    const data = JSON.parse(event.data)
+    if (data.user_status_update) {
+      const { userId, status} = data.user_status_update.userId;
+      console.log(`USER ID: ${data.user_status_update.userId}`);
 
-    handleUserStatusUpdate(data.user_status_update.userId, data.user_status_update.status);
-    console.log(`USER ${data.user_status_update.userId} is ${data.user_status_update.status}`)
-  }
-  else {
-  }
-});
-
+      handleUserStatusUpdate(data.user_status_update.userId, data.user_status_update.status);
+      console.log(`USER ${data.user_status_update.userId} is ${data.user_status_update.status}`)
+    }
+    else {
+    }
+  });
 
   // Connection closed
   socket.addEventListener('close', function (event) {
@@ -84,7 +78,7 @@ socket.addEventListener('message', function (event) {
         console.log(err)
         console.log("Error getting Game ID")
     }   
-}
+  }
 
   async function getTurn(gameId: number) {
     try {
@@ -95,8 +89,9 @@ socket.addEventListener('message', function (event) {
       });
       setTurn(response.data.turn_id);
       if (allUsersReady && response.data.turn_id === userId) {
-            handleUserStatusUpdate(userId.toString(), "In Progress")
-            console.log("statusss" + status)
+        // TODO - Make this handleUserStatus method work to change 
+        // Status to In Progress
+            // handleUserStatusUpdate(userId.toString(), "In Progress")
             navigate('/card')
         } else {
             console.log(allUsersReady)
@@ -111,20 +106,18 @@ socket.addEventListener('message', function (event) {
   }
 
   async function handleStartGame(readyCheck: boolean, user: string, player1: string, player2: string): Promise<void> {
-      console.log(`Player 1: ${player1} - Player 2: ${player2}`)
+      dispatch({ type: 'SET_USER_ID_2', payload: users[1]?.user_id.toString() });
+      localStorage.setItem('userId2', users[1]?.user_id.toString());
       await getGame(player1, player2)
   }
-
 
   useEffect(() => {
       fetchUsers();
     }, [status]); 
-    
-  //   useEffect(() => {
-  //     if (allUsersReady) {
-  //         navigate('/card')
-  //     }
-  //   }, [allUsersReady]); 
+
+  useEffect(() => {
+    console.log(users[1]?.user_id)
+  }, [users])
 
   const handleReady = async (id: string) => {
     try {
@@ -214,7 +207,6 @@ socket.addEventListener('message', function (event) {
       console.error(error);
     }
   };
-
   
   const handleUserStatusUpdate = (user_id: string, status: string) => {
     setUsers((prevUsers) =>

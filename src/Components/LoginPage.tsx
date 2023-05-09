@@ -70,7 +70,6 @@
 
         // Dispatch an action to set the user ID in the Redux store
         dispatch({ type: 'SET_USER_ID', payload: loggedInUser });
-
           // navigate('/card', { state: { id: userId } });
           navigate('/lobby')
         }, 1000);
