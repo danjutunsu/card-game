@@ -6,6 +6,19 @@
     font-weight: normal !important;
   }
 
+  .card-header {
+    color: #ff8c00; /* complementary color */
+    text-shadow: 2px 2px 2px #000; /* add a text shadow */
+    stroke: black; /* add a stroke */
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px 5px 0 0;
+    font-size: 36px;
+    font-weight: normal !important;
+    -webkit-text-stroke: 1px black;
+    text-stroke: 1px black;
+  }
+
   .form-label {
     font-weight: normal !important;
     text-align: center;
@@ -115,6 +128,14 @@
     border-radius: 5px;
     cursor: pointer;
   }
+}
+
+.ready {
+  color: rgb(255, 0, 0);
+}
+
+.idle {
+  color: #50c878;
 }
 
 .login-page {
@@ -252,6 +273,19 @@ input {
   margin-top: 5px;
 }
 
+.card-header {
+  color: #ff8c00; /* complementary color */
+  text-shadow: 2px 2px 2px #000; /* add a text shadow */
+  stroke: black; /* add a stroke */
+  padding: 10px;
+  text-align: center;
+  border-radius: 5px 5px 0 0;
+  font-size: 36px;
+  font-weight: bold;
+  -webkit-text-stroke: 1px black;
+  text-stroke: 1px black;
+}
+
 .login-header {
   color: #ffe14f; /* complementary color */
   text-shadow: 2px 2px 2px #000; /* add a text shadow */
@@ -287,6 +321,7 @@ body {
   color: #6d68ff; /* complementary color */
   text-shadow: 2px 2px 2px #000; /* add a text shadow */
   stroke: black; /* add a stroke */
+  padding-left: 10px;
   text-align: center;
   font-size: 36px;
   font-weight: bold;
@@ -319,7 +354,7 @@ body {
 }
 
 .lobby-row {
-  color: #ff704d; 
+  color: #6d68ff; 
   text-align: center;
   border-radius: 5px 5px 0 0;
   font-size: 36px;

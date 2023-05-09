@@ -222,7 +222,7 @@ const Card: React.FC = () => {
         <div className="card-page">
                 {data.length > 0 && answered < data.length ? (
                     <div>
-                        <p>{data[randomQuestion].question}</p>
+                        <p className="card-header">{data[randomQuestion].question}</p>
                         {data[randomQuestion].options.map((option, index) => (
                             <div key={index}>
                                 <div className="button-container">

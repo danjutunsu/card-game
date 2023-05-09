@@ -95,6 +95,8 @@ socket.addEventListener('message', function (event) {
       });
       setTurn(response.data.turn_id);
       if (allUsersReady && response.data.turn_id === userId) {
+            handleUserStatusUpdate(userId.toString(), "In Progress")
+            console.log("statusss" + status)
             navigate('/card')
         } else {
             console.log(allUsersReady)
@@ -158,7 +160,7 @@ socket.addEventListener('message', function (event) {
           status: status
         }
       }));
-      
+
       // socket.close();
     } catch (error) {
       console.error(error);
@@ -176,7 +178,7 @@ socket.addEventListener('message', function (event) {
         {Array.isArray(users) && users.map((user) => (
           <li key={user.user_id} className="lobby-row" style={{listStyle: 'none'}}>
             <div className="lobby-column lobby-column-stroke"> {toPascalCase(user.username)} </div>
-            <div className="lobby-column lobby-column-stroke"> {user.status} </div>
+            <div className={`lobby-column lobby-column-stroke ${user.status === 'Ready' ? 'ready' : 'idle'}`}>{user.status}</div>
           </li>
         ))}
       </ul>
@@ -213,6 +215,7 @@ socket.addEventListener('message', function (event) {
     }
   };
 
+  
   const handleUserStatusUpdate = (user_id: string, status: string) => {
     setUsers((prevUsers) =>
       prevUsers.map((user) =>
@@ -238,7 +241,7 @@ socket.addEventListener('message', function (event) {
       <p className="stats-row"></p>
 
       <button disabled={!allUsersReady} className="button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
-      {waiting && <div><h1>You turn is next</h1></div>}
+      {waiting && <div><h1 className="stats-header">Your turn is next</h1></div>}
     </div>
   );
 };
