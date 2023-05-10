@@ -12,8 +12,6 @@
   import { store } from "../store";
   import { io } from 'socket.io-client';
 
-
-
   const MyComponent: React.FC = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [loggedInCard, setLoggedInCard] = useState(false);
@@ -33,27 +31,6 @@
 
       if (response.status === 200) {
         console.log('userID: ' + response.data.userId)
-        // const res = await axios.post(`${url}/api/lobby`, {
-        //   userId: userId
-        // })
-        // Associates the UserId with the socket. 
-        // -- Passes the userId parameter to the socket to be stored in the array.
-        // const socket = new WebSocket(`ws://localhost:3002?userId=${response.data.userId}`)
-
-        // Connection opened
-        // socket.addEventListener('open', function (event) {
-          // socket.send('Sello Server!');
-        // });
-
-        // // Listen for messages
-        // socket.addEventListener('message', function (event) {
-        //   console.log('Message from server ', event.data);
-        // });
-
-        // Connection closed
-        // socket.addEventListener('close', function (event) {
-        //   console.log('WebSocket connection closed');
-        // });
 
         setUserId(response.data.userId)
         // continue with your code

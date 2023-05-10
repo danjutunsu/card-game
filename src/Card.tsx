@@ -26,6 +26,8 @@ const Card: React.FC = () => {
     const [correctlyAnswered, setCorrectlyAnswered] = useState<number>(0);
     const [totalQuestions, setTotalQuestions] = useState<number>(0);
     const [user, setUser] = useState<string>('');
+    const [username1, setUsername1] = useState('');
+    const [username2, setUsername2] = useState('');
     const [userPoints, setUserPoints] = useState(Object);
     const location = useLocation();
     const userId = useSelector((state: AppState) => state.userId);
@@ -35,18 +37,23 @@ const Card: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        async function fetchData() {
-            const response = await axios.get(`${url}/api/questions`);
-            const jsonData = response.data;
-            setData(jsonData);
-        }
-        fetchData();
-        console.log(`user1:${userId} user2: ${userId2}`)
-        if (userId && userId2) {
-          getGameStatus()
-        }
+      async function fetchData() {
+        const response = await axios.get(`${url}/api/questions`);
+        const jsonData = response.data;
+        setData(jsonData);
+      }
+      fetchData();
+      console.log(`user1:${userId} user2: ${userId2}`)
+      if (userId && userId2) {
+        getGameStatus();
+      }
+      async function fetchUsername() {
+        const u2 = await getUname(userId2);
+        setUsername2(u2);
+      }
+      fetchUsername();
     }, []);
-
+    
     const getGameStatus = async () => 
     {
       console.log("EXECUTING-_______________")
@@ -107,7 +114,12 @@ const Card: React.FC = () => {
         // all questions have been visited
         console.log("Finished Guessing")
         getUserPoints(parseInt(userId))
-        await axios.put(`${url}/api/games/turn`)
+        if (gameStatus === 0 || gameStatus === 2) {
+        await axios.put(`${url}/api/games/turn`, {
+          player1: userId,
+          player2: userId2
+        })
+        }
         console.log(`user 1: ${userId}`)
         console.log(`user 2: ${userId2}`)
         await axios.put(`${url}/api/games/status`, {
@@ -171,15 +183,15 @@ const Card: React.FC = () => {
             answered: answered,
             count: count
           });
-          if (answered === data.length) {
-            await axios.put(`${url}/api/games`, {
-                userId: userId,
-                questionId: questionId,
-                answer: answer,
-                answered: answered,
-                count: count
-              });
-          }
+          // if (answered === data.length) {
+          //   await axios.put(`${url}/api/games`, {
+          //       userId: userId,
+          //       questionId: questionId,
+          //       answer: answer,
+          //       answered: answered,
+          //       count: count
+          //     });
+          // }
           console.log(response.data); // handle the response from the backend
         } catch (error) {
           console.error(error);
@@ -214,6 +226,21 @@ const Card: React.FC = () => {
             console.error(error);
         }
     } 
+
+    async function getUname(id: string) {
+      try {
+        const response = await axios.get(`${url}/api/username`, {
+          params: {
+            userId: id
+          },
+        });
+        
+        return response.data.rows[0].username
+      //   console.log(`User Data: ${response.data.userId}`); // handle the response from the backend
+      } catch (error) {
+        console.error(error);
+      }
+    }
       
     function handleAnswerNextQuestion(index: number) {
       console.log("ANSWERING")
@@ -228,7 +255,7 @@ const Card: React.FC = () => {
       console.log("GUESSING")
       const questionId = data[randomQuestion].id;
       const userGuess = index;
-      addGuess(parseInt(userId), questionId, userGuess);
+      addGuess(parseInt(userId2), questionId, userGuess);
       if (index === data[randomQuestion].answer)
       {
           console.log("CORRECT")
@@ -245,7 +272,7 @@ const Card: React.FC = () => {
     
     return (
       <div className="card-page">
-        {gameStatus === 0 || gameStatus === 1 ? (
+        {gameStatus === 0 || gameStatus === 2 ? (
         <div>
         {data[randomQuestion] && (
           <p className="card-header">{data[randomQuestion].question}</p>)}
@@ -263,8 +290,7 @@ const Card: React.FC = () => {
         ) :
         <div>
         {data[randomQuestion] && (
-          <p className="card-header">{data[randomQuestion].question}</p>)}
-          <h1 className="stats-header">You are guessing</h1>
+          <><h1 className="stats-header">How did the other player answer this question?</h1><p className="card-header">{data[randomQuestion].question}</p></>)}          
           {data[randomQuestion]?.options?.map((option, index) => (
             <div key={index}>
               <div className="button-container">

@@ -27,7 +27,6 @@ const Lobby = () => {
   //create new socket
   const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
   
-
   // // Listen for messages
   socket.addEventListener('message', function (event) {
     const data = JSON.parse(event.data)
@@ -72,6 +71,8 @@ const Lobby = () => {
         })
         console.log('data: ' + response.data.id) // add this line to log the response
         setGameId(response.data.id)
+        
+        // Get the turn id for current round
         getTurn(response.data.id)
     }
     catch (err) {
@@ -87,7 +88,9 @@ const Lobby = () => {
           gameId: gameId
         }
       });
+
       setTurn(response.data.turn_id);
+
       if (allUsersReady && response.data.turn_id === userId) {
         // TODO - Make this handleUserStatus method work to change 
         // Status to In Progress
@@ -106,8 +109,8 @@ const Lobby = () => {
   }
 
   async function handleStartGame(readyCheck: boolean, user: string, player1: string, player2: string): Promise<void> {
-      dispatch({ type: 'SET_USER_ID_2', payload: users[1]?.user_id.toString() });
-      localStorage.setItem('userId2', users[1]?.user_id.toString());
+      await dispatch({ type: 'SET_USER_ID_2', payload: users[1]?.user_id.toString() });
+      await localStorage.setItem('userId2', users[1]?.user_id.toString());
       await getGame(player1, player2)
   }
 
@@ -154,7 +157,6 @@ const Lobby = () => {
         }
       }));
 
-      // socket.close();
     } catch (error) {
       console.error(error);
     }
@@ -201,8 +203,10 @@ const Lobby = () => {
 
   const handleLogout = async (userId: string) => {
     try {
-        await axios.delete(`${url}/api/lobby?userId=${userId}`);
-        navigate('/')
+      const message = { payload: 'logout' };
+      socket.send(JSON.stringify(message));
+      await axios.delete(`${url}/api/lobby?userId=${userId}`);
+      navigate('/')
     } catch (error) {
       console.error(error);
     }
