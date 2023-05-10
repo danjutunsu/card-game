@@ -41,18 +41,19 @@ const Card: React.FC = () => {
             setData(jsonData);
         }
         fetchData();
-        getGameStatus(userId, userId2)
+        console.log(`user1:${userId} user2: ${userId2}`)
+        if (userId && userId2) {
+          getGameStatus()
+        }
     }, []);
 
-    const getGameStatus = async (player1: string, player2: string) => 
+    const getGameStatus = async () => 
     {
       console.log("EXECUTING-_______________")
-      console.log(`Player1: ${userId}`)
-      console.log(`Player2: ${userId2}`)
       const response = await axios.get(`${url}/api/games/status`, {
         params: {
-          player1: player1,
-          player2: player2
+          player1: userId,
+          player2: userId2
         }
       })
       const jsonData = response.data.game_status;
@@ -106,7 +107,14 @@ const Card: React.FC = () => {
         // all questions have been visited
         console.log("Finished Guessing")
         getUserPoints(parseInt(userId))
-        await axios.put(`${url}/api/games/turn`,)
+        await axios.put(`${url}/api/games/turn`)
+        console.log(`user 1: ${userId}`)
+        console.log(`user 2: ${userId2}`)
+        await axios.put(`${url}/api/games/status`, {
+            player1: userId,
+            player2: userId2
+          }
+        )
         navigate('/lobby');
         return null; // return the current question
       }
@@ -237,10 +245,11 @@ const Card: React.FC = () => {
     
     return (
       <div className="card-page">
-        {gameStatus === '0' ? (
+        {gameStatus === 0 || gameStatus === 1 ? (
         <div>
         {data[randomQuestion] && (
           <p className="card-header">{data[randomQuestion].question}</p>)}
+          <h1 className="stats-header">You are answering</h1>
           {data[randomQuestion]?.options?.map((option, index) => (
             <div key={index}>
               <div className="button-container">
@@ -255,6 +264,7 @@ const Card: React.FC = () => {
         <div>
         {data[randomQuestion] && (
           <p className="card-header">{data[randomQuestion].question}</p>)}
+          <h1 className="stats-header">You are guessing</h1>
           {data[randomQuestion]?.options?.map((option, index) => (
             <div key={index}>
               <div className="button-container">
