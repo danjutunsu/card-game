@@ -1,25 +1,35 @@
 import { useEffect, useState } from "react";
 import { url } from "./Config";
-import Statistics from "./Statistics";
 import axios from "axios";
-import { Hash } from "crypto";
-import LoginForm from "./Components/LoginForm";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { AppState } from "./store";
-import { json } from "stream/consumers";
 
 // const navigate = useNavigate();
 
 interface CardProps {
-    id: number,
-    question: string,
-    options: string[],
-    answer: number
+  id: number,
+  question: string,
+  options: string[],
+  answer: number
+}
+
+interface AnswerProps {
+  user_id: number,
+  question_id: number,
+  answer: number
+}
+
+interface QuestionProps {
+  id: number,
+  question: number,
+  answer: number
 }
 
 const Card: React.FC = () => {
     const [data, setData] = useState<CardProps[]>([]);
+    const [answers, setAnswers] = useState<AnswerProps[]>([]);
+    const [guesses, setGuesses] = useState<QuestionProps[]>([]);
     const [randomQuestion, setRandomQuestion] = useState<number>(0);
     const [visited, setVisited] = useState<number[]>([]);
     const [answered, setAnswered] = useState<number>(0);
@@ -43,6 +53,7 @@ const Card: React.FC = () => {
         setData(jsonData);
       }
       fetchData();
+      // fetchAnswers();
       console.log(`user1:${userId} user2: ${userId2}`)
       if (userId && userId2) {
         getGameStatus();
@@ -54,6 +65,42 @@ const Card: React.FC = () => {
       fetchUsername();
     }, []);
     
+    async function fetchAnswers() {
+      const response = await axios.get(`${url}/api/answers`);
+      const jsonData = response.data;
+      setAnswers(jsonData);
+    }
+
+    useEffect(() => {
+      console.log("USER ANSWERS:")
+      let correct = 0;
+      let total = 0;
+
+      guesses.forEach(element => {
+        total++;
+        const guess = element.answer
+        const answer = answers.find((a) => a.user_id === element.id && a.question_id === element.question)
+        if (guess === answer?.answer) {
+          console.log("GOOD GUESS")
+          correct++
+        }
+
+        console.log(`user ${element.id} guess for question ${element.question}: ${element.answer}`)
+        console.log(`User ${answer?.user_id} answer for question ${answer?.question_id}: ${answer?.answer}`)
+        });
+        console.log("# CORRECT: " + correct)
+        addPoints(userId, correct, total)
+    }, [answers])
+
+    const addPoints = async (user: string, points: number, total: number) => {
+      await axios.put(`${url}/api/points`, {
+        user,
+        points,
+        total
+      })
+      console.log("POINTS SHOULD BE INSERTED")
+    }
+
     const getGameStatus = async () => 
     {
       console.log("EXECUTING-_______________")
@@ -113,6 +160,10 @@ const Card: React.FC = () => {
       if (visited.length === data.length) {
         // all questions have been visited
         console.log("Finished Guessing")
+        await fetchAnswers()
+        if (guesses.length > 0) {
+          console.log("USER GUESSES:")
+        }
         getUserPoints(parseInt(userId))
         if (gameStatus === 0 || gameStatus === 2) {
         await axios.put(`${url}/api/games/turn`, {
@@ -241,7 +292,12 @@ const Card: React.FC = () => {
         console.error(error);
       }
     }
-      
+
+    const addNewGuess = (id: number, question: number, answer: number) => {
+      const newGuess = { id, question, answer };
+      setGuesses(prevGuesses => [...prevGuesses, newGuess]);
+    }
+
     function handleAnswerNextQuestion(index: number) {
       console.log("ANSWERING")
       const questionId = data[randomQuestion].id;
@@ -255,17 +311,22 @@ const Card: React.FC = () => {
       console.log("GUESSING")
       const questionId = data[randomQuestion].id;
       const userGuess = index;
+      addNewGuess(parseInt(userId), questionId, index)
+      console.log('Question ' + questionId)
       addGuess(parseInt(userId2), questionId, userGuess);
-      if (index === data[randomQuestion].answer)
+
+      if (index === 0)
       {
-          console.log("CORRECT")
-          setCorrectlyAnswered(correctlyAnswered+1)
-          getRandomQuestion();
+        console.log("CORRECT")
+        setCorrectlyAnswered(correctlyAnswered+1)
+        getRandomQuestion();
       }
       else
       {
-          console.log("INCORRECT")
-          getRandomQuestion();
+        // console.log(`index: ${index}`)
+        // console.log(`answer: ${answers[randomQuestion].answer}`)
+        console.log("INCORRECT")
+        getRandomQuestion();
       }
       setAnswered(answered+1)
     }
