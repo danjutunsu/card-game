@@ -37,7 +37,9 @@ const Lobby = () => {
       handleUserStatusUpdate(data.user_status_update.userId, data.user_status_update.status);
       console.log(`USER ${data.user_status_update.userId} is ${data.user_status_update.status}`)
     }
-    else {
+    else if (data.end_game) {
+      console.log("NAVIGATING TO STATS")
+      navigate(`/stats`)
     }
   });
 
@@ -69,7 +71,7 @@ const Lobby = () => {
                 player2: player2
             }
         })
-        console.log('data: ' + response.data.id) // add this line to log the response
+        console.log('data: ' + response.data.id)
         setGameId(response.data.id)
         
         // Get the turn id for current round

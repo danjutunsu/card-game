@@ -27,52 +27,73 @@ interface QuestionProps {
 }
 
 const Card: React.FC = () => {
-    const [data, setData] = useState<CardProps[]>([]);
-    const [answers, setAnswers] = useState<AnswerProps[]>([]);
-    const [guesses, setGuesses] = useState<QuestionProps[]>([]);
-    const [randomQuestion, setRandomQuestion] = useState<number>(0);
-    const [visited, setVisited] = useState<number[]>([]);
-    const [answered, setAnswered] = useState<number>(0);
-    const [correctlyAnswered, setCorrectlyAnswered] = useState<number>(0);
-    const [totalQuestions, setTotalQuestions] = useState<number>(0);
-    const [user, setUser] = useState<string>('');
-    const [username1, setUsername1] = useState('');
-    const [username2, setUsername2] = useState('');
-    const [userPoints, setUserPoints] = useState(Object);
-    const location = useLocation();
-    const userId = useSelector((state: AppState) => state.userId);
-    const userId2 = useSelector((state: AppState) => state.userId2);
-    const [gameStatus, setGameStatus] = useState()
+  const [data, setData] = useState<CardProps[]>([]);
+  const [answers, setAnswers] = useState<AnswerProps[]>([]);
+  const [guesses, setGuesses] = useState<QuestionProps[]>([]);
+  const [randomQuestion, setRandomQuestion] = useState<number>(0);
+  const [visited, setVisited] = useState<number[]>([]);
+  const [answered, setAnswered] = useState<number>(0);
+  const [correctlyAnswered, setCorrectlyAnswered] = useState<number>(0);
+  const [totalQuestions, setTotalQuestions] = useState<number>(0);
+  const [user, setUser] = useState<string>('');
+  const [username1, setUsername1] = useState('');
+  const [username2, setUsername2] = useState('');
+  const [userPoints, setUserPoints] = useState(Object);
+  const location = useLocation();
+  const userId = useSelector((state: AppState) => state.userId);
+  const userId2 = useSelector((state: AppState) => state.userId2);
+  const [gameStatus, setGameStatus] = useState()
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
+  //create new socket
+  const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
 
-    useEffect(() => {
-      async function fetchData() {
-        const response = await axios.get(`${url}/api/questions`);
-        const jsonData = response.data;
-        setData(jsonData);
-      }
-      fetchData();
-      // fetchAnswers();
-      console.log(`user1:${userId} user2: ${userId2}`)
-      if (userId && userId2) {
-        getGameStatus();
-      }
-      async function fetchUsername() {
-        const u2 = await getUname(userId2);
-        setUsername2(u2);
-      }
-      fetchUsername();
-    }, []);
-    
-    async function fetchAnswers() {
-      const response = await axios.get(`${url}/api/answers`);
-      const jsonData = response.data;
-      setAnswers(jsonData);
+  const handleEnd = async () => {
+    try {
+      const message = { payload: 'end' };
+      socket.send(JSON.stringify(message));
+    } catch (error) {
+      console.error(error);
     }
+  };
 
-    useEffect(() => {
+  // // Listen for messages
+  socket.addEventListener('message', function (event) {
+    const data = JSON.parse(event.data)
+    if (data.end_game) {
+      console.log("NAVIGATING TO STATS")
+      navigate(`/stats`)
+    }
+  });
+
+  useEffect(() => {
+    async function fetchData() {
+      const response = await axios.get(`${url}/api/questions`);
+      const jsonData = response.data;
+      setData(jsonData);
+    }
+    fetchData();
+    console.log(`user1:${userId} user2: ${userId2}`)
+    if (userId && userId2) {
+      getGameStatus();
+    }
+    async function fetchUsername() {
+      const u2 = await getUname(userId2);
+      setUsername2(u2);
+    }
+    fetchUsername();
+  }, []);
+    
+  async function fetchAnswers() {
+    const response = await axios.get(`${url}/api/answers`);
+    const jsonData = response.data;
+    setAnswers(jsonData);
+  }
+
+  useEffect(() => {
+    if (answers.length > 0 && (gameStatus === 1 || gameStatus === 3)) {
       console.log("USER ANSWERS:")
+
       let correct = 0;
       let total = 0;
 
@@ -88,13 +109,15 @@ const Card: React.FC = () => {
         console.log(`user ${element.id} guess for question ${element.question}: ${element.answer}`)
         console.log(`User ${answer?.user_id} answer for question ${answer?.question_id}: ${answer?.answer}`)
         });
-        console.log("# CORRECT: " + correct)
-        addPoints(userId, correct, total)
-    }, [answers])
+      console.log("# CORRECT: " + correct)
+      addPoints(userId, correct, total)
+    }
+  }, [answers])
 
-    const addPoints = async (user: string, points: number, total: number) => {
+    const addPoints = async (userId: string, points: number, total: number) => {
+      console.log("UPDATING POINTS")
       await axios.put(`${url}/api/points`, {
-        user,
+        userId,
         points,
         total
       })
@@ -150,6 +173,7 @@ const Card: React.FC = () => {
           const response = await axios.post(`${url}/api/reset`, {
             userId: userId
           });
+          setAnswers([])
           console.log(response.data); // handle the response from the backend
         } catch (error) {
           console.error(error);
@@ -178,7 +202,12 @@ const Card: React.FC = () => {
             player2: userId2
           }
         )
-        navigate('/lobby');
+        console.log(`game status before navigating: ${gameStatus}`)
+        if (gameStatus === 0) {
+          handleEnd()
+        } else {
+          navigate(`/lobby`)
+        }
         return null; // return the current question
       }
     
@@ -234,15 +263,6 @@ const Card: React.FC = () => {
             answered: answered,
             count: count
           });
-          // if (answered === data.length) {
-          //   await axios.put(`${url}/api/games`, {
-          //       userId: userId,
-          //       questionId: questionId,
-          //       answer: answer,
-          //       answered: answered,
-          //       count: count
-          //     });
-          // }
           console.log(response.data); // handle the response from the backend
         } catch (error) {
           console.error(error);
