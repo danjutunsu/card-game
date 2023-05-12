@@ -13,6 +13,7 @@ interface User {
 
 const Lobby = () => {
   const [users, setUsers] = useState<User[]>([]);
+  const [genres, setGenres] = useState([]);
   const userId = useSelector((state: AppState) => state.userId);
   const userId2 = useSelector((state: AppState) => state.userId2);
   const [username, setUserName] = useState('')
@@ -158,7 +159,6 @@ const Lobby = () => {
           status: status
         }
       }));
-
     } catch (error) {
       console.error(error);
     }
@@ -169,6 +169,19 @@ const Lobby = () => {
     handleStatusUpdate: (user_id: string, newStatus: string) => void;
   }
   
+  function GenreList(props: UserListProps) {
+    return (
+      <><div className="lobby-column lobby-column-stroke stats-header">Choose a genre:</div>
+      <ul>
+        {Array.isArray(users) && users.map((user) => (
+          <li key={user.user_id} className="lobby-row" style={{ listStyle: 'none' }}>
+            <div className={`lobby-column lobby-column-stroke ${user.status === 'Ready' ? 'ready' : 'idle'}`}>{user.status}</div>
+          </li>
+        ))}
+      </ul></>
+    );
+  }
+
   function UserList(props: UserListProps) {
     return (
       <ul>
@@ -240,6 +253,7 @@ const Lobby = () => {
 
       <button disabled={!allUsersReady} className="button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
       {waiting && <div><h1 className="stats-header">Your turn is next</h1></div>}
+      <GenreList users={users} handleReady={handleReady} handleStatusUpdate={handleUserStatusUpdate}/>
     </div>
   );
 };

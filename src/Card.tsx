@@ -44,6 +44,7 @@ const Card: React.FC = () => {
   const userId2 = useSelector((state: AppState) => state.userId2);
   const [gameStatus, setGameStatus] = useState()
   const navigate = useNavigate();
+  const [genre, setGenre] = useState('relationships')
 
   //create new socket
   const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
@@ -67,12 +68,16 @@ const Card: React.FC = () => {
   });
 
   useEffect(() => {
-    async function fetchData() {
-      const response = await axios.get(`${url}/api/questions`);
+    async function fetchData(genre: string) {
+      const response = await axios.get(`${url}/api/questions/`, {
+        params: {
+          genre: genre
+        }
+      });
       const jsonData = response.data;
       setData(jsonData);
     }
-    fetchData();
+    fetchData(genre);
     console.log(`user1:${userId} user2: ${userId2}`)
     if (userId && userId2) {
       getGameStatus();
@@ -369,19 +374,20 @@ const Card: React.FC = () => {
           ))}
         </div>
         ) :
-        <div>
-        {data[randomQuestion] && (
-          <><h1 className="stats-header">How did the other player answer this question?</h1><p className="card-header">{data[randomQuestion].question}</p></>)}          
-          {data[randomQuestion]?.options?.map((option, index) => (
-            <div key={index}>
-              <div className="button-container">
-                <button className="button" onClick={() => handleNextQuestion(index)}>
-                  {option}
-                </button>
+        <><h1 className="stats-header">How did they answer this question?</h1>
+          <div className="card">
+            {data[randomQuestion] && (
+              <><p className="card-header">{data[randomQuestion].question}</p></>)}
+            {data[randomQuestion]?.options?.map((option, index) => (
+              <div key={index}>
+                <div className="button-container">
+                  <button className="button" onClick={() => handleNextQuestion(index)}>
+                    {option}
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div></>
         }
       </div>
     );    

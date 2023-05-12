@@ -21,6 +21,7 @@
   const { user, setUser } = useContext(UserContext);
   const [userId, setUserId] = useState('')
   const dispatch = useDispatch();
+  const [showLogin, setShowLogin] = useState(true);
 
   const handleLogin = async (username: string, password: string) => {
     try {
@@ -30,8 +31,6 @@
       });
 
       if (response.status === 200) {
-        console.log('userID: ' + response.data.userId)
-
         setUserId(response.data.userId)
         // continue with your code
         localStorage.setItem("token", response.data.token);
@@ -60,8 +59,6 @@
     }
   };
     
-const [showLogin, setShowLogin] = useState(true);
-
 const handleClick = () => {
   setShowLogin(!showLogin);
   };
@@ -97,7 +94,6 @@ function mapDispatchToProps(dispatch: (arg0: { type: string; payload?: any; }) =
   };
 }
   
-
 const LoginPage = () => {
     return (
         <MyComponent />
