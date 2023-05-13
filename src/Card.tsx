@@ -42,9 +42,9 @@ const Card: React.FC = () => {
   const location = useLocation();
   const userId = useSelector((state: AppState) => state.userId);
   const userId2 = useSelector((state: AppState) => state.userId2);
+  const genre = useSelector((state: AppState) => state.genre);
   const [gameStatus, setGameStatus] = useState()
   const navigate = useNavigate();
-  const [genre, setGenre] = useState('relationships')
 
   //create new socket
   const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
@@ -68,6 +68,7 @@ const Card: React.FC = () => {
   });
 
   useEffect(() => {
+    console.log(`GENRE: ${genre}`)
     async function fetchData(genre: string) {
       const response = await axios.get(`${url}/api/questions/`, {
         params: {
@@ -338,7 +339,7 @@ const Card: React.FC = () => {
       const userGuess = index;
       addNewGuess(parseInt(userId), questionId, index)
       console.log('Question ' + questionId)
-      addGuess(parseInt(userId2), questionId, userGuess);
+      // addGuess(parseInt(userId2), questionId, userGuess);
 
       if (index === 0)
       {

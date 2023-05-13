@@ -4,7 +4,8 @@ import { createStore } from 'redux';
 
 export type AppState = {
   userId: string;
-  userId2: string
+  userId2: string;
+  genre: string;
 };
 
 const getInitialState = () => {
@@ -14,7 +15,8 @@ const getInitialState = () => {
   }
   return {
     userId: '',
-    userId2: ''
+    userId2: '',
+    genre: ''
   };
 };
 
@@ -34,6 +36,13 @@ const rootReducer = (state: AppState = getInitialState(), action: any) => {
       };
       localStorage.setItem('userId2State', JSON.stringify(newUserId2State));
       return newUserId2State;
+    case 'SET_GENRE':
+    const newUserGenre = {
+      ...state,
+      genre: action.payload,
+    };
+    localStorage.setItem('userGenreState', JSON.stringify(newUserGenre));
+    return newUserGenre;
     default:
       return state;
   }

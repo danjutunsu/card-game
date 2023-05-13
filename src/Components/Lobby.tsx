@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { url } from "../Config";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../store";
@@ -11,14 +11,21 @@ interface User {
   status: string;
 }
 
+interface Genre {
+  id: number;
+  genre: string;
+}
+
 const Lobby = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [genres, setGenres] = useState([]);
+  const [genre, setGenre] = useState('')
+  const [genres, setGenres] = useState<Genre[]>([]);
   const userId = useSelector((state: AppState) => state.userId);
   const userId2 = useSelector((state: AppState) => state.userId2);
   const [username, setUserName] = useState('')
   const navigate = useNavigate();
   const [status, setStatus] = useState('')
+  const [gameStatus, setGameStatus] = useState()
   const [userIdList, setUserIdList] = useState([])
   const [gameId, setGameId] = useState(0)
   const [turn, setTurn] = useState(0)
@@ -41,6 +48,11 @@ const Lobby = () => {
     else if (data.end_game) {
       console.log("NAVIGATING TO STATS")
       navigate(`/stats`)
+    } else if (data.genreToSet) {
+      console.log(`SETTING GENRE TO ${data.genreToSet}`)
+      setGenre(data.genreToSet)
+      dispatch({ type: 'SET_GENRE', payload: data.genreToSet });
+      localStorage.setItem('genre', genre);
     }
   });
 
@@ -48,6 +60,24 @@ const Lobby = () => {
   socket.addEventListener('close', function (event) {
     console.log('WebSocket connection closed');
   });
+
+  const getGameStatus = async () => 
+  {
+    console.log("EXECUTING-_______________")
+    const response = await axios.get(`${url}/api/games/status`, {
+      params: {
+        player1: userId,
+        player2: userId2
+      }
+    })
+    const jsonData = response.data.game_status;
+
+    setGameStatus(jsonData)
+    if (jsonData === "0") {
+      // console.log("ANSWERING")
+    }
+    return jsonData;
+  }
 
   const fetchUsers = async () => {
     try {
@@ -57,6 +87,19 @@ const Lobby = () => {
       console.log('userid: ' + userId)
       setAllUsersReady(response.data.allUsersReady); // Set flag based on response
       console.log(`Ready? ${allUsersReady}`)
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchGenres = async () => {
+    try {
+      const response = await axios.get(`${url}/api/questions/genres`);
+      setGenres(response.data);
+      console.log('genres:')
+      genres.forEach(element => {
+        console.log(element.genre)
+      })
     } catch (error) {
       console.error(error);
     }
@@ -118,7 +161,10 @@ const Lobby = () => {
   }
 
   useEffect(() => {
-      fetchUsers();
+    getGameStatus()
+    fetchUsers();
+    fetchGenres();
+    console.log(`Game Status: ${gameStatus}`)
     }, [status]); 
 
   useEffect(() => {
@@ -168,19 +214,55 @@ const Lobby = () => {
     handleReady: (id: string) => Promise<void>;
     handleStatusUpdate: (user_id: string, newStatus: string) => void;
   }
+
   
-  function GenreList(props: UserListProps) {
+  
+  function GenreList() {
+    const [selectedGenres, setSelectedGenres] = useState<{[key: string]: boolean}>({});
+  
+    const handleGenreClick = (genreId: string, genre: string) => {
+      setSelectedGenres((prevState) => ({
+        ...prevState,
+        [genreId]: !prevState[genreId],
+      }));
+  
+      const message = {
+        payload: {
+          message: 'set genre',
+          genre: genre,
+        },
+      };
+      socket.send(JSON.stringify(message));
+    };
+  
     return (
-      <><div className="lobby-column lobby-column-stroke stats-header">Choose a genre:</div>
-      <ul>
-        {Array.isArray(users) && users.map((user) => (
-          <li key={user.user_id} className="lobby-row" style={{ listStyle: 'none' }}>
-            <div className={`lobby-column lobby-column-stroke ${user.status === 'Ready' ? 'ready' : 'idle'}`}>{user.status}</div>
-          </li>
-        ))}
-      </ul></>
+      <>
+        <div className="lobby-column lobby-column-stroke stats-header">
+          Choose a genre:
+        </div>
+        <ul>
+          {Array.isArray(genres) &&
+            genres.map((genre) => (
+              <li
+                key={genre.id}
+                className="lobby-row"
+                style={{ listStyle: 'none' }}
+              >
+                <div className={`genre-column`}>
+                  <button
+                    className={`${selectedGenres[genre.id] ? 'selected' : 'button'}`}
+                    onClick={() => handleGenreClick(genre.id.toString(), genre.genre)}
+                  >
+                    {genre.genre.replaceAll('_', ' ')}
+                  </button>
+                </div>
+              </li>
+            ))}
+        </ul>
+      </>
     );
   }
+  
 
   function UserList(props: UserListProps) {
     return (
@@ -253,7 +335,11 @@ const Lobby = () => {
 
       <button disabled={!allUsersReady} className="button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
       {waiting && <div><h1 className="stats-header">Your turn is next</h1></div>}
-      <GenreList users={users} handleReady={handleReady} handleStatusUpdate={handleUserStatusUpdate}/>
+      {gameStatus !== 0 ? (
+        <div></div>
+      ) : (
+      <GenreList />
+      )}
     </div>
   );
 };
