@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../store";
 import { useNavigate } from "react-router-dom";
 
+
 interface User {
   user_id: string;
   username: string;
@@ -31,6 +32,8 @@ const Lobby = () => {
   const [turn, setTurn] = useState(0)
   const [waiting, setWaiting] = useState(false)
   const dispatch = useDispatch();
+  const [player1, setPlayer1] = useState('')
+  
 
   //create new socket
   const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
@@ -61,17 +64,27 @@ const Lobby = () => {
     console.log('WebSocket connection closed');
   });
 
+  useEffect(() => {
+  async function fetchPlayer1() {
+    const p1 = await getPlayer1(userId, userId2);
+    setPlayer1(p1);
+  }
+  fetchPlayer1();
+}, [userId, users]);
+
   const getGameStatus = async () => 
   {
+    fetchUsers();
     console.log("EXECUTING-_______________")
+    
     const response = await axios.get(`${url}/api/games/status`, {
       params: {
         player1: userId,
         player2: userId2
       }
     })
-    const jsonData = response.data.game_status;
-
+    const jsonData = await response.data.game_status;
+    
     setGameStatus(jsonData)
     if (jsonData === "0") {
       // console.log("ANSWERING")
@@ -79,12 +92,29 @@ const Lobby = () => {
     return jsonData;
   }
 
+  useEffect(() => {
+    getPlayer1(userId, userId2)
+    console.log(`UserID:${userId}`)
+    console.log(`UserID2:${userId2}`)
+  }, [users])
+
   const fetchUsers = async () => {
     try {
       const response = await axios.get(`${url}/api/lobby`);
       setUsers(response.data.users);
+      const usersList = response.data.users
       getUname(userId)
-      console.log('userid: ' + userId)
+      console.log("USERS:")
+      usersList.forEach((element: { user_id: string; }) => {
+        console.log(element)
+        if (element.user_id !== userId) {
+          console.log("SETTING NEW USER")
+          dispatch({ type: 'SET_USER_ID_2', payload: element.user_id});
+          localStorage.setItem('userId2', element.user_id);
+        }
+        
+      })
+      
       setAllUsersReady(response.data.allUsersReady); // Set flag based on response
       console.log(`Ready? ${allUsersReady}`)
     } catch (error) {
@@ -115,6 +145,7 @@ const Lobby = () => {
                 player2: player2
             }
         })
+        console.log(`Player1: ${player1} Player2: ${player2}`)
         console.log('data: ' + response.data.id)
         setGameId(response.data.id)
         
@@ -155,15 +186,37 @@ const Lobby = () => {
   }
 
   async function handleStartGame(readyCheck: boolean, user: string, player1: string, player2: string): Promise<void> {
-      await dispatch({ type: 'SET_USER_ID_2', payload: users[1]?.user_id.toString() });
-      await localStorage.setItem('userId2', users[1]?.user_id.toString());
-      await getGame(player1, player2)
+      await getGame(userId, userId2)
   }
 
+  async function getPlayer1(player1: string, player2: string) {
+    try {
+      const response = await axios.get(`${url}/api/games/player1`, {
+        params: {
+          player1: player1,
+          player2: player2
+        }
+      });
+      console.log(`Player 1: ${response.data}`);
+      setPlayer1(response.data.player1_id.toString)
+      return response.data.player1_id
+    } catch (err) {
+      console.log(err);
+      
+      console.log(`Player1id: ${player1}`)
+      console.log(`Player2id: ${player2}`)
+      console.log("Error retrieving player 1");
+    }
+  }
+  
   useEffect(() => {
-    getGameStatus()
     fetchUsers();
+  }, [0])
+
+  useEffect(() => {
+    getGameStatus();
     fetchGenres();
+    // getPlayer1(userId, userId2);
     console.log(`Game Status: ${gameStatus}`)
     }, [status]); 
 
@@ -220,11 +273,22 @@ const Lobby = () => {
   function GenreList() {
     const [selectedGenres, setSelectedGenres] = useState<{[key: string]: boolean}>({});
   
-    const handleGenreClick = (genreId: string, genre: string) => {
+    const handleGenreClick = async (genreId: string, genre: string) => {
       setSelectedGenres((prevState) => ({
         ...prevState,
         [genreId]: !prevState[genreId],
       }));
+
+      try {
+        const response = await axios.put(`${url}/api/games/genre`, {
+          player1: userId,
+          player2: userId2,
+          genre: genre
+        });
+      } catch (err) {
+        console.log(err)
+        console.log(`Error updating the genre`)
+      }
   
       const message = {
         payload: {
@@ -335,10 +399,10 @@ const Lobby = () => {
 
       <button disabled={!allUsersReady} className="button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
       {waiting && <div><h1 className="stats-header">Your turn is next</h1></div>}
-      {gameStatus !== 0 ? (
-        <div></div>
-      ) : (
+      {gameStatus === 0 && userId.toString() === users[0].user_id.toString() ?  (
       <GenreList />
+      ) : (
+        <div></div>
       )}
     </div>
   );

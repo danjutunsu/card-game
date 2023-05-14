@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { url } from "./Config";
 import axios from "axios";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "./store";
 
 // const navigate = useNavigate();
@@ -42,9 +42,10 @@ const Card: React.FC = () => {
   const location = useLocation();
   const userId = useSelector((state: AppState) => state.userId);
   const userId2 = useSelector((state: AppState) => state.userId2);
-  const genre = useSelector((state: AppState) => state.genre);
+  const [genre, setGenre] = useState('')
   const [gameStatus, setGameStatus] = useState()
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   //create new socket
   const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
@@ -68,20 +69,46 @@ const Card: React.FC = () => {
   });
 
   useEffect(() => {
-    console.log(`GENRE: ${genre}`)
-    async function fetchData(genre: string) {
-      const response = await axios.get(`${url}/api/questions/`, {
-        params: {
-          genre: genre
-        }
+    getGenre(userId, userId2);
+  }, []);
+
+  async function getGenre(player1:string, player2:string) {
+    try {
+      const response = await axios.get(`${url}/api/games/genre`, {
+        params: { player1: player1, player2: player2 }
       });
-      const jsonData = response.data;
-      setData(jsonData);
+      const data = response.data;
+      setGenre(data);
+      fetchData(data)
+      console.log("RESPONSE" + data)
+      console.log(userId, userId2)
+    } catch (error) {
+      console.error(error);
     }
-    fetchData(genre);
+  }
+  
+  useEffect(() => {
+    dispatch({ type: 'SET_GENRE', payload: genre });
+    localStorage.setItem('genre', genre);
+  }, [genre])
+
+  async function fetchData(genre: string) {
+    const response = await axios.get(`${url}/api/questions/`, {
+      params: {
+        genre: genre
+      }
+    });
+    const jsonData = response.data;
+    setData(jsonData);
+  }
+
+  useEffect(() => {
+    getGenre(userId, userId2)
+    console.log(`GENRE: ${genre}`)
+    
     console.log(`user1:${userId} user2: ${userId2}`)
     if (userId && userId2) {
-      getGameStatus();
+      getGameStatus(userId, userId2);
     }
     async function fetchUsername() {
       const u2 = await getUname(userId2);
@@ -130,13 +157,14 @@ const Card: React.FC = () => {
       console.log("POINTS SHOULD BE INSERTED")
     }
 
-    const getGameStatus = async () => 
+    const getGameStatus = async (player1: string, player2: string) => 
     {
       console.log("EXECUTING-_______________")
+      console.log(player1, player2)
       const response = await axios.get(`${url}/api/games/status`, {
         params: {
-          player1: userId,
-          player2: userId2
+          player1: player1,
+          player2: player2
         }
       })
       const jsonData = response.data.game_status;
