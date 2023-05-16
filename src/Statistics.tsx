@@ -4,6 +4,7 @@ import './styles.css'
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { AppState } from './store'
+import { useNavigate } from "react-router-dom";
 
 interface StatisticsProps {
   user: string;
@@ -20,6 +21,7 @@ const MyComponent = (props: StatisticsProps) => {
   const storeId = useSelector((state: AppState) => state.userId);
   const [username, setUserName] = useState(storeId);
   const userId = useSelector((state: AppState) => state.userId);
+  const navigate = useNavigate();
 
   async function getUname(id: string) {
     try {
@@ -43,7 +45,7 @@ const MyComponent = (props: StatisticsProps) => {
   return (
     <div className="stats-page">
       <p className="stats-header">User: {username}</p>
-      <button>{storeId}</button>
+      <button onClick={() => navigate(`/lobby`)}>Return To Lobby</button>
       <p className="stats-row">Points: {props.points}</p>
       <p className="stats-row"># Correct This Round: {props.correctlyAnswered} of {props.totalQuestions}</p>
       <p className="stats-row">{props.totalQuestions ? `${percentCorrect}%` : "No Guesses this round"}</p>

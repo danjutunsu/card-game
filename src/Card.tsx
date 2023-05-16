@@ -237,7 +237,7 @@ const Card: React.FC = () => {
           }
         )
         console.log(`game status before navigating: ${gameStatus}`)
-        if (gameStatus === 0) {
+        if (gameStatus === 3) {
           handleEnd()
         } else {
           navigate(`/lobby`)
