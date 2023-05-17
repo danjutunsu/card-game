@@ -66,6 +66,9 @@ const Card: React.FC = () => {
       console.log("NAVIGATING TO STATS")
       navigate(`/stats`)
     }
+    if (data.reset) {
+      console.log(`RESET`)
+    }
   });
 
   useEffect(() => {
@@ -170,7 +173,15 @@ const Card: React.FC = () => {
       const jsonData = response.data.game_status;
 
       setGameStatus(jsonData)
-      if (jsonData === "0") {
+      if (jsonData === 0) {
+        console.log('resetting')
+        try {
+          const message = { payload: 'reset' };
+          socket.send(JSON.stringify(message));
+
+        } catch (error) {
+          console.error(error);
+        }
         // console.log("ANSWERING")
       }
       return jsonData;
@@ -179,7 +190,6 @@ const Card: React.FC = () => {
     //initialze with a random question
     //update state upon initialization
     useEffect(() => {
-        ResetRound(parseInt(userId))
         if (data.length > 0) {
           const initialIndex = Math.floor(Math.random() * data.length);
           setTotalQuestions(data.length)
@@ -202,10 +212,12 @@ const Card: React.FC = () => {
         console.log(`Total: ${total}`)
     }
 
-    const ResetRound = async (userId: number) => {
+    const ResetRound = async (userId: number, userId2: number) => {
+      console.log(`Altering `)
         try {
-          const response = await axios.post(`${url}/api/reset`, {
-            userId: userId
+          const response = await axios.put(`${url}/api/reset`, {
+            userId: userId,
+            userId2: userId2
           });
           setAnswers([])
           console.log(response.data); // handle the response from the backend
