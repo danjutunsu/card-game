@@ -27,7 +27,6 @@ interface QuestionProps {
 }
 
 const Card = () => {
-
   const userId = useSelector((state: AppState) => state.userId);
   const userId2 = useSelector((state: AppState) => state.userId2);
   const [data, setData] = useState<CardProps[]>([]);
@@ -46,11 +45,6 @@ const Card = () => {
   const [gameStatus, setGameStatus] = useState()
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    console.log(`User 1 on card: ${userId}`)
-    console.log(`User 2 on card: ${userId2}`)
-  }, [0])
 
   //create new socket
   const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
@@ -88,8 +82,6 @@ const Card = () => {
       const data = response.data;
       setGenre(data);
       fetchData(data)
-      console.log("RESPONSE" + data)
-      console.log(userId, userId2)
     } catch (error) {
       console.error(error);
     }
@@ -112,9 +104,7 @@ const Card = () => {
 
   useEffect(() => {
     getGenre(userId, userId2)
-    console.log(`GENRE: ${genre}`)
-    
-    console.log(`user1:${userId} user2: ${userId2}`)
+
     if (userId && userId2) {
       getGameStatus(userId, userId2);
     }
@@ -243,8 +233,6 @@ const Card = () => {
           player2: userId2
         })
         }
-        console.log(`user 1: ${userId}`)
-        console.log(`user 2: ${userId2}`)
         await axios.put(`${url}/api/games/status`, {
             player1: userId,
             player2: userId2
