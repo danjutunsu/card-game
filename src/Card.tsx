@@ -406,7 +406,8 @@ const Card = () => {
           ))}
         </div>
         ) :
-        <><h1 className="stats-header">How did<span className="lobby-username">{username2}</span> answer this question?</h1>
+        <>          <button className="return-button" onClick={() => navigate(`/lobby`)}>Return To Lobby</button>
+        <h1 className="stats-header">How did<span className="lobby-username">{username2}</span> answer this question?</h1>
           <div className="card">
             {data[randomQuestion] && (
               <><p className="card-header">{data[randomQuestion].question}</p></>)}

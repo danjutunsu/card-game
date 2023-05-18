@@ -33,6 +33,8 @@ const Lobby = () => {
   const [waiting, setWaiting] = useState(false)
   const dispatch = useDispatch();
   const [player1, setPlayer1] = useState('')
+  const [invited, setInvited] = useState(false)
+  const [accepted, setAccepted] = useState(false)
 
   //create new socket
   const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
@@ -46,11 +48,8 @@ const Lobby = () => {
   socket.addEventListener('message', function (event) {
     const data = JSON.parse(event.data)
     if (data.user_status_update) {
-      const { userId, status} = data.user_status_update.userId;
-      console.log(`USER ID: ${data.user_status_update.userId}`);
-
+      const { userId, status} = data.user_status_update;
       handleUserStatusUpdate(data.user_status_update.userId, data.user_status_update.status);
-      console.log(`USER ${data.user_status_update.userId} is ${data.user_status_update.status}`)
     }
     else if (data.end_game) {
       navigate(`/stats`)
@@ -61,9 +60,11 @@ const Lobby = () => {
       localStorage.setItem('genre', genre);
     } else if (data.invite) {
       // const { sender, recipient } = data.invite;
-      alert(`${data.invite.sender} is inviting you to join their game.`)
+      // alert(`${data.invite.sender} is inviting you to join their game.`)
+      setInvited(true)
       
       console.log(`user ${data.invite.sender} invited user ${data.invite.recipient} to join the game`)
+
     } else if (data.logout) {
       // const { sender, recipient } = data.invite;
       fetchUsers();
@@ -126,7 +127,6 @@ const Lobby = () => {
         }
       })      
       setAllUsersReady(response.data.allUsersReady); // Set flag based on response
-      console.log(`Ready? ${allUsersReady}`)
     } catch (error) {
       console.error(error);
     }
@@ -289,14 +289,36 @@ const Lobby = () => {
     }
   }
 
+  const handleAccept = async (sender: string, recipient: string) => {
+    if (!accepted) {
+      setAccepted(true)
+    } else {
+      setAccepted(false)
+    }
+
+    if (sender !== recipient) {
+      try {
+        // Accept clicked
+        socket.send(JSON.stringify({
+          type: 'accept',
+          payload: {
+            sender: sender,
+            recipient: recipient
+          }
+        }));
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+
+
   interface UserListProps {
     users: User[];
     handleReady: (id: string) => Promise<void>;
     handleStatusUpdate: (user_id: string, newStatus: string) => void;
   }
 
-  
-  
   function GenreList() {
     const [selectedGenres, setSelectedGenres] = useState<{[key: string]: boolean}>({});
   
@@ -353,7 +375,6 @@ const Lobby = () => {
       </>
     );
   }
-  
 
   function UserList(props: UserListProps) {
     return (
@@ -361,8 +382,12 @@ const Lobby = () => {
         {Array.isArray(users) && users.map((user) => (
           <li key={user.user_id} className="lobby-row" style={{listStyle: 'none'}}>
             <div className="lobby-column lobby-column-stroke"> {toPascalCase(user.username)} 
-            </div>{user.user_id !== userId ? 
+            </div>
+            {user.user_id !== userId ? 
             <button className="invite-button" onClick={() => handleInvite(userId, user.user_id)}>Invite</button> : <></>}
+            {user.user_id === userId && invited ? 
+            <button className="button" onClick={() => handleAccept(userId, user.user_id)}>{accepted ? 'Accepted' : 'Accept?'}
+            </button> : <></>}
             <div className={`lobby-column lobby-column-stroke ${user.status === 'Ready' ? 'ready' : 'idle'}`}>{user.status}</div>
           </li>
         ))}
@@ -414,19 +439,16 @@ const Lobby = () => {
     <div className="stats-page">
       <button id="logout" className="logout-button" onClick={() => handleLogout(userId)}>Logout</button>
       <div className="user-info">
-      <span>
-    <p className="stats-header">Logged In As:</p>
-    <p className="lobby-username">{toPascalCase(username)}</p>
-    </span>
+        <span>
+          <p className="stats-header">Logged In As:</p>
+          <p className="lobby-username">{toPascalCase(username)}</p>
+        </span>
       </div>
       <p className="stats-header">Users In Lobby:</p>
       <UserList users={users} handleReady={handleReady} handleStatusUpdate={handleUserStatusUpdate}/>
-      {/* <p className="stats-row"></p> */}
-      {/* <p className="stats-header"></p> */}
       <button className="ready-button" onClick={() => handleReady(userId)}>Ready?</button> 
       <p className="stats-row"></p>
-
-      <button disabled={!allUsersReady} className="button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
+      <button disabled={!allUsersReady || !accepted} className="button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
       {waiting && <div><h1 className="stats-header">Your turn is next</h1></div>}
       {gameStatus === 0 && userId.toString() === users[0].user_id.toString() ?  (
       <GenreList />

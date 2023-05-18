@@ -181,6 +181,19 @@
   display: inline-block;
 }
 
+.return-button {
+  background-color: rgb(109, 104, 255);
+  height: auto;
+  text-decoration: none;
+  color: white;
+  padding: 5px;
+  font-size: 18px;
+  border: none;
+  border-radius: 0px;
+  cursor: pointer;
+  display: inline-block;
+}
+
 .invite-button {
   background-color: #ffe14f;
   height: auto;
