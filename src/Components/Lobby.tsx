@@ -36,7 +36,12 @@ const Lobby = () => {
 
   //create new socket
   const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
-  
+
+  socket.onopen = function (event) {
+    console.log(`user connected`)
+    // fetchUsers()
+  };
+
   // // Listen for messages
   socket.addEventListener('message', function (event) {
     const data = JSON.parse(event.data)
@@ -48,13 +53,20 @@ const Lobby = () => {
       console.log(`USER ${data.user_status_update.userId} is ${data.user_status_update.status}`)
     }
     else if (data.end_game) {
-      console.log("NAVIGATING TO STATS")
       navigate(`/stats`)
     } else if (data.genreToSet) {
       console.log(`SETTING GENRE TO ${data.genreToSet}`)
       setGenre(data.genreToSet)
       dispatch({ type: 'SET_GENRE', payload: data.genreToSet });
       localStorage.setItem('genre', genre);
+    } else if (data.invite) {
+      // const { sender, recipient } = data.invite;
+      alert(`${data.invite.sender} is inviting you to join their game.`)
+      
+      console.log(`user ${data.invite.sender} invited user ${data.invite.recipient} to join the game`)
+    } else if (data.logout) {
+      // const { sender, recipient } = data.invite;
+      fetchUsers();
     }
   });
 
@@ -66,6 +78,7 @@ const Lobby = () => {
   useEffect(() => {
   async function fetchPlayer1() {
     const p1 = await getPlayer1(userId, userId2);
+
     setPlayer1(p1);
   }
   fetchPlayer1();
@@ -198,8 +211,7 @@ const Lobby = () => {
       setPlayer1(response.data.player1_id.toString)
       return response.data.player1_id
     } catch (err) {
-      console.log(err);
-      
+      console.log(err);      
       console.log(`Player1id: ${player1}`)
       console.log(`Player2id: ${player2}`)
       console.log("Error retrieving player 1");
@@ -247,7 +259,7 @@ const Lobby = () => {
         setAllUsersReady(allReady); // Update flag based on current state of users
       }
     
-      // Connection opened
+      // Status button clicked
       socket.send(JSON.stringify({
         type: 'user_status_update',
         payload: {
@@ -259,6 +271,24 @@ const Lobby = () => {
       console.error(error);
     }
   }
+
+  const handleInvite = async (sender: string, recipient: string) => {
+    if (sender !== recipient) {
+      try {
+        // Invite clicked
+        socket.send(JSON.stringify({
+          type: 'invite',
+          payload: {
+            sender: sender,
+            recipient: recipient
+          }
+        }));
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+
   interface UserListProps {
     users: User[];
     handleReady: (id: string) => Promise<void>;
@@ -330,7 +360,9 @@ const Lobby = () => {
       <ul>
         {Array.isArray(users) && users.map((user) => (
           <li key={user.user_id} className="lobby-row" style={{listStyle: 'none'}}>
-            <div className="lobby-column lobby-column-stroke"> {toPascalCase(user.username)} </div>
+            <div className="lobby-column lobby-column-stroke"> {toPascalCase(user.username)} 
+            </div>{user.user_id !== userId ? 
+            <button className="invite-button" onClick={() => handleInvite(userId, user.user_id)}>Invite</button> : <></>}
             <div className={`lobby-column lobby-column-stroke ${user.status === 'Ready' ? 'ready' : 'idle'}`}>{user.status}</div>
           </li>
         ))}
