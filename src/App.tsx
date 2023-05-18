@@ -52,14 +52,7 @@ function App() {
         <Route path="/create" element={<CreateForm onLogin={function (username: string, password: string): void {
           throw new Error('Function not implemented.');
         } } />} />
-        <Route path="/stats" element={<Statistics
-          user={storeId}
-          points={userPoints?.points}
-          correctlyAnswered={userPoints?.correct_round}
-          totalQuestions={userPoints?.total_round}
-          totalCorrect={userPoints?.total_correct}
-          totalIncorrect={userPoints?.total_incorrect}
-          totalHistorical={userPoints?.total_guess} />} />
+         <Route path="/stats" element={<Statistics />} />
       </Routes>
     </BrowserRouter></>
   );

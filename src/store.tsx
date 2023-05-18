@@ -14,11 +14,12 @@ const getInitialState = () => {
     return JSON.parse(savedState);
   }
   return {
-    userId: '',
-    userId2: '',
-    genre: ''
+    userId: localStorage.getItem('userId') || '', // Retrieve userId from localStorage
+    userId2: localStorage.getItem('userId2') || '', // Retrieve userId2 from localStorage
+    genre: localStorage.getItem('genre') || '' // Retrieve genre from localStorage
   };
 };
+
 
 const rootReducer = (state: AppState = getInitialState(), action: any) => {
   switch (action.type) {
@@ -27,22 +28,22 @@ const rootReducer = (state: AppState = getInitialState(), action: any) => {
         ...state,
         userId: action.payload,
       };
-      localStorage.setItem('userIdState', JSON.stringify(newUserIdState));
+      localStorage.setItem('appState', JSON.stringify(newUserIdState)); // Update localStorage
       return newUserIdState;
     case 'SET_USER_ID_2':
       const newUserId2State = {
         ...state,
         userId2: action.payload,
       };
-      localStorage.setItem('userId2State', JSON.stringify(newUserId2State));
+      localStorage.setItem('appState', JSON.stringify(newUserId2State)); // Update localStorage
       return newUserId2State;
     case 'SET_GENRE':
-    const newUserGenre = {
-      ...state,
-      genre: action.payload,
-    };
-    localStorage.setItem('userGenreState', JSON.stringify(newUserGenre));
-    return newUserGenre;
+      const newUserGenre = {
+        ...state,
+        genre: action.payload,
+      };
+      localStorage.setItem('appState', JSON.stringify(newUserGenre)); // Update localStorage
+      return newUserGenre;
     default:
       return state;
   }

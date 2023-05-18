@@ -26,7 +26,10 @@ interface QuestionProps {
   answer: number
 }
 
-const Card: React.FC = () => {
+const Card = () => {
+
+  const userId = useSelector((state: AppState) => state.userId);
+  const userId2 = useSelector((state: AppState) => state.userId2);
   const [data, setData] = useState<CardProps[]>([]);
   const [answers, setAnswers] = useState<AnswerProps[]>([]);
   const [guesses, setGuesses] = useState<QuestionProps[]>([]);
@@ -36,16 +39,18 @@ const Card: React.FC = () => {
   const [correctlyAnswered, setCorrectlyAnswered] = useState<number>(0);
   const [totalQuestions, setTotalQuestions] = useState<number>(0);
   const [user, setUser] = useState<string>('');
-  const [username1, setUsername1] = useState('');
-  const [username2, setUsername2] = useState('');
+  const [username2, setUsername2] = useState(userId2);
   const [userPoints, setUserPoints] = useState(Object);
   const location = useLocation();
-  const userId = useSelector((state: AppState) => state.userId);
-  const userId2 = useSelector((state: AppState) => state.userId2);
   const [genre, setGenre] = useState('')
   const [gameStatus, setGameStatus] = useState()
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    console.log(`User 1 on card: ${userId}`)
+    console.log(`User 2 on card: ${userId2}`)
+  }, [0])
 
   //create new socket
   const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
@@ -73,7 +78,7 @@ const Card: React.FC = () => {
 
   useEffect(() => {
     getGenre(userId, userId2);
-  }, []);
+  }, [userPoints]);
 
   async function getGenre(player1:string, player2:string) {
     try {
@@ -89,7 +94,7 @@ const Card: React.FC = () => {
       console.error(error);
     }
   }
-  
+
   useEffect(() => {
     dispatch({ type: 'SET_GENRE', payload: genre });
     localStorage.setItem('genre', genre);
@@ -113,10 +118,11 @@ const Card: React.FC = () => {
     if (userId && userId2) {
       getGameStatus(userId, userId2);
     }
-    async function fetchUsername() {
-      const u2 = await getUname(userId2);
-      setUsername2(u2);
-    }
+      async function fetchUsername() {
+        const u2 = await getUname(userId2);
+        console.log(userId2)
+        setUsername2(u2);
+      }
     fetchUsername();
   }, []);
     
@@ -128,8 +134,6 @@ const Card: React.FC = () => {
 
   useEffect(() => {
     if (answers.length > 0 && (gameStatus === 1 || gameStatus === 3)) {
-      console.log("USER ANSWERS:")
-
       let correct = 0;
       let total = 0;
 
@@ -138,10 +142,8 @@ const Card: React.FC = () => {
         const guess = element.answer
         const answer = answers.find((a) => a.user_id === element.id && a.question_id === element.question)
         if (guess === answer?.answer) {
-          console.log("GOOD GUESS")
           correct++
         }
-
         console.log(`user ${element.id} guess for question ${element.question}: ${element.answer}`)
         console.log(`User ${answer?.user_id} answer for question ${answer?.question_id}: ${answer?.answer}`)
         });
@@ -375,6 +377,7 @@ const Card: React.FC = () => {
 
     function handleNextQuestion(index: number) {
       console.log("GUESSING")
+      console.log(userId, userId2)
       const questionId = data[randomQuestion].id;
       const userGuess = index;
       addNewGuess(parseInt(userId), questionId, index)
@@ -415,7 +418,7 @@ const Card: React.FC = () => {
           ))}
         </div>
         ) :
-        <><h1 className="stats-header">How did they answer this question?</h1>
+        <><h1 className="stats-header">How did<span className="lobby-username">{username2}</span> answer this question?</h1>
           <div className="card">
             {data[randomQuestion] && (
               <><p className="card-header">{data[randomQuestion].question}</p></>)}

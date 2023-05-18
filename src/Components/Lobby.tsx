@@ -33,7 +33,6 @@ const Lobby = () => {
   const [waiting, setWaiting] = useState(false)
   const dispatch = useDispatch();
   const [player1, setPlayer1] = useState('')
-  
 
   //create new socket
   const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
@@ -112,9 +111,7 @@ const Lobby = () => {
           dispatch({ type: 'SET_USER_ID_2', payload: element.user_id});
           localStorage.setItem('userId2', element.user_id);
         }
-        
-      })
-      
+      })      
       setAllUsersReady(response.data.allUsersReady); // Set flag based on response
       console.log(`Ready? ${allUsersReady}`)
     } catch (error) {
@@ -209,9 +206,9 @@ const Lobby = () => {
     }
   }
   
-  useEffect(() => {
-    fetchUsers();
-  }, [0])
+  // useEffect(() => {
+  //   fetchUsers();
+  // }, [0])
 
   useEffect(() => {
     getGameStatus();
