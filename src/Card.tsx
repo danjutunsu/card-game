@@ -29,6 +29,7 @@ interface QuestionProps {
 const Card = () => {
   const userId = useSelector((state: AppState) => state.userId);
   const userId2 = useSelector((state: AppState) => state.userId2);
+  const uuid = useSelector((state: AppState) => state.uuid);
   const [data, setData] = useState<CardProps[]>([]);
   const [answers, setAnswers] = useState<AnswerProps[]>([]);
   const [guesses, setGuesses] = useState<QuestionProps[]>([]);
@@ -406,7 +407,7 @@ const Card = () => {
           ))}
         </div>
         ) :
-        <>          <button className="return-button" onClick={() => navigate(`/lobby`)}>Return To Lobby</button>
+        <>          <button className="return-button" onClick={() => navigate(`/lobby/${uuid}`)}>Return To Lobby</button>
         <h1 className="stats-header">How did<span className="lobby-username">{username2}</span> answer this question?</h1>
           <div className="card">
             {data[randomQuestion] && (

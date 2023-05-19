@@ -6,6 +6,7 @@ export type AppState = {
   userId: string;
   userId2: string;
   genre: string;
+  uuid: string;
 };
 
 const getInitialState = () => {
@@ -16,7 +17,8 @@ const getInitialState = () => {
   return {
     userId: localStorage.getItem('userId') || '', // Retrieve userId from localStorage
     userId2: localStorage.getItem('userId2') || '', // Retrieve userId2 from localStorage
-    genre: localStorage.getItem('genre') || '' // Retrieve genre from localStorage
+    genre: localStorage.getItem('genre') || '', // Retrieve genre from localStorage
+    uuid: localStorage.getItem('uuid') || '' // Retrieve uuid from localStorage
   };
 };
 
@@ -44,6 +46,13 @@ const rootReducer = (state: AppState = getInitialState(), action: any) => {
       };
       localStorage.setItem('appState', JSON.stringify(newUserGenre)); // Update localStorage
       return newUserGenre;
+    case 'SET_UUID':
+      const newUserUUID = {
+        ...state,
+        uuid: action.payload,
+      };
+      localStorage.setItem('appState', JSON.stringify(newUserUUID)); // Update localStorage
+      return newUserUUID;
     default:
       return state;
   }

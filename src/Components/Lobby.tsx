@@ -26,6 +26,7 @@ const Lobby = () => {
   const [genres, setGenres] = useState<Genre[]>([]);
   const userId = useSelector((state: AppState) => state.userId);
   const userId2 = useSelector((state: AppState) => state.userId2);
+  const uuid = useSelector((state: AppState) => state.uuid);
   const [username, setUserName] = useState('')
   const navigate = useNavigate();
   const [status, setStatus] = useState('')
@@ -44,6 +45,11 @@ const Lobby = () => {
 
   //create new socket
   const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
+  
+  if (lobbyId) {
+    dispatch({ type: 'SET_UUID', payload: lobbyId });
+    localStorage.setItem('uuid', lobbyId);
+  }
 
   axios.put(`${url}/api/lobby/${lobbyId}`, {
     userId: userId
@@ -90,6 +96,13 @@ const Lobby = () => {
     } else if (data.leave) {
       // const { sender, recipient } = data.invite;
       fetchUsers(params.lobbyId);
+    } else if (data.invitee) {
+      // const { sender, recipient } = data.invite;
+      console.log(`INVITED`)
+      // alert('sheeeit')
+      // console.log(data.invitee.lobbyId)
+      navigate(`/lobby/${data.invitee.lobbyId}`)
+      fetchUsers(params.lobbyId)
     }
   });
 
@@ -409,8 +422,8 @@ const Lobby = () => {
           <li key={user.user_id} className="lobby-row" style={{listStyle: 'none'}}>
             <div className="lobby-column lobby-column-stroke"> {toPascalCase(user.username)} 
             </div>
-            {user.user_id !== userId ? 
-            <button className="invite-button" onClick={() => handleInvite(userId, user.user_id)}>Invite</button> : <></>}
+            {/* {user.user_id !== userId ? 
+            <button className="invite-button" onClick={() => handleInvite(userId, user.user_id)}>Invite</button> : <></>} */}
             {user.user_id === userId && invited ? 
             <button className="button" onClick={() => handleAccept(userId, user.user_id)}>{accepted ? 'Accepted' : 'Accept?'}
             </button> : <></>}
@@ -498,12 +511,21 @@ const Lobby = () => {
 
   const handleInviteUser = async (username: string) => {
     try {
-      const message = { payload: 'leave' };
-      socket.send(JSON.stringify(message));
-      await axios.put(`${url}/api/lobby/leave`, {
-          userId: userId,
-          uuid: uuid
+      const response = await axios.get(`${url}/api/users/invite`, {
+        params: {
+          username: username
+        }
       });
+      console.log(`USERNAME RESPONSE: ${response.data}`)
+      
+      // Invite sent
+      socket.send(JSON.stringify({
+        type: 'invitee',
+        payload: {
+          userId: response.data,
+          lobbyId: lobbyId
+        }
+      }));
       // navigate('/')
     } catch (error) {
       console.error(error);
