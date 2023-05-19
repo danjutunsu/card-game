@@ -11,6 +11,8 @@
   import { connect, useDispatch } from 'react-redux';
   import { store } from "../store";
   import { io } from 'socket.io-client';
+  import {v4 as uuidv4} from 'uuid';
+
 
   const MyComponent: React.FC = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -22,8 +24,11 @@
   const [userId, setUserId] = useState('')
   const dispatch = useDispatch();
   const [showLogin, setShowLogin] = useState(true);
+  const randomId = uuidv4();
 
   const handleLogin = async (username: string, password: string) => {
+    console.log(`RandomID: ${randomId}`)
+
     try {
       const response = await axios.post(`${url}/api/login`, {
         username: username,
@@ -47,8 +52,9 @@
         // Dispatch an action to set the user ID in the Redux store
         dispatch({ type: 'SET_USER_ID', payload: loggedInUser });
           // navigate('/card', { state: { id: userId } });
-          
-            navigate('/lobby')
+            handleUpdateUUID(response.data.userId, randomId)
+            console.log(`UserId: ${loggedInUser} RandomID: ${randomId}`)
+            navigate(`/lobby/${randomId}`)
         }, 1000);
       } else {
         // if the login fails, display an error message
@@ -59,6 +65,18 @@
       console.error(error);
     }
   };
+
+  const handleUpdateUUID = async (id: string, uuid: string | undefined) => {
+    try {
+      const response = await axios.put(`${url}/api/lobby/uuid`, {
+        id: id,
+        uuid: uuid
+      });
+      const updatedUser = response.data; // Get updated user object with new status 
+    } catch (error) {
+      console.error(error);
+    }
+  }
     
 const handleClick = () => {
   setShowLogin(!showLogin);

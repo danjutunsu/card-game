@@ -3,8 +3,11 @@ import { SetStateAction, useEffect, useState } from "react";
 import { url } from "../Config";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../store";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
+interface Lobby {
+  lobbyId: string
+}
 
 interface User {
   user_id: string;
@@ -35,12 +38,28 @@ const Lobby = () => {
   const [player1, setPlayer1] = useState('')
   const [invited, setInvited] = useState(false)
   const [accepted, setAccepted] = useState(false)
+  const params = useParams();
+  const lobbyId = params.lobbyId;
+  const [inviteeUsername, setInviteeUsername] = useState('Enter Username');
 
   //create new socket
   const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
 
+  axios.put(`${url}/api/lobby/${lobbyId}`, {
+    userId: userId
+  })
+  .then(response => {
+    // Handle the response data
+    console.log(response.data);
+  })
+  .catch(error => {
+    // Handle the error
+    console.error(error);
+  });
+
   socket.onopen = function (event) {
     console.log(`user connected`)
+    console.log(`Lobby ID: ${params.lobbyId}`)
     // fetchUsers()
   };
 
@@ -67,7 +86,10 @@ const Lobby = () => {
 
     } else if (data.logout) {
       // const { sender, recipient } = data.invite;
-      fetchUsers();
+      fetchUsers(params.lobbyId);
+    } else if (data.leave) {
+      // const { sender, recipient } = data.invite;
+      fetchUsers(params.lobbyId);
     }
   });
 
@@ -87,7 +109,7 @@ const Lobby = () => {
 
   const getGameStatus = async () => 
   {
-    fetchUsers();
+    fetchUsers(params.lobbyId);
     console.log("EXECUTING-_______________")
     
     const response = await axios.get(`${url}/api/games/status`, {
@@ -111,9 +133,13 @@ const Lobby = () => {
     console.log(`UserID2:${userId2}`)
   }, [users])
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (uuid: string | undefined) => {
     try {
-      const response = await axios.get(`${url}/api/lobby`);
+      const response = await axios.get(`${url}/api/lobby`, {
+        params: {
+          uuid: uuid
+        }
+      });
       setUsers(response.data.users);
       const usersList = response.data.users
       getUname(userId)
@@ -426,7 +452,64 @@ const Lobby = () => {
       console.error(error);
     }
   };
+
+  const handleCopyLobby = (uuid: string | undefined) => {
+    if (uuid) {
+      const url = window.location.origin; // Get the current URL
+      const fullUUID = `${url}/lobby/${uuid}`; // Concatenate the URL and UUID
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(fullUUID)
+          .then(() => {
+            console.log('Text copied to clipboard:', fullUUID);
+            // You can show a success message or perform any other actions here
+          })
+          .catch((error) => {
+            console.error('Error copying text to clipboard:', error);
+            // You can show an error message or handle the error in any desired way
+          });
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = fullUUID;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        console.log('Text copied to clipboard:', fullUUID);
+        // You can show a success message or perform any other actions here
+      }
+    }
+  };
   
+  
+
+  const handleLeaveGame = async (userId: string, uuid: string | undefined) => {
+    try {
+      const message = { payload: 'leave' };
+      socket.send(JSON.stringify(message));
+      await axios.put(`${url}/api/lobby/leave`, {
+          userId: userId,
+          uuid: uuid
+      });
+      // navigate('/')
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleInviteUser = async (username: string) => {
+    try {
+      const message = { payload: 'leave' };
+      socket.send(JSON.stringify(message));
+      await axios.put(`${url}/api/lobby/leave`, {
+          userId: userId,
+          uuid: uuid
+      });
+      // navigate('/')
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleUserStatusUpdate = (user_id: string, status: string) => {
     setUsers((prevUsers) =>
       prevUsers.map((user) =>
@@ -437,7 +520,14 @@ const Lobby = () => {
 
   return (
     <div className="stats-page">
-      <button id="logout" className="logout-button" onClick={() => handleLogout(userId)}>Logout</button>
+      <div>
+      <button id="copy" className="button" onClick={() => handleCopyLobby(lobbyId)}>Copy Lobby</button>
+      <button id="leave" className="button" onClick={() => handleLeaveGame(userId, params.lobbyId)}>Leave Game</button>
+      <div>
+        <button id="leave" className="button" onClick={() => handleInviteUser(inviteeUsername)}>Invite User</button>
+        <input type="text" value={inviteeUsername} onClick={() => setInviteeUsername('')} onChange={(e) => setInviteeUsername(e.target.value)} />
+      </div>
+      <button id="logout" className="logout-button" onClick={() => handleLogout(userId)}>Logout</button></div>
       <div className="user-info">
         <span>
           <p className="stats-header">Logged In As:</p>
