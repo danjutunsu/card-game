@@ -49,9 +49,7 @@ function App() {
         <Route path="/lobby/:lobbyId" element={<Lobby />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/waiting" element={<WaitingRoom />} />
-        <Route path="/create" element={<CreateForm onLogin={function (username: string, password: string): void {
-          throw new Error('Function not implemented.');
-        } } />} />
+        <Route path="/create" element={<CreateForm />} />
          <Route path="/stats" element={<Statistics />} />
       </Routes>
     </BrowserRouter></>

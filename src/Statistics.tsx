@@ -7,6 +7,7 @@ import { AppState } from "./store";
 import { useNavigate } from "react-router-dom";
 
 interface StatisticsProps {
+  uuid: string
   user: string;
   points: number;
   correctlyAnswered: number;
@@ -47,7 +48,7 @@ const MyComponent = (props: StatisticsProps) => {
       {username[-1] === 's' ? <p className="stats-header">{userId2}' Stats</p>
       : <p className="stats-header">{userId2}'s Stats</p>
       }
-      <button className="button" onClick={() => navigate(`/lobby`)}>Return To Lobby</button>
+      <button className="button" onClick={() => navigate(`/lobby/${props.uuid}`)}>Return To Lobby</button>
       <p className="stats-row">Points: {props.points}</p>
       <p className="stats-row">
         # Correct This Round: {props.correctlyAnswered} of {props.totalQuestions}
@@ -71,7 +72,7 @@ const MyComponent = (props: StatisticsProps) => {
 const Statistics = () => {
   const userId = useSelector((state: AppState) => state.userId);
   const [userPoints, setUserPoints] = useState(Object);
-
+  const uuid = useSelector((state: AppState) => state.uuid);
 
   useEffect(() => {
     getUserPoints(parseInt(userId))
@@ -94,6 +95,7 @@ const Statistics = () => {
 
   return (
     <MyComponent
+      uuid={uuid}
       user={userId}
       points={userPoints.points}
       correctlyAnswered={userPoints.correct_round}

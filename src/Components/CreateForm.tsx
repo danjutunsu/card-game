@@ -8,14 +8,17 @@ interface CreateFormProps {
     onLogin: (username: string, password: string) => void;
   }
   
-  const CreateForm: React.FC<CreateFormProps> = ({ onLogin }) => {
+  const CreateForm: React.FC = () => {
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('swag');
+    const [email, setEmail] = useState('');
+    const [submitMessage, setSubmitMessage] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
   
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        // addUser(2, username, password)
-        onLogin(username, password);
+        addUser(username, email, password)
+        // onLogin(username, password);
     };
     
     // useEffect(() => {
@@ -25,22 +28,30 @@ interface CreateFormProps {
     //     // console.log("visited: ", visited);
     // }, );
 
-    const addUser = async (uid: number, uName: string, password: string) => {
+    const addUser = async (uName: string, email: string, password: string) => {
+      console.log(`CREATING USER`)
+      if (confirmPassword === password) {  
         try {
           const hashedPassword = bcrypt.hashSync(password, 10); // hash the password
           console.log("HASHED: " + hashedPassword)
           console.log(password)
   
           const response = await axios.post(`${url}/api/users`, {
-            userId: uid,
             userName: uName,
+            email: email,
             password: hashedPassword // send the hashed password to the backend
           });
-  
+          setSubmitMessage('Account Created')
         } catch (error) {
+          setSubmitMessage('Error Creating User')
           console.error(error);
-        }
+          console.log(`An Error occured while saving the user`)
+          alert(`Please ensure that the email address is unique, or log in if your email is already registered.`)
+          }
+      } else {
+        setSubmitMessage('Please ensure passwords match')
       }
+    }
 
     return (
       <><form onSubmit={handleSubmit}>
@@ -54,15 +65,23 @@ interface CreateFormProps {
             </label>
             <br />
             <label>
+                Email Address:
+                <input type="text" value={email} onChange={e => setEmail(e.target.value)} />
+            </label>
+            <br />
+            <label>
                 Password:
                 <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
             </label>
             <br />
             <label>
                 Confirm Password:
-                <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+                <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
             </label>
             <br />
+            <label className="submission-message">
+            {submitMessage}
+            </label>
             <div className='button-container'>
                 <button type="submit" className="button">
                     Submit

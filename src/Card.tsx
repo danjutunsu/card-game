@@ -243,7 +243,7 @@ const Card = () => {
         if (gameStatus === 3) {
           handleEnd()
         } else {
-          navigate(`/lobby`)
+          navigate(`/lobby/${uuid}`)
         }
         return null; // return the current question
       }

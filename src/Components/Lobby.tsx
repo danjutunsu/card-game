@@ -328,7 +328,7 @@ const Lobby = () => {
       });
 
       setTurn(response.data.turn_id);
-
+      console.log(`setting turn ${turn}`)
       if (allUsersReady && response.data.turn_id === userId) {
         // TODO - Make this handleUserStatus method work to change 
         // Status to In Progress
@@ -372,6 +372,7 @@ const Lobby = () => {
   // }, [0])
 
   useEffect(() => {
+    getTurn(gameId)
     getGameStatus();
     fetchGenres();
     // getPlayer1(userId, userId2);
@@ -533,10 +534,10 @@ const Lobby = () => {
             <div className="lobby-column lobby-column-stroke"> {toPascalCase(user.username)} 
             </div>
             {/* {user.user_id !== userId ? 
-            <button className="invite-button" onClick={() => handleInvite(userId, user.user_id)}>Invite</button> : <></>} */}
-            {user.user_id === userId /* && invited */ ? 
+            <button className="invite-button" onClick={() => handleInvite(userId, user.user_id)}>Invite</button> : <></>}
+            {user.user_id === userId ? 
             <button className="button" onClick={() => handleAccept(userId, user.user_id)}>{accepted ? 'Accepted' : 'Accept?'}
-            </button> : <></>}
+            </button> : <></>} */}
             <div className={`lobby-column lobby-column-stroke ${user.status === 'Ready' ? 'ready' : 'idle'}`}>{user.status}</div>
           </li>
         ))}
@@ -617,11 +618,11 @@ const Lobby = () => {
       <button className="ready-button" onClick={() => handleReady(userId)}>Ready?</button> 
       <p className="stats-row"></p>
       <button disabled={!allUsersReady || users.length < 2 /* || !accepted */} className="button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
-      {waiting && <div><h1 className="stats-header">Your turn is next</h1></div>}
-      {gameStatus === 0 && userId.toString() === users[0].user_id.toString() ?  (
+      {waiting ? <div><h1 className="stats-header">Your turn is next</h1></div> : <></>}
+      {gameStatus === 0 && userId.toString() === turn.toString() ?  (
       <GenreList />
       ) : (
-        <div></div>
+        <></>
       )}
     </div>
   );

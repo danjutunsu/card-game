@@ -253,6 +253,10 @@ button[disabled] {
   cursor: pointer;
 }
 
+.submission-message{
+  color: green;
+}
+
 .menu-li-button {
   display: flex;
   flex-direction: column;
