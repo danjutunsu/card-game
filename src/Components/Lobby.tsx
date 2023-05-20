@@ -4,6 +4,7 @@ import { url } from "../Config";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../store";
 import { useNavigate, useParams } from "react-router-dom";
+import {v4 as uuidv4} from 'uuid';
 
 interface Lobby {
   lobbyId: string
@@ -19,6 +20,89 @@ interface Genre {
   id: number;
   genre: string;
 }
+
+const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket: WebSocket}) => {
+  const [menuVisible, setMenuVisible] = useState(false);
+  const navigate = useNavigate();
+  const params = useParams();
+  const lobbyId = params.lobbyId;
+  const randomId = uuidv4();
+
+  const toggleMenu = () => {
+    setMenuVisible(!menuVisible);
+  };
+
+  const handleCopyLobby = (uuid: string | undefined) => {
+    if (uuid) {
+      const url = window.location.origin; // Get the current URL
+      const fullUUID = `${url}/lobby/${uuid}`; // Concatenate the URL and UUID
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(fullUUID)
+          .then(() => {
+            console.log('Text copied to clipboard:', fullUUID);
+            // You can show a success message or perform any other actions here
+          })
+          .catch((error) => {
+            console.error('Error copying text to clipboard:', error);
+            // You can show an error message or handle the error in any desired way
+          });
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = fullUUID;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        console.log('Text copied to clipboard:', fullUUID);
+        // You can show a success message or perform any other actions here
+      }
+    }
+  };
+
+  const handleLeaveGame = async (userId: string, uuid: string | undefined) => {
+    try {
+      const message = { payload: 'leave' };
+      props.socket.send(JSON.stringify(message));
+      await axios.put(`${url}/api/lobby/leave`, {
+          userId: userId,
+          uuid: uuid
+      });
+      navigate(`/lobby/${randomId}`)
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleLogout = async (userId: string) => {
+    try {
+      const message = { payload: 'logout' };
+      props.socket.send(JSON.stringify(message));
+      await axios.delete(`${url}/api/lobby?userId=${userId}`);
+      navigate('/')
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <div className="menu-container">
+      <button className="menu-button" onClick={toggleMenu}>Menu</button>
+      {menuVisible && (
+        <ul style={{ listStyle: "none", padding: 0 }}>
+          <li>
+            <button id="copy" className="menu-li-button" onClick={() => handleCopyLobby(props.lobbyId)}>Copy Lobby</button>
+          </li>
+          <li>
+            <button id="leave" className="menu-li-button" onClick={() => handleLeaveGame(props.userId, lobbyId)}>Leave Game</button>
+          </li>
+          <li>
+            <button id="logout" className="menu-li-button" onClick={() => handleLogout(props.userId)}>Logout</button>
+          </li>
+        </ul>
+      )}
+    </div>
+  );
+};
 
 const Lobby = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -37,8 +121,8 @@ const Lobby = () => {
   const [waiting, setWaiting] = useState(false)
   const dispatch = useDispatch();
   const [player1, setPlayer1] = useState('')
-  const [invited, setInvited] = useState(false)
-  const [accepted, setAccepted] = useState(false)
+  const [invited, setInvited] = useState(true)
+  const [accepted, setAccepted] = useState(true)
   const params = useParams();
   const lobbyId = params.lobbyId;
   const [inviteeUsername, setInviteeUsername] = useState('Enter Username');
@@ -101,8 +185,36 @@ const Lobby = () => {
       console.log(`INVITED`)
       // alert('sheeeit')
       // console.log(data.invitee.lobbyId)
-      navigate(`/lobby/${data.invitee.lobbyId}`)
-      fetchUsers(params.lobbyId)
+      const result = window.confirm(`Invited to join a game`)
+      if (result) {
+        navigate(`/lobby/${data.invitee.lobbyId}`)
+        fetchUsers(params.lobbyId)
+        // Status button clicked
+        socket.send(JSON.stringify({
+          type: 'refresh',
+          payload: {
+            user1: userId,
+            user2: data.invitee.sender
+          }
+        }));
+      } else {
+        // Status button clicked
+        socket.send(JSON.stringify({
+          type: 'user_rejected',
+          payload: {
+            reject: userId,
+            request: data.invitee.sender
+          }
+        }));
+      }
+    } else if (data.user_rejected) {
+      // const { sender, recipient } = data.invite;
+      alert(`USER ${data.user_rejected.reject} rejected the invitation`)
+      fetchUsers(params.lobbyId);
+    } else if (data.refresh) {
+      // const { sender, recipient } = data.invite;
+      console.log(`REFRESH`)
+      fetchUsers(params.lobbyId);
     }
   });
 
@@ -111,14 +223,14 @@ const Lobby = () => {
     console.log('WebSocket connection closed');
   });
 
-  useEffect(() => {
-  async function fetchPlayer1() {
-    const p1 = await getPlayer1(userId, userId2);
+//   useEffect(() => {
+//   async function fetchPlayer1() {
+//     const p1 = await getPlayer1(userId, userId2);
 
-    setPlayer1(p1);
-  }
-  fetchPlayer1();
-}, [userId, users]);
+//     setPlayer1(p1);
+//   }
+//   fetchPlayer1();
+// }, [userId, users]);
 
   const getGameStatus = async () => 
   {
@@ -251,8 +363,6 @@ const Lobby = () => {
       return response.data.player1_id
     } catch (err) {
       console.log(err);      
-      console.log(`Player1id: ${player1}`)
-      console.log(`Player2id: ${player2}`)
       console.log("Error retrieving player 1");
     }
   }
@@ -281,7 +391,7 @@ const Lobby = () => {
           setStatus('Idle');
           await axios.put(`${url}/api/lobby`); // Update status of all users
           const response = await axios.get(`${url}/api/lobby`);
-          setUsers(response.data.users);
+          // setUsers(response.data.users);
           setAllUsersReady(response.data.allUsersReady); // Update flag based on response
           users.forEach((element: any) => {
             console.log(`${element.username} status: ${element.status}`)
@@ -360,7 +470,7 @@ const Lobby = () => {
 
   function GenreList() {
     const [selectedGenres, setSelectedGenres] = useState<{[key: string]: boolean}>({});
-  
+
     const handleGenreClick = async (genreId: string, genre: string) => {
       setSelectedGenres((prevState) => ({
         ...prevState,
@@ -424,7 +534,7 @@ const Lobby = () => {
             </div>
             {/* {user.user_id !== userId ? 
             <button className="invite-button" onClick={() => handleInvite(userId, user.user_id)}>Invite</button> : <></>} */}
-            {user.user_id === userId && invited ? 
+            {user.user_id === userId /* && invited */ ? 
             <button className="button" onClick={() => handleAccept(userId, user.user_id)}>{accepted ? 'Accepted' : 'Accept?'}
             </button> : <></>}
             <div className={`lobby-column lobby-column-stroke ${user.status === 'Ready' ? 'ready' : 'idle'}`}>{user.status}</div>
@@ -455,80 +565,29 @@ const Lobby = () => {
     }
   }
 
-  const handleLogout = async (userId: string) => {
-    try {
-      const message = { payload: 'logout' };
-      socket.send(JSON.stringify(message));
-      await axios.delete(`${url}/api/lobby?userId=${userId}`);
-      navigate('/')
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleCopyLobby = (uuid: string | undefined) => {
-    if (uuid) {
-      const url = window.location.origin; // Get the current URL
-      const fullUUID = `${url}/lobby/${uuid}`; // Concatenate the URL and UUID
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(fullUUID)
-          .then(() => {
-            console.log('Text copied to clipboard:', fullUUID);
-            // You can show a success message or perform any other actions here
-          })
-          .catch((error) => {
-            console.error('Error copying text to clipboard:', error);
-            // You can show an error message or handle the error in any desired way
-          });
-      } else {
-        const textArea = document.createElement('textarea');
-        textArea.value = fullUUID;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        console.log('Text copied to clipboard:', fullUUID);
-        // You can show a success message or perform any other actions here
-      }
-    }
-  };
-  
-  
-
-  const handleLeaveGame = async (userId: string, uuid: string | undefined) => {
-    try {
-      const message = { payload: 'leave' };
-      socket.send(JSON.stringify(message));
-      await axios.put(`${url}/api/lobby/leave`, {
-          userId: userId,
-          uuid: uuid
-      });
-      // navigate('/')
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const handleInviteUser = async (username: string) => {
-    try {
-      const response = await axios.get(`${url}/api/users/invite`, {
-        params: {
-          username: username
-        }
-      });
-      console.log(`USERNAME RESPONSE: ${response.data}`)
-      
-      // Invite sent
-      socket.send(JSON.stringify({
-        type: 'invitee',
-        payload: {
-          userId: response.data,
-          lobbyId: lobbyId
-        }
-      }));
-      // navigate('/')
-    } catch (error) {
-      console.error(error);
+    if (users.length < 2) {
+      try {
+        const response = await axios.get(`${url}/api/users/invite`, {
+          params: {
+            username: username
+          }
+        });
+        console.log(`USERNAME RESPONSE: ${response.data}`)
+        
+        // Invite sent
+        socket.send(JSON.stringify({
+          type: 'invitee',
+          payload: {
+            userId: response.data,
+            lobbyId: lobbyId,
+            sender: userId
+          }
+        }));
+        // navigate('/')
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -542,14 +601,11 @@ const Lobby = () => {
 
   return (
     <div className="stats-page">
-      <div>
-      <button id="copy" className="button" onClick={() => handleCopyLobby(lobbyId)}>Copy Lobby</button>
-      <button id="leave" className="button" onClick={() => handleLeaveGame(userId, params.lobbyId)}>Leave Game</button>
-      <div>
-        <button id="leave" className="button" onClick={() => handleInviteUser(inviteeUsername)}>Invite User</button>
-        <input type="text" value={inviteeUsername} onClick={() => setInviteeUsername('')} onChange={(e) => setInviteeUsername(e.target.value)} />
+      <MenuButton lobbyId={lobbyId} userId={userId} socket={socket} />
+      <div className="search-container">
+        <input className="search-form" type="text" value={inviteeUsername} onClick={() => setInviteeUsername('')} onChange={(e) => setInviteeUsername(e.target.value)} />
+        <button disabled={users.length >=2} id="leave" className="invite-button" onClick={() => handleInviteUser(inviteeUsername)}>Invite User</button>
       </div>
-      <button id="logout" className="logout-button" onClick={() => handleLogout(userId)}>Logout</button></div>
       <div className="user-info">
         <span>
           <p className="stats-header">Logged In As:</p>
@@ -560,7 +616,7 @@ const Lobby = () => {
       <UserList users={users} handleReady={handleReady} handleStatusUpdate={handleUserStatusUpdate}/>
       <button className="ready-button" onClick={() => handleReady(userId)}>Ready?</button> 
       <p className="stats-row"></p>
-      <button disabled={!allUsersReady || !accepted} className="button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
+      <button disabled={!allUsersReady || users.length < 2 /* || !accepted */} className="button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
       {waiting && <div><h1 className="stats-header">Your turn is next</h1></div>}
       {gameStatus === 0 && userId.toString() === users[0].user_id.toString() ?  (
       <GenreList />
