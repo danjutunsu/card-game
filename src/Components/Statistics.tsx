@@ -46,6 +46,7 @@ const MyComponent = (props: StatisticsProps) => {
   const genre = useSelector((state: AppState) => state.genre);
   const [answers, setAnswers] = useState<AnswerProps[]>([]);
   const [guesses, setGuesses] = useState<GuessProps[]>([]);
+  const gameId = useSelector((state: AppState) => state.gameId);
 
 
   async function getUname(id: string) {
@@ -89,14 +90,22 @@ const MyComponent = (props: StatisticsProps) => {
     setData(jsonData);
   }
 
-  async function fetchAnswers() {
-    const response = await axios.get(`${url}/api/answers`);
+  async function fetchAnswers(gameId: number) {
+    const response = await axios.get(`${url}/api/answers`, {
+      params: {
+        gameId: gameId
+      }      
+    });
     const jsonData = response.data;
     setAnswers(jsonData);
   }
 
-  async function fetchGuesses() {
-    const response = await axios.get(`${url}/api/guesses`);
+  async function fetchGuesses(gameId: number) {
+    const response = await axios.get(`${url}/api/guesses`, {
+      params: {
+        gameId: gameId
+      }      
+    });
     const jsonData = response.data;
     setGuesses(jsonData);
   }
@@ -104,8 +113,8 @@ const MyComponent = (props: StatisticsProps) => {
   useEffect(() => {
     getUname(props.user);
     fetchData(genre);
-    fetchAnswers()
-    fetchGuesses()
+    fetchAnswers(gameId)
+    fetchGuesses(gameId)
   }, []);
 
   return (

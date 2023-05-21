@@ -333,6 +333,9 @@ const Lobby = () => {
       console.log(`Player1: ${player1} Player2: ${player2}`);
       console.log('data: ' + response.data.id);
       setGameId(response.data.id);
+      
+      dispatch({ type: 'SET_GAMEID', payload: gameId });
+      localStorage.setItem('gameId', gameId.toString());
   
       // Get the turn ID for current round
       await getTurn(response.data.id);

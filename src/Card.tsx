@@ -47,6 +47,7 @@ const Card = () => {
   const [gameStatus, setGameStatus] = useState()
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const gameId = useSelector((state: AppState) => state.gameId);
 
   //create new socket
   const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
@@ -283,12 +284,13 @@ const Card = () => {
         }
     }      
 
-    const addGuess = async (userId: number, questionId: number, userGuess: number) => {
+    const addGuess = async (userId: number, questionId: number, userGuess: number, gameId: number) => {
         try {
           const response = await axios.post(`${url}/api/guesses`, {
             userId: userId,
             questionId: questionId,
-            userGuess: userGuess
+            userGuess: userGuess,
+            gameId: gameId
           });
           console.log(response.data); // handle the response from the backend
         } catch (error) {
@@ -296,14 +298,15 @@ const Card = () => {
         }
     } 
 
-    const addAnswer = async (userId: number, questionId: number, answer: number, answered: number, count: number) => {
+    const addAnswer = async (userId: number, questionId: number, answer: number, answered: number, count: number, gameId: number) => {
         try {
           const response = await axios.post(`${url}/api/answers`, {
             userId: userId,
             questionId: questionId,
             answer: answer,
             answered: answered,
-            count: count
+            count: count,
+            gameId: gameId
           });
           console.log(response.data); // handle the response from the backend
         } catch (error) {
@@ -364,7 +367,7 @@ const Card = () => {
       console.log("ANSWERING")
       const questionId = data[randomQuestion].id;
       const userAnswer = index;
-      addAnswer(parseInt(userId), questionId, userAnswer, answered, data.length);
+      addAnswer(parseInt(userId), questionId, userAnswer, answered, data.length, gameId);
       setAnswered(answered+1)
       getRandomQuestion();
     }
@@ -374,7 +377,7 @@ const Card = () => {
       console.log(userId, userId2)
       const questionId = data[randomQuestion].id;
       const userGuess = index;
-      addGuess(parseInt(userId), questionId, userGuess);
+      addGuess(parseInt(userId), questionId, userGuess, gameId);
       addNewGuess(parseInt(userId), questionId, index)
       console.log('Question ' + questionId)
       // addGuess(parseInt(userId2), questionId, userGuess);
