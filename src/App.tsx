@@ -5,7 +5,7 @@ import LoginPage from './Components/LoginPage';
 import CreateForm from './Components/CreateForm';
 import './styles.css';
 import { BrowserRouter, Route, Routes, Link, useLocation } from 'react-router-dom';
-import Statistics from './Statistics';
+import Statistics from './Components/Statistics';
 import axios from 'axios';
 import { url } from './Config';
 import { AppState } from './store';

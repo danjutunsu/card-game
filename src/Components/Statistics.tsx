@@ -1,9 +1,9 @@
 import axios from "axios";
-import { url } from "./Config";
-import "./styles.css";
+import { url } from "../Config";
+import "../styles.css";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { AppState } from "./store";
+import { AppState } from "../store";
 import { useNavigate } from "react-router-dom";
 
 interface StatisticsProps {
@@ -17,12 +17,36 @@ interface StatisticsProps {
   totalHistorical: number;
 }
 
+interface CardProps {
+  id: number,
+  question: string,
+  options: string[],
+  answer: number
+}
+
+interface AnswerProps {
+  user_id: number,
+  question_id: number,
+  answer: number
+}
+
+interface GuessProps {
+  user_id: number,
+  question_id: number,
+  guess: number
+}
+
 const MyComponent = (props: StatisticsProps) => {
   const percentCorrect = (props.correctlyAnswered / props.totalQuestions) * 100;
   const [username, setUserName] = useState(props.user);
   const navigate = useNavigate();
   const userId = useSelector((state: AppState) => state.userId);
   const userId2 = useSelector((state: AppState) => state.userId2);
+  const [data, setData] = useState<CardProps[]>([]);
+  const genre = useSelector((state: AppState) => state.genre);
+  const [answers, setAnswers] = useState<AnswerProps[]>([]);
+  const [guesses, setGuesses] = useState<GuessProps[]>([]);
+
 
   async function getUname(id: string) {
     try {
@@ -39,14 +63,56 @@ const MyComponent = (props: StatisticsProps) => {
     }
   }
 
+  function QuestionData() {
+    return (
+      <ul>
+        {Array.isArray(data) && data.map((entry) => (
+          <li key={entry.id} className="stats-row" style={{listStyle: 'none'}}>
+            <div className="button">
+              {entry.question} 
+            </div>
+            <div className="stats-guess">You Guessed: {entry.options[guesses[entry.id].guess]}</div>
+            <div className="stats-answer">They Answered: {entry.options[answers[entry.id].answer]}</div>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  async function fetchData(genre: string) {
+    const response = await axios.get(`${url}/api/questions/`, {
+      params: {
+        genre: genre
+      }
+    });
+    const jsonData = response.data;
+    console.log(jsonData)
+    setData(jsonData);
+  }
+
+  async function fetchAnswers() {
+    const response = await axios.get(`${url}/api/answers`);
+    const jsonData = response.data;
+    setAnswers(jsonData);
+  }
+
+  async function fetchGuesses() {
+    const response = await axios.get(`${url}/api/guesses`);
+    const jsonData = response.data;
+    setGuesses(jsonData);
+  }
+
   useEffect(() => {
     getUname(props.user);
+    fetchData(genre);
+    fetchAnswers()
+    fetchGuesses()
   }, []);
 
   return (
     <div className="stats-page">
+      <QuestionData />
       {username[-1] === 's' ? <p className="stats-header">{userId2}' Stats</p>
-      : <p className="stats-header">{userId2}'s Stats</p>
+      : <p className="stats-header">{username}'s Stats</p>
       }
       <button className="button" onClick={() => navigate(`/lobby/${props.uuid}`)}>Return To Lobby</button>
       <p className="stats-row">Points: {props.points}</p>

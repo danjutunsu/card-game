@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "./store";
 
 // const navigate = useNavigate();
+//TODO -- add feature at game end -- compare answers to guesses and show both which players picked
 
 interface CardProps {
   id: number,
@@ -131,7 +132,11 @@ const Card = () => {
       guesses.forEach(element => {
         total++;
         const guess = element.answer
+        const guessQuestion = element.question
         const answer = answers.find((a) => a.user_id === element.id && a.question_id === element.question)
+        console.log(`${data[guessQuestion]?.question}`)
+        console.log(`You guessed ${element?.answer}`)
+        console.log(`They answered ${answer?.answer}`)
         if (guess === answer?.answer) {
           correct++
         }
@@ -369,6 +374,7 @@ const Card = () => {
       console.log(userId, userId2)
       const questionId = data[randomQuestion].id;
       const userGuess = index;
+      addGuess(parseInt(userId), questionId, userGuess);
       addNewGuess(parseInt(userId), questionId, index)
       console.log('Question ' + questionId)
       // addGuess(parseInt(userId2), questionId, userGuess);
@@ -393,6 +399,9 @@ const Card = () => {
       <div className="card-page">
         {gameStatus === 0 || gameStatus === 2 ? (
         <div>
+          <div className="button-container">
+            <button className="return-button" onClick={() => navigate(`/lobby/${uuid}`)}>Return To Lobby</button>
+          </div>
         {data[randomQuestion] && (
           <p className="card-header">{data[randomQuestion].question}</p>)}
           <h1 className="stats-header">You are answering</h1>
@@ -407,7 +416,10 @@ const Card = () => {
           ))}
         </div>
         ) :
-        <><button className="return-button" onClick={() => navigate(`/lobby/${uuid}`)}>Return To Lobby</button>
+        <>        
+        <div className="button-container">
+            <button className="return-button" onClick={() => navigate(`/lobby/${uuid}`)}>Return To Lobby</button>
+          </div>
         <h1 className="stats-header">How did<span className="lobby-username">{username2}</span> answer this question?</h1>
           <div className="card">
             {data[randomQuestion] && (

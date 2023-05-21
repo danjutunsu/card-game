@@ -27,10 +27,16 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
   const params = useParams();
   const lobbyId = params.lobbyId;
   const randomId = uuidv4();
+  const [username, setUserName] = useState('')
+  const userId = useSelector((state: AppState) => state.userId);
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
   };
+
+  useEffect(() => {
+    getUname(userId)
+  }, [0])
 
   const handleCopyLobby = (uuid: string | undefined) => {
     if (uuid) {
@@ -84,21 +90,51 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
     }
   };
 
+  function toPascalCase(str: string): string {
+    return str.replace(/(\w)(\w*)/g, function(_, firstChar, rest) {
+      return firstChar.toUpperCase() + rest.toLowerCase();
+    });
+  }
+
+  async function getUname(id: string) {
+    try {
+      const response = await axios.get(`${url}/api/username`, {
+        params: {
+          userId: id
+        },
+      });
+      
+      setUserName(response.data.rows[0].username)
+    //   console.log(`User Data: ${response.data.userId}`); // handle the response from the backend
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
-    <div className="menu-container">
+    <div>
       <button className="menu-button" onClick={toggleMenu}>Menu</button>
       {menuVisible && (
-        <ul style={{ listStyle: "none", padding: 0 }}>
-          <li>
-            <button id="copy" className="menu-li-button" onClick={() => handleCopyLobby(props.lobbyId)}>Copy Lobby</button>
-          </li>
-          <li>
-            <button id="leave" className="menu-li-button" onClick={() => handleLeaveGame(props.userId, lobbyId)}>Leave Game</button>
-          </li>
-          <li>
-            <button id="logout" className="menu-li-button" onClick={() => handleLogout(props.userId)}>Logout</button>
-          </li>
-        </ul>
+        <><div className="user-info">
+          <span>
+            <p className="menu-header">User:</p>
+            <p className="menu-username">{toPascalCase(username)}</p>
+          </span>
+        </div>
+        <div className="menu">
+          <ul style={{ listStyle: "none", padding: 0 }}>
+            <li>
+              <button id="copy" className="menu-li-button" onClick={() => handleCopyLobby(props.lobbyId)}>Copy Lobby</button>
+            </li>
+            <li>
+              <button id="leave" className="menu-li-button" onClick={() => handleLeaveGame(props.userId, lobbyId)}>Leave Game</button>
+            </li>
+            <li>
+              <button id="logout" className="menu-li-button" onClick={() => handleLogout(props.userId)}>Logout</button>
+            </li>
+          </ul>
+          </div>
+        </>
       )}
     </div>
   );
@@ -111,7 +147,6 @@ const Lobby = () => {
   const userId = useSelector((state: AppState) => state.userId);
   const userId2 = useSelector((state: AppState) => state.userId2);
   const uuid = useSelector((state: AppState) => state.uuid);
-  const [username, setUserName] = useState('')
   const navigate = useNavigate();
   const [status, setStatus] = useState('')
   const [gameStatus, setGameStatus] = useState()
@@ -120,9 +155,7 @@ const Lobby = () => {
   const [turn, setTurn] = useState(0)
   const [waiting, setWaiting] = useState(false)
   const dispatch = useDispatch();
-  const [player1, setPlayer1] = useState('')
   const [invited, setInvited] = useState(true)
-  const [accepted, setAccepted] = useState(true)
   const params = useParams();
   const lobbyId = params.lobbyId;
   const [inviteeUsername, setInviteeUsername] = useState('Enter Username');
@@ -139,11 +172,9 @@ const Lobby = () => {
     userId: userId
   })
   .then(response => {
-    // Handle the response data
     console.log(response.data);
   })
   .catch(error => {
-    // Handle the error
     console.error(error);
   });
 
@@ -168,12 +199,7 @@ const Lobby = () => {
       dispatch({ type: 'SET_GENRE', payload: data.genreToSet });
       localStorage.setItem('genre', genre);
     } else if (data.invite) {
-      // const { sender, recipient } = data.invite;
-      // alert(`${data.invite.sender} is inviting you to join their game.`)
       setInvited(true)
-      
-      console.log(`user ${data.invite.sender} invited user ${data.invite.recipient} to join the game`)
-
     } else if (data.logout) {
       // const { sender, recipient } = data.invite;
       fetchUsers(params.lobbyId);
@@ -183,7 +209,6 @@ const Lobby = () => {
     } else if (data.invitee) {
       // const { sender, recipient } = data.invite;
       console.log(`INVITED`)
-      // alert('sheeeit')
       // console.log(data.invitee.lobbyId)
       const result = window.confirm(`Invited to join a game`)
       if (result) {
@@ -223,15 +248,6 @@ const Lobby = () => {
     console.log('WebSocket connection closed');
   });
 
-//   useEffect(() => {
-//   async function fetchPlayer1() {
-//     const p1 = await getPlayer1(userId, userId2);
-
-//     setPlayer1(p1);
-//   }
-//   fetchPlayer1();
-// }, [userId, users]);
-
   const getGameStatus = async () => 
   {
     fetchUsers(params.lobbyId);
@@ -252,11 +268,11 @@ const Lobby = () => {
     return jsonData;
   }
 
-  useEffect(() => {
-    getPlayer1(userId, userId2)
-    console.log(`UserID:${userId}`)
-    console.log(`UserID2:${userId2}`)
-  }, [users])
+  // useEffect(() => {
+  //   getPlayer1(userId, userId2)
+  //   console.log(`UserID:${userId}`)
+  //   console.log(`UserID2:${userId2}`)
+  // }, [users])
 
   const fetchUsers = async (uuid: string | undefined) => {
     try {
@@ -267,7 +283,6 @@ const Lobby = () => {
       });
       setUsers(response.data.users);
       const usersList = response.data.users
-      getUname(userId)
       console.log("USERS:")
       usersList.forEach((element: { user_id: string; }) => {
         console.log(element)
@@ -300,25 +315,70 @@ const Lobby = () => {
 
   async function getGame(player1: string, player2: string) {
     try {
-        const response = await axios.get(`${url}/api/games/id`, {
-            params: {
-                player1: player1,
-                player2: player2
-            }
-        })
-        console.log(`Player1: ${player1} Player2: ${player2}`)
-        console.log('data: ' + response.data.id)
-        setGameId(response.data.id)
-        
-        // Get the turn id for current round
-        getTurn(response.data.id)
+      const response = await axios.get(`${url}/api/games/id`, {
+        params: {
+          player1: player1,
+          player2: player2
+        }
+      });
+  
+      if (!response.data.id) {
+        // Game ID doesn't exist, insert a new row
+        await axios.post(`${url}/api/games`, {
+          player1: player1,
+          player2: player2
+        });
+      }
+  
+      console.log(`Player1: ${player1} Player2: ${player2}`);
+      console.log('data: ' + response.data.id);
+      setGameId(response.data.id);
+  
+      // Get the turn ID for current round
+      await getTurn(response.data.id);
+      await getGenre(userId, userId2);
+      console.log(`USERID: ${userId} TURN: ${turn} GENRE: ${genre}`)
+      if (allUsersReady && turn.toString() === userId.toString()) {
+        // TODO - Make this handleUserStatus method work to change 
+        // Status to In Progress
+            // handleUserStatusUpdate(userId.toString(), "In Progress")
+            navigate('/card')
+        } else {
+            // navigate('/waiting')
+            setWaiting(true)
+        }
+    } catch (err) {
+      console.log(err);
+      console.log("Error getting Game ID");
     }
-    catch (err) {
-        console.log(err)
-        console.log("Error getting Game ID")
-    }   
   }
 
+  async function getGameID(player1: string, player2: string) {
+    try {
+      const response = await axios.get(`${url}/api/games/id`, {
+        params: {
+          player1: player1,
+          player2: player2
+        }
+      });
+  
+      if (!response.data.id) {
+        // Game ID doesn't exist, insert a new row
+        await axios.post(`${url}/api/games`, {
+          player1: player1,
+          player2: player2
+        });
+      }
+  
+      console.log(`Player1: ${player1} Player2: ${player2}`);
+      console.log('data: ' + response.data.id);
+      setGameId(response.data.id);
+    } catch (err) {
+      console.log(err);
+      console.log("Error getting Game ID");
+    }
+  }
+  
   async function getTurn(gameId: number) {
     try {
         const response = await axios.get(`${url}/api/games/turn`, {
@@ -328,18 +388,22 @@ const Lobby = () => {
       });
 
       setTurn(response.data.turn_id);
-      console.log(`setting turn ${turn}`)
-      if (allUsersReady && response.data.turn_id === userId) {
-        // TODO - Make this handleUserStatus method work to change 
-        // Status to In Progress
-            // handleUserStatusUpdate(userId.toString(), "In Progress")
-            navigate('/card')
-        } else {
-            console.log(allUsersReady)
-            console.log(userId)
-            // navigate('/waiting')
-            setWaiting(true)
+      
+    } catch (err) {
+      console.log(err);
+      console.log("Error getting turn ID");
+    }
+  }
+
+  async function getGenre(player1: string, player2: string) {
+    try {
+        const response = await axios.get(`${url}/api/games/genre`, {
+        params: {
+          player1: player1,
+          player2: player2
         }
+      });
+      setGenre(response.data.game_genre);
     } catch (err) {
       console.log(err);
       console.log("Error getting turn ID");
@@ -349,38 +413,21 @@ const Lobby = () => {
   async function handleStartGame(readyCheck: boolean, user: string, player1: string, player2: string): Promise<void> {
       await getGame(userId, userId2)
   }
-
-  async function getPlayer1(player1: string, player2: string) {
-    try {
-      const response = await axios.get(`${url}/api/games/player1`, {
-        params: {
-          player1: player1,
-          player2: player2
-        }
-      });
-      console.log(`Player 1: ${response.data}`);
-      setPlayer1(response.data.player1_id.toString)
-      return response.data.player1_id
-    } catch (err) {
-      console.log(err);      
-      console.log("Error retrieving player 1");
-    }
-  }
   
-  // useEffect(() => {
-  //   fetchUsers();
-  // }, [0])
+  useEffect(() => {
+    getGameID(userId, userId2)
+    getGameStatus();
+  }, [allUsersReady])
 
   useEffect(() => {
+    fetchGenres();
     getTurn(gameId)
     getGameStatus();
-    fetchGenres();
-    // getPlayer1(userId, userId2);
     console.log(`Game Status: ${gameStatus}`)
     }, [status]); 
 
   useEffect(() => {
-    console.log(users[1]?.user_id)
+    getTurn(gameId)
   }, [users])
 
   const handleReady = async (id: string) => {
@@ -439,30 +486,6 @@ const Lobby = () => {
     }
   }
 
-  const handleAccept = async (sender: string, recipient: string) => {
-    if (!accepted) {
-      setAccepted(true)
-    } else {
-      setAccepted(false)
-    }
-
-    if (sender !== recipient) {
-      try {
-        // Accept clicked
-        socket.send(JSON.stringify({
-          type: 'accept',
-          payload: {
-            sender: sender,
-            recipient: recipient
-          }
-        }));
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  }
-
-
   interface UserListProps {
     users: User[];
     handleReady: (id: string) => Promise<void>;
@@ -473,6 +496,7 @@ const Lobby = () => {
     const [selectedGenres, setSelectedGenres] = useState<{[key: string]: boolean}>({});
 
     const handleGenreClick = async (genreId: string, genre: string) => {
+      setSelectedGenres(({}))
       setSelectedGenres((prevState) => ({
         ...prevState,
         [genreId]: !prevState[genreId],
@@ -513,7 +537,7 @@ const Lobby = () => {
               >
                 <div className={`genre-column`}>
                   <button
-                    className={`${selectedGenres[genre.id] ? 'selected' : 'button'}`}
+                    className={`${selectedGenres[genre.id] ? 'selected' : 'unselected'}`}
                     onClick={() => handleGenreClick(genre.id.toString(), genre.genre)}
                   >
                     {genre.genre.replaceAll('_', ' ')}
@@ -549,21 +573,6 @@ const Lobby = () => {
     return str.replace(/(\w)(\w*)/g, function(_, firstChar, rest) {
       return firstChar.toUpperCase() + rest.toLowerCase();
     });
-  }
-
-  async function getUname(id: string) {
-    try {
-      const response = await axios.get(`${url}/api/username`, {
-        params: {
-          userId: id
-        },
-      });
-      
-      setUserName(response.data.rows[0].username)
-    //   console.log(`User Data: ${response.data.userId}`); // handle the response from the backend
-    } catch (error) {
-      console.error(error);
-    }
   }
 
   const handleInviteUser = async (username: string) => {
@@ -607,17 +616,11 @@ const Lobby = () => {
         <input className="search-form" type="text" value={inviteeUsername} onClick={() => setInviteeUsername('')} onChange={(e) => setInviteeUsername(e.target.value)} />
         <button disabled={users.length >=2} id="leave" className="invite-button" onClick={() => handleInviteUser(inviteeUsername)}>Invite User</button>
       </div>
-      <div className="user-info">
-        <span>
-          <p className="stats-header">Logged In As:</p>
-          <p className="lobby-username">{toPascalCase(username)}</p>
-        </span>
-      </div>
-      <p className="stats-header">Users In Lobby:</p>
+      <p className="lobby-header">Users In Lobby:</p>
       <UserList users={users} handleReady={handleReady} handleStatusUpdate={handleUserStatusUpdate}/>
       <button className="ready-button" onClick={() => handleReady(userId)}>Ready?</button> 
       <p className="stats-row"></p>
-      <button disabled={!allUsersReady || users.length < 2 /* || !accepted */} className="button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
+      <button disabled={!allUsersReady || users.length < 2} className="button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
       {waiting ? <div><h1 className="stats-header">Your turn is next</h1></div> : <></>}
       {gameStatus === 0 && userId.toString() === turn.toString() ?  (
       <GenreList />
