@@ -161,27 +161,27 @@ const Lobby = () => {
 
   //create new socket
   const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
-  
+
   if (lobbyId) {
     dispatch({ type: 'SET_UUID', payload: lobbyId });
     localStorage.setItem('uuid', lobbyId);
   }
 
-  axios.put(`${url}/api/lobby/${lobbyId}`, {
-    userId: userId
-  })
-  .then(response => {
-    console.log(response.data);
-  })
-  .catch(error => {
-    console.error(error);
-  });
+  // axios.put(`${url}/api/lobby/${lobbyId}`, {
+  //   userId: userId
+  // })
+  // .then(response => {
+  //   console.log(response.data);
+  // })
+  // .catch(error => {
+  //   console.error(error);
+  // });
 
-  socket.onopen = function (event) {
-    console.log(`user connected`)
-    console.log(`Lobby ID: ${params.lobbyId}`)
-    // fetchUsers()
-  };
+
+  // Event: Connection opened
+  socket.addEventListener('open', (event) => {
+    setStatus('Idle')
+  });
 
   // // Listen for messages
   socket.addEventListener('message', function (event) {
@@ -250,7 +250,7 @@ const Lobby = () => {
   const getGameStatus = async () => 
   {
     fetchUsers(params.lobbyId);
-    console.log("EXECUTING-_______________")
+    console.log("EXECUTING_")
     
     const response = await axios.get(`${url}/api/games/status`, {
       params: {
@@ -344,6 +344,15 @@ const Lobby = () => {
         // TODO - Make this handleUserStatus method work to change 
         // Status to In Progress
             // handleUserStatusUpdate(userId.toString(), "In Progress")
+            // Status button clicked
+            inProgress(userId)
+            socket.send(JSON.stringify({
+              type: 'user_status_update',
+              payload: {
+                userId: userId,
+                status: "In Progress"
+              }
+            }));
             navigate('/card')
         } else {
             // navigate('/waiting')
@@ -352,6 +361,19 @@ const Lobby = () => {
     } catch (err) {
       console.log(err);
       console.log("Error getting Game ID");
+    }
+  }
+
+  async function inProgress(userId: string) {
+    setStatus('In Progress');
+    try {
+      const response = await axios.put(`${url}/api/lobby/inprogress`, null, {
+        params: {
+          userId: userId
+        }
+      });
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -423,6 +445,7 @@ const Lobby = () => {
 
   useEffect(() => {
     fetchGenres();
+    fetchUsers(lobbyId)
     getTurn(gameId)
     getGameStatus();
     console.log(`Game Status: ${gameStatus}`)

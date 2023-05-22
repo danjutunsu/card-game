@@ -61,6 +61,22 @@ const Card = () => {
     }
   };
 
+  async function idle(userId: string) {
+    try {
+      const response = await axios.put(`${url}/api/lobby/idle`, null, {
+        params: {
+          userId: userId
+        }
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }  
+
+  window.addEventListener('popstate', (event) => {
+    idle(userId)
+  })
+
   // // Listen for messages
   socket.addEventListener('message', function (event) {
     const data = JSON.parse(event.data)
