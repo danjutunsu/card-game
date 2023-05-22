@@ -77,14 +77,10 @@
   
   .stats-row {
     color: #44302b; 
-    text-shadow: 1px 1px 1px #111111;
-    stroke: black;
     text-align: center;
     border-radius: 5px 5px 0 0;
     font-size: 22px;
     font-weight: normal !important;
-    -webkit-text-stroke: 1px black;
-    text-stroke: 1px black;
   }
   
   .status-text {
@@ -451,55 +447,69 @@ input {
 }
 
 body {
-  background-color: #f2f2f2; /* set the background color to a light gray */
+  background-color: #ededed; /* set the background color to a light gray */
 }
 
 .stats-header {
-  color: #ffe14f; /* complementary color */
-  text-shadow: 2px 2px 2px #000; /* add a text shadow */
-  stroke: black; /* add a stroke */
+  color: #BA55D3; /* complementary color */
   text-align: center;
   /* border-radius: 5px 5px 0 0; */
   font-size: 36px;
   font-weight: bold;
-  -webkit-text-stroke: 1px black;
-  text-stroke: 1px black;
+  -webkit-text-stroke: 1px #000;
 }
 
 .stats-row {
-  color: #ff704d; 
-  text-shadow: 1px 1px 1px #111111;
-  stroke: black;
+  color: #FF69B4; 
   text-align: center;
   border-radius: 5px 5px 0 0;
   font-size: 22px;
   font-weight: bold;
-  -webkit-text-stroke: 1px black;
-  text-stroke: 1px black;
+  -webkit-text-stroke: 1px #000;
+}
+
+.stats-text { 
+  text-align: center;
+}
+
+.stats-question {
+  height: auto;
+  background-color: #BA55D3;
+  text-decoration: none;
+  color: white;
+  padding: 10px;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  outline: 1px solid black;
 }
 
 .stats-guess {
-  height: 50px;
-  background-color: #ffe14f; /* complementary color */
+  height: auto;
+  background-color: #FF69B4;
   text-decoration: none;
   color: white;
   padding: 10px;
   font-size: 18px;
   border: none;
   border-radius: 5px;
-  cursor: pointer;
+  margin-bottom: 5px;
+  outline: 1px solid black;
 }
 
 .stats-answer {
-  height: 50px;
-  background-color: #ffe14f; /* complementary color */
+  height: auto;
+  background-color: #FF69B4;
   text-decoration: none;
   color: white;
   padding: 10px;
   font-size: 18px;
   border: none;
+  margin-bottom: 10px;
   border-radius: 5px;
-  cursor: pointer;
+  outline: 1px solid black;
 }
 
 .status-text {

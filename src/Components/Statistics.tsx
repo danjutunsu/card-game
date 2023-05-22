@@ -48,6 +48,9 @@ const MyComponent = (props: StatisticsProps) => {
   const [guesses, setGuesses] = useState<GuessProps[]>([]);
   const gameId = useSelector((state: AppState) => state.gameId);
 
+  useEffect(() => {
+    fetchData(genre);
+  }, [0])
 
   async function getUname(id: string) {
     try {
@@ -65,20 +68,31 @@ const MyComponent = (props: StatisticsProps) => {
   }
 
   function QuestionData() {
+    if (!Array.isArray(data) || guesses.length === 0) {
+      return <p>Loading...</p>; // or any other loading indicator
+    }
+  
     return (
       <ul>
-        {Array.isArray(data) && data.map((entry) => (
-          <li key={entry.id} className="stats-row" style={{listStyle: 'none'}}>
-            <div className="button">
-              {entry.question} 
-            </div>
-            <div className="stats-guess">You Guessed: {entry.options[guesses[entry.id].guess]}</div>
-            <div className="stats-answer">They Answered: {entry.options[answers[entry.id].answer]}</div>
+        {data.map((entry) => (
+          <li key={entry.id} className="stats-text" style={{ listStyle: "none" }}>
+            <div className="stats-question">{entry.question}</div>
+            {guesses[entry.id] && (
+              <>
+                <div className="stats-guess">
+                  You Guessed: {entry.options[guesses[entry.id].guess]}
+                </div>
+                <div className="stats-answer">
+                  They Answered: {entry.options[answers[entry.id].answer]}
+                </div>
+              </>
+            )}
           </li>
         ))}
       </ul>
     );
   }
+  
   async function fetchData(genre: string) {
     const response = await axios.get(`${url}/api/questions/`, {
       params: {
@@ -112,18 +126,17 @@ const MyComponent = (props: StatisticsProps) => {
 
   useEffect(() => {
     getUname(props.user);
-    fetchData(genre);
     fetchAnswers(gameId)
     fetchGuesses(gameId)
-  }, []);
+  }, [data]);
 
   return (
     <div className="stats-page">
+      <button className="return-button" style={{marginTop: 15}} onClick={() => navigate(`/lobby/${props.uuid}`)}>Return To Lobby</button>
       <QuestionData />
       {username[-1] === 's' ? <p className="stats-header">{userId2}' Stats</p>
       : <p className="stats-header">{username}'s Stats</p>
       }
-      <button className="button" onClick={() => navigate(`/lobby/${props.uuid}`)}>Return To Lobby</button>
       <p className="stats-row">Points: {props.points}</p>
       <p className="stats-row">
         # Correct This Round: {props.correctlyAnswered} of {props.totalQuestions}
