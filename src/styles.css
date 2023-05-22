@@ -105,9 +105,10 @@
 
   .button {
     height: 50px;
-    background-color: rgb(109, 104, 255);
+    background-color: #8A2BE2;
     text-decoration: none;
     color: white;
+    width: auto !important;
     padding: 10px;
     font-size: 18px;
     border: none;
@@ -165,7 +166,7 @@
 }
 
 .button {
-  background-color: rgb(109, 104, 255);
+  background-color: #8A2BE2;
   height: auto;
   text-decoration: none;
   color: white;
@@ -192,12 +193,13 @@
 }
 
 .selected {
-  background-color: red;
+  background-color: #6A5ACD;
   height: auto;
+  width: auto;
   text-decoration: none;
   color: white;
   padding: 10px;
-  font-size: 28px;
+  font-size: 22px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -205,12 +207,13 @@
 }
 
 .unselected {
-  background-color: rgb(109, 104, 255);
+  background-color: #8A2BE2;
   height: auto;
+  width: auto;
   text-decoration: none;
   color: white;
   padding: 10px;
-  font-size: 28px;
+  font-size: 22px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -224,12 +227,13 @@ button[disabled] {
 
 .search-container {
   display: flex;
-  align-items:end;
+  justify-content: center;
+  align-items: center;
 }
 
 .search-form {
   height: 30px;
-  width: 200px;
+  width: 50%;
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 3px;
@@ -237,9 +241,8 @@ button[disabled] {
 
 .invite-button {
   height: 30px;
-  background-color: #ccc;
   margin-left: 10px;
-  background-color: #ffe14f;
+  background-color: #8A2BE2;
   color: white;
   /* padding: 10px; */
   /* margin-top: 80px; */
@@ -272,6 +275,18 @@ button[disabled] {
   cursor: pointer;
 }
 
+.menu-container {
+  display: inline-block;
+  position: relative;
+  margin: 10px;
+  text-decoration: none;
+  color: white;
+  padding: 10px;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+}
+
 .menu-button {
   display: flex;
   flex-direction: column;
@@ -279,7 +294,7 @@ button[disabled] {
   justify-content: center;
   position: relative;
   margin: 10px;
-  background-color: #6d68ff;
+  background-color: #8A2BE2;
   text-decoration: none;
   color: white;
   padding: 10px;
@@ -290,7 +305,7 @@ button[disabled] {
 }
 
 .menu-header {
-  color: #ffe14f; /* complementary color */
+  color: #8A2BE2; /* complementary color */
   text-shadow: 2px 2px 2px #000; /* add a text shadow */
   stroke: black; /* add a stroke */
   text-align: center;
@@ -304,7 +319,7 @@ button[disabled] {
 
 .menu-username {
   display: inline-block;
-  color: #6d68ff; /* complementary color */
+  color: #8A2BE2; /* complementary color */
   text-shadow: 2px 2px 2px #000; /* add a text shadow */
   stroke: black; /* add a stroke */
   padding-left: 10px;
@@ -319,7 +334,7 @@ button[disabled] {
   display: block;
   margin: 0 auto;
   margin-bottom: 10px;
-  background-color: #50c878;
+  background-color: #8A2BE2;
   text-decoration: none;
   text-align: center;
   color: white;
@@ -331,11 +346,11 @@ button[disabled] {
 }
 
 .ready-button {
-  background-color: #50c878;
+  background-color: #6A5ACD;
   text-decoration: none;
   margin-top: 10px;
-  color: #ffe14f;
   padding: 10px;
+  color: #FFFFFF;
   font-size: 28px;
   border: none;
   border-radius: 5px;
@@ -451,7 +466,7 @@ body {
 }
 
 .stats-header {
-  color: #BA55D3; /* complementary color */
+  color: #BA55D3;
   text-align: center;
   /* border-radius: 5px 5px 0 0; */
   font-size: 36px;
@@ -520,12 +535,12 @@ body {
   border-radius: 5px 5px 0 0;
   font-size: 22px;
   font-weight: bold;
-  -webkit-text-stroke: 1px black;
-  text-stroke: 1px black;
+  /* -webkit-text-stroke: 1px black;
+  text-stroke: 1px black; */
 }
 
 .lobby-row {
-  color: #6d68ff;
+  color: #BA55D3; /* complementary color */
   text-align: center;
   border-radius: 5px 5px 0 0;
   font-size: 28px;
@@ -544,21 +559,40 @@ body {
   color: rgb(60, 60, 60);
 }
 
-.lobby-column-stroke {
+.lobby-container {  
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.lobby-stroke {
   -webkit-text-stroke: 1px black;
   text-stroke: 1px black;
 }
 
 .lobby-header {
-  color: #ffe14f; /* complementary color */
-  text-shadow: 2px 2px 2px #000; /* add a text shadow */
+  color: #BA55D3; /* complementary color */
   stroke: black; /* add a stroke */
   text-align: center;
   /* border-radius: 5px 5px 0 0; */
   font-size: 28px;
-  font-weight: bold;
-  -webkit-text-stroke: 1px black;
-  text-stroke: 1px black;
+  /* font-weight: bold; */
+  /* -webkit-text-stroke: 1px black; */
+  /* text-stroke: 1px black; */
+}
+
+.start-button {
+  background-color: #87CEEB;
+  height: auto;
+  text-decoration: none;
+  color: white;
+  padding: 10px;
+  font-size: 28px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-block;
 }
 
 .genre-column {

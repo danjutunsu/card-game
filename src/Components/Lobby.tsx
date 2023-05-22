@@ -112,12 +112,11 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
   }
 
   return (
-    <div>
+    <div className="menu-container">
       <button className="menu-button" onClick={toggleMenu}>Menu</button>
       {menuVisible && (
         <><div className="user-info">
           <span>
-            <p className="menu-header">User:</p>
             <p className="menu-username">{toPascalCase(username)}</p>
           </span>
         </div>
@@ -527,7 +526,7 @@ const Lobby = () => {
   
     return (
       <>
-        <div className="lobby-column lobby-column-stroke stats-header">
+        <div className="lobby-header lobby-column lobby-stroke">
           Choose a genre:
         </div>
         <ul>
@@ -613,18 +612,18 @@ const Lobby = () => {
   };
 
   return (
-    <div className="stats-page">
+    <div className="lobby-container">
       <MenuButton lobbyId={lobbyId} userId={userId} socket={socket} />
       <div className="search-container">
         <input className="search-form" type="text" value={inviteeUsername} onClick={() => setInviteeUsername('')} onChange={(e) => setInviteeUsername(e.target.value)} />
         <button disabled={users.length >=2} id="leave" className="invite-button" onClick={() => handleInviteUser(inviteeUsername)}>Invite User</button>
       </div>
-      <p className="lobby-header">Users In Lobby:</p>
+      <p className="lobby-header lobby-stroke">Users In Lobby:</p>
       <UserList users={users} handleReady={handleReady} handleStatusUpdate={handleUserStatusUpdate}/>
       <button className="ready-button" onClick={() => handleReady(userId)}>Ready?</button> 
-      <p className="stats-row"></p>
-      <button disabled={!allUsersReady || users.length < 2} className="button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
-      {waiting ? <div><h1 className="stats-header">Your turn is next</h1></div> : <></>}
+      <p className="lobby-row"></p>
+      <button disabled={!allUsersReady || users.length < 2} className="start-button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
+      {waiting ? <div><h1 className="lobby-header lobby-stroke">Your turn is next</h1></div> : <></>}
       {gameStatus === 0 && userId.toString() === turn.toString() ?  (
       <GenreList />
       ) : (
