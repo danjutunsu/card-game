@@ -158,6 +158,7 @@ const Lobby = () => {
   const params = useParams();
   const lobbyId = params.lobbyId;
   const [inviteeUsername, setInviteeUsername] = useState('Enter Username');
+  const [selectedGenre, setSelectedGenre] = useState('')
 
   //create new socket
   const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
@@ -410,7 +411,6 @@ const Lobby = () => {
           gameId: gameId
         }
       });
-
       setTurn(response.data.turn_id);
       
     } catch (err) {
@@ -445,10 +445,11 @@ const Lobby = () => {
 
   useEffect(() => {
     fetchGenres();
-    fetchUsers(lobbyId)
     getTurn(gameId)
+    console.log(`GETTING TURN WITH GAMEID: ${gameId}`)
     getGameStatus();
     console.log(`Game Status: ${gameStatus}`)
+    fetchUsers(lobbyId)
     }, [status]); 
 
   useEffect(() => {
@@ -461,6 +462,14 @@ const Lobby = () => {
       const updatedUser = response.data; // Get updated user object with new status
       if (updatedUser.status === 'Ready') {
         try {
+          socket.send(JSON.stringify({
+            type: 'user_status_update',
+            payload: {
+              userId: userId,
+              status: "Ready"
+            }
+          }));
+
           setStatus('Idle');
           await axios.put(`${url}/api/lobby`); // Update status of all users
           const response = await axios.get(`${url}/api/lobby`);
@@ -473,22 +482,30 @@ const Lobby = () => {
           console.error(error);
         }
       } else {
+        socket.send(JSON.stringify({
+          type: 'user_status_update',
+          payload: {
+            userId: userId,
+            status: "Idle"
+          }
+        }));
         users.forEach((element: any) => {
           console.log(`${element.username} status: ${element.status}`)
         });
+
         setStatus('Ready');
         const allReady = users.every(user => user.status === 'Ready');
         setAllUsersReady(allReady); // Update flag based on current state of users
       }
     
-      // Status button clicked
-      socket.send(JSON.stringify({
-        type: 'user_status_update',
-        payload: {
-          userId: userId,
-          status: status
-        }
-      }));
+      // // Status button clicked
+      // socket.send(JSON.stringify({
+      //   type: 'user_status_update',
+      //   payload: {
+      //     userId: userId,
+      //     status: status
+      //   }
+      // }));
     } catch (error) {
       console.error(error);
     }
@@ -558,12 +575,15 @@ const Lobby = () => {
               <li
                 key={genre.id}
                 className="lobby-row"
-                style={{ listStyle: 'none' }}
-              >
+                style={{ listStyle: 'none' }}>
                 <div className={`genre-column`}>
                   <button
-                    className={`${selectedGenres[genre.id] ? 'selected' : 'unselected'}`}
-                    onClick={() => handleGenreClick(genre.id.toString(), genre.genre)}
+                    className={`${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
+                    onClick={() => 
+                    {
+                      handleGenreClick(genre.id.toString(), genre.genre)
+                      setSelectedGenre(genre.genre)
+                    }}
                   >
                     {genre.genre.replaceAll('_', ' ')}
                   </button>

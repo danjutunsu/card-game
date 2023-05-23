@@ -1,9 +1,29 @@
 /* styles.css */
 
-@media (max-width:480px) {
+@media (max-width:1000px) {
   .lobby-username {
-    width: 100% !important;
+    width: 50% !important;
     font-weight: normal !important;
+  }
+
+  .card {
+    width: 90% !important;
+    background-color: rgb(255, 255, 255);
+    border: 1px solid black;
+    border-radius: 10px;
+    position: relative; 
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 10px;
+    /* justify-content: center; */
+    align-items: center;
+  }
+  
+  .card-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   .card-header {
@@ -137,13 +157,6 @@
 }
 
 .login-page {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.card-page {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -424,22 +437,46 @@ input {
 }
 
 .card {
-  width:85%;
-  min-height: 550px;
+  /* max-width: 50%; */
+  height: auto;
   background-color: rgb(255, 255, 255);
   border: 1px solid black;
   border-radius: 10px;
   position: relative; 
   display: flex;
   flex-direction: column;
+  padding-bottom: 10px;
   /* justify-content: center; */
   align-items: center;
 }
 
+.card-page {
+  /* width: 75%; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .card-header {
-  color: #ff8c00; /* complementary color */
+  color: #BA55D3; /* complementary color */
   text-shadow: 2px 2px 2px #000; /* add a text shadow */
   stroke: black; /* add a stroke */
+  text-align: center;
+  border-radius: 5px 5px 0 0;
+  font-size: 34px;
+  font-weight: bold;
+  -webkit-text-stroke: 1px black;
+  text-stroke: 1px black;
+}
+
+.card-question {
+  max-width: 95%;
+  color: #BA55D3; /* complementary color */
+  text-shadow: 2px 2px 2px #000; /* add a text shadow */
+  stroke: black; /* add a stroke */
+  margin-bottom: 10px;
+  margin-top: 10px;
   text-align: center;
   border-radius: 5px 5px 0 0;
   font-size: 34px;
@@ -583,7 +620,7 @@ body {
 }
 
 .start-button {
-  background-color: #87CEEB;
+  background-color: #6d68ff;
   height: auto;
   text-decoration: none;
   color: white;

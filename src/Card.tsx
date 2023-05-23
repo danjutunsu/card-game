@@ -63,6 +63,13 @@ const Card = () => {
 
   async function idle(userId: string) {
     try {
+      socket.send(JSON.stringify({
+        type: 'user_status_update',
+        payload: {
+          userId: userId,
+          status: "Idle"
+        }
+      }));
       const response = await axios.put(`${url}/api/lobby/idle`, null, {
         params: {
           userId: userId
@@ -388,6 +395,37 @@ const Card = () => {
       getRandomQuestion();
     }
 
+    const changePronouns = (question: string): string => {
+      const pronouns: { [key: string]: string } = {
+        I: "he",
+        me: "him",
+        my: "his",
+        mine: "his",
+        we: "they",
+        us: "them",
+        our: "their",
+        ours: "theirs",
+        you: "they",
+        your: "their",
+        yours: "theirs"
+        // Add more pronouns as needed
+      };
+    
+      const words = question.split(" ");
+      const transformedWords = words.map((word) => {
+        const lowerCasedWord = word.toLowerCase();
+        if (pronouns.hasOwnProperty(lowerCasedWord)) {
+          const pronoun = pronouns[lowerCasedWord];
+          return word.charAt(0) === word.charAt(0).toUpperCase()
+            ? pronoun.charAt(0).toUpperCase() + pronoun.slice(1)
+            : pronoun;
+        }
+        return word;
+      });
+    
+      return transformedWords.join(" ");
+    };
+
     function handleNextQuestion(index: number) {
       console.log("GUESSING")
       console.log(userId, userId2)
@@ -422,8 +460,8 @@ const Card = () => {
             <button className="return-button" onClick={() => navigate(`/lobby/${uuid}`)}>Return To Lobby</button>
           </div>
         {data[randomQuestion] && (
-          <p className="card-header">{data[randomQuestion].question}</p>)}
-          <h1 className="stats-header">You are answering</h1>
+          <p className="card-question">{data[randomQuestion].question}</p>)}
+          {/* <h1 className="card-header">You are answering</h1> */}
           {data[randomQuestion]?.options?.map((option, index) => (
             <div key={index}>
               <div className="button-container">
@@ -439,10 +477,10 @@ const Card = () => {
         <div className="button-container">
             <button className="return-button" onClick={() => navigate(`/lobby/${uuid}`)}>Return To Lobby</button>
           </div>
-        <h1 className="stats-header">How did<span className="lobby-username">{username2}</span> answer this question?</h1>
+        {/* <h1 className="card-header">How did<span className="lobby-username">{username2}</span> answer this question?</h1> */}
           <div className="card">
             {data[randomQuestion] && (
-              <><p className="card-header">{data[randomQuestion].question}</p></>)}
+              <><p className="card-question">{changePronouns(data[randomQuestion].question)}</p></>)}
             {data[randomQuestion]?.options?.map((option, index) => (
               <div key={index}>
                 <div className="button-container">
