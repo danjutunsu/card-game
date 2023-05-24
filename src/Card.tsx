@@ -161,7 +161,7 @@ const Card = () => {
   }
 
   useEffect(() => {
-    if (answers.length > 0) {
+    if (answers.length > 0 && (gameStatus === 1 || gameStatus === 3)) {
       let correct = 0;
       let total = 0;
 
@@ -169,7 +169,7 @@ const Card = () => {
         total++;
         const guess = element.guess
         const guessQuestion = element.question
-        const answer = answers.find((a) => a.user_id.toString() === userId2 && a.question_id === element.question)
+        const answer = answers.find((a) => a.user_id.toString() === userId2.toString() && a.question_id === element.question)
         console.log(`${data[guessQuestion]?.question}`)
         console.log(`You guessed ${element?.guess}`)
         console.log(`They answered ${answer?.answer}`)
@@ -187,23 +187,22 @@ const Card = () => {
         console.log(element)
       })
       console.log(`# correct points: ${correct}`)
-      addPoints(userId, correct, total, gameId)
+      addPoints(userId, correct, total)
     }
   }, [answers])
 
-  const addPoints = async (user_id: string, points: number, total: number, game_id: number) => {
+  const addPoints = async (user_id: string, points: number, total: number) => {
     console.log("UPDATING POINTS");
     console.log(`USER: ${user_id}`)
     console.log(`POINTS: ${points}`)
     console.log(`TOTAL: ${total}`)
-    console.log(`GAMEID: ${game_id}`)
     try {
       await axios.put(`${url}/api/points`, {
-        user_id: user_id,
-        points: points,
-        total: total,
-        game_id: game_id
-      });
+            user_id: user_id,
+            points: points,
+            total: total
+          }
+        )
       console.log("POINTS SHOULD BE INSERTED");
     } catch (error) {
       console.error(error);
