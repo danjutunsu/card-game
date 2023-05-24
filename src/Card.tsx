@@ -24,7 +24,7 @@ interface AnswerProps {
 interface QuestionProps {
   id: number,
   question: number,
-  answer: number
+  guess: number
 }
 
 const Card = () => {
@@ -61,16 +61,16 @@ const Card = () => {
     }
   };
 
-  async function idle(userId: string) {
+  async function ready(userId: string) {
     try {
       socket.send(JSON.stringify({
         type: 'user_status_update',
         payload: {
           userId: userId,
-          status: "Idle"
+          status: "Ready"
         }
       }));
-      const response = await axios.put(`${url}/api/lobby/idle`, null, {
+      const response = await axios.put(`${url}/api/lobby/ready`, null, {
         params: {
           userId: userId
         }
@@ -81,7 +81,7 @@ const Card = () => {
   }  
 
   window.addEventListener('popstate', (event) => {
-    idle(userId)
+    ready(userId)
   })
 
   // // Listen for messages
@@ -142,68 +142,98 @@ const Card = () => {
     fetchUsername();
   }, []);
     
-  async function fetchAnswers() {
-    const response = await axios.get(`${url}/api/answers`);
-    const jsonData = response.data;
-    setAnswers(jsonData);
+  async function fetchAnswers(game_id: number, user_id: string) {
+    try { 
+      const response = await axios.get(`${url}/api/answers`, {
+        params: {
+          game_id: game_id,
+          user_id: user_id
+        },
+      });
+      console.log('ANSWERS:', response.data); // Log all rows to the console
+      setAnswers(response.data);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      // Handle error
+      return null;
+    }
   }
 
   useEffect(() => {
-    if (answers.length > 0 && (gameStatus === 1 || gameStatus === 3)) {
+    if (answers.length > 0) {
       let correct = 0;
       let total = 0;
 
       guesses.forEach(element => {
         total++;
-        const guess = element.answer
+        const guess = element.guess
         const guessQuestion = element.question
-        const answer = answers.find((a) => a.user_id === element.id && a.question_id === element.question)
+        const answer = answers.find((a) => a.user_id.toString() === userId2 && a.question_id === element.question)
         console.log(`${data[guessQuestion]?.question}`)
-        console.log(`You guessed ${element?.answer}`)
+        console.log(`You guessed ${element?.guess}`)
         console.log(`They answered ${answer?.answer}`)
         if (guess === answer?.answer) {
           correct++
         }
-        console.log(`user ${element.id} guess for question ${element.question}: ${element.answer}`)
+        console.log(`user ${element.id} guess for question ${element.question}: ${element.guess}`)
         console.log(`User ${answer?.user_id} answer for question ${answer?.question_id}: ${answer?.answer}`)
-        });
+      });
       console.log("# CORRECT: " + correct)
-      addPoints(userId, correct, total)
+      console.log(`$gameid: ${gameId}`)
+      
+      answers.forEach(element => {
+        console.log(`ANSWERS:`)
+        console.log(element)
+      })
+      console.log(`# correct points: ${correct}`)
+      addPoints(userId, correct, total, gameId)
     }
   }, [answers])
 
-    const addPoints = async (userId: string, points: number, total: number) => {
-      console.log("UPDATING POINTS")
+  const addPoints = async (user_id: string, points: number, total: number, game_id: number) => {
+    console.log("UPDATING POINTS");
+    console.log(`USER: ${user_id}`)
+    console.log(`POINTS: ${points}`)
+    console.log(`TOTAL: ${total}`)
+    console.log(`GAMEID: ${game_id}`)
+    try {
       await axios.put(`${url}/api/points`, {
-        userId,
-        points,
-        total
-      })
-      console.log("POINTS SHOULD BE INSERTED")
+        user_id: user_id,
+        points: points,
+        total: total,
+        game_id: game_id
+      });
+      console.log("POINTS SHOULD BE INSERTED");
+    } catch (error) {
+      console.error(error);
+      // Handle error
     }
+  };
+  
 
-    const getGameStatus = async (player1: string, player2: string) => 
-    {
-      console.log("EXECUTING-_______________")
-      console.log(player1, player2)
-      const response = await axios.get(`${url}/api/games/status`, {
-        params: {
-          player1: player1,
-          player2: player2
-        }
-      })
-      const jsonData = response.data.game_status;
+  const getGameStatus = async (player1: string, player2: string) => 
+  {
+    console.log("EXECUTING-_______________")
+    console.log(player1, player2)
+    const response = await axios.get(`${url}/api/games/status`, {
+      params: {
+        player1: player1,
+        player2: player2
+      }
+    })
+    const jsonData = response.data.game_status;
 
-      setGameStatus(jsonData)
-      if (jsonData === 0) {
-        console.log('resetting')
-        try {
-          const message = { payload: 'reset' };
-          socket.send(JSON.stringify(message));
+    setGameStatus(jsonData)
+    if (jsonData === 0) {
+      console.log('resetting')
+      try {
+        const message = { payload: 'reset' };
+        socket.send(JSON.stringify(message));
 
-        } catch (error) {
-          console.error(error);
-        }
+      } catch (error) {
+        console.error(error);
+      }
         // console.log("ANSWERING")
       }
       return jsonData;
@@ -252,16 +282,17 @@ const Card = () => {
       if (visited.length === data.length) {
         // all questions have been visited
         console.log("Finished Guessing")
-        await fetchAnswers()
-        if (guesses.length > 0) {
-          console.log("USER GUESSES:")
-        }
+        console.log(gameId)
+        fetchAnswers(gameId, userId2)
+        guesses.forEach(element => {
+          console.log(element)
+        })
         getUserPoints(parseInt(userId))
         if (gameStatus === 0 || gameStatus === 2) {
-        await axios.put(`${url}/api/games/turn`, {
-          player1: userId,
-          player2: userId2
-        })
+          await axios.put(`${url}/api/games/turn`, {
+            player1: userId,
+            player2: userId2
+          })
         }
         await axios.put(`${url}/api/games/status`, {
             player1: userId,
@@ -381,8 +412,8 @@ const Card = () => {
       }
     }
 
-    const addNewGuess = (id: number, question: number, answer: number) => {
-      const newGuess = { id, question, answer };
+    const addNewGuess = (id: number, question: number, guess: number) => {
+      const newGuess = { id, question, guess };
       setGuesses(prevGuesses => [...prevGuesses, newGuess]);
     }
 

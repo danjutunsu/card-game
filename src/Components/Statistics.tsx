@@ -104,20 +104,29 @@ const MyComponent = (props: StatisticsProps) => {
     setData(jsonData);
   }
 
-  async function fetchAnswers(gameId: number) {
-    const response = await axios.get(`${url}/api/answers`, {
-      params: {
-        gameId: gameId
-      }      
-    });
-    const jsonData = response.data;
-    setAnswers(jsonData);
+  async function fetchAnswers(game_id: number, user_id: string) {
+    try { 
+      const response = await axios.get(`${url}/api/answers`, {
+        params: {
+          game_id: game_id,
+          user_id: user_id
+        },
+      });
+      console.log('ANSWERS:', response.data); // Log all rows to the console
+      setAnswers(response.data);
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      // Handle error
+      return null;
+    }
   }
 
-  async function fetchGuesses(gameId: number) {
+  async function fetchGuesses(gameId: number, userId: string) {
     const response = await axios.get(`${url}/api/guesses`, {
       params: {
-        gameId: gameId
+        gameId: gameId,
+        userId: userId
       }      
     });
     const jsonData = response.data;
@@ -126,8 +135,8 @@ const MyComponent = (props: StatisticsProps) => {
 
   useEffect(() => {
     getUname(props.user);
-    fetchAnswers(gameId)
-    fetchGuesses(gameId)
+    fetchAnswers(gameId, userId2)
+    fetchGuesses(gameId, userId2)
   }, [data]);
 
   return (

@@ -150,7 +150,7 @@ const Lobby = () => {
   const [status, setStatus] = useState('')
   const [gameStatus, setGameStatus] = useState()
   const [userIdList, setUserIdList] = useState([])
-  const [gameId, setGameId] = useState(0)
+  const gameId = useSelector((state: AppState) => state.gameId);
   const [turn, setTurn] = useState(0)
   const [waiting, setWaiting] = useState(false)
   const dispatch = useDispatch();
@@ -168,15 +168,15 @@ const Lobby = () => {
     localStorage.setItem('uuid', lobbyId);
   }
 
-  // axios.put(`${url}/api/lobby/${lobbyId}`, {
-  //   userId: userId
-  // })
-  // .then(response => {
-  //   console.log(response.data);
-  // })
-  // .catch(error => {
-  //   console.error(error);
-  // });
+  axios.put(`${url}/api/lobby/${lobbyId}`, {
+    userId: userId
+  })
+  .then(response => {
+    console.log(response.data);
+  })
+  .catch(error => {
+    console.error(error);
+  });
 
 
   // Event: Connection opened
@@ -332,13 +332,12 @@ const Lobby = () => {
   
       console.log(`Player1: ${player1} Player2: ${player2}`);
       console.log('data: ' + response.data.id);
-      setGameId(response.data.id);
       
       dispatch({ type: 'SET_GAMEID', payload: gameId });
       localStorage.setItem('gameId', gameId.toString());
   
       // Get the turn ID for current round
-      await getTurn(response.data.id);
+      await getTurn(gameId);
       await getGenre(userId, userId2);
       console.log(`USERID: ${userId} TURN: ${turn} GENRE: ${genre}`)
       if (allUsersReady && turn.toString() === userId.toString()) {
@@ -397,7 +396,9 @@ const Lobby = () => {
   
       console.log(`Player1: ${player1} Player2: ${player2}`);
       console.log('data: ' + response.data.id);
-      setGameId(response.data.id);
+      
+      dispatch({ type: 'SET_GAMEID', payload: response.data.id });
+      localStorage.setItem('gameId', response.data.id);
     } catch (err) {
       console.log(err);
       console.log("Error getting Game ID");
@@ -563,37 +564,27 @@ const Lobby = () => {
       };
       socket.send(JSON.stringify(message));
     };
-  
+
+
     return (
-      <>
-        <div className="lobby-header lobby-column lobby-stroke">
-          Choose a genre:
-        </div>
-        <ul>
-          {Array.isArray(genres) &&
-            genres.map((genre) => (
-              <li
-                key={genre.id}
-                className="lobby-row"
-                style={{ listStyle: 'none' }}>
-                <div className={`genre-column`}>
-                  <button
-                    className={`${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
-                    onClick={() => 
-                    {
-                      handleGenreClick(genre.id.toString(), genre.genre)
-                      setSelectedGenre(genre.genre)
-                    }}
-                  >
-                    {genre.genre.replaceAll('_', ' ')}
-                  </button>
-                </div>
-              </li>
-            ))}
-        </ul>
-      </>
+      <div className="genre-grid">
+        {Array.isArray(genres) &&
+          genres.map((genre) => (
+            <div
+              key={genre.id}
+              className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
+              onClick={() => {
+                handleGenreClick(genre.id.toString(), genre.genre);
+                setSelectedGenre(genre.genre);
+              }}
+            >
+              {genre.genre.replaceAll('_', ' ')}
+            </div>
+          ))}
+      </div>
     );
   }
+    
 
   function UserList(props: UserListProps) {
     return (

@@ -19,6 +19,28 @@
     align-items: center;
   }
   
+  .genre-grid {
+    display: grid;
+    max-width: 90%;
+    grid-template-columns: repeat(3, 1fr); /* Adjust the number of columns as needed */
+    grid-gap: 5px; /* Adjust the gap between grid items as needed */
+    text-align: center;
+  }
+  
+  .genre-item {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px; /* Adjust the item height as needed */
+    background-color: #f2f2f2; /* Adjust the background color as needed */
+    cursor: pointer;
+  }
+  
+  .genre-item.selected {
+    background-color: #6d68ff; /* Adjust the selected item color as needed */
+  }  
+  
   .card-page {
     display: flex;
     flex-direction: column;
