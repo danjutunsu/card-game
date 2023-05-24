@@ -159,6 +159,7 @@ const Lobby = () => {
   const lobbyId = params.lobbyId;
   const [inviteeUsername, setInviteeUsername] = useState('Enter Username');
   const [selectedGenre, setSelectedGenre] = useState('')
+  const [player1, setPlayer1] = useState('')
 
   //create new socket
   const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
@@ -311,6 +312,21 @@ const Lobby = () => {
     }
   };
 
+  const fetchPlayer1 = async (game_id: number) => {
+    try {
+      const response = await axios.get(`${url}/api/games/player1`, {
+        params: {
+          game_id: game_id
+        }
+      });
+      console.log(`PLAYER1: ${response.data[0].player1_id}`);
+      setPlayer1(response.data[0].player1_id);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+
   const [allUsersReady, setAllUsersReady] = useState(false);
 
   async function getGame(player1: string, player2: string) {
@@ -446,6 +462,7 @@ const Lobby = () => {
 
   useEffect(() => {
     fetchGenres();
+    fetchPlayer1(gameId);
     getTurn(gameId)
     console.log(`GETTING TURN WITH GAMEID: ${gameId}`)
     getGameStatus();
@@ -658,7 +675,7 @@ const Lobby = () => {
       <p className="lobby-row"></p>
       <button disabled={!allUsersReady || users.length < 2} className="start-button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
       {waiting ? <div><h1 className="lobby-header lobby-stroke">Your turn is next</h1></div> : <></>}
-      {gameStatus === 0 && userId.toString() === turn.toString() ?  (
+      {gameStatus === 0 && userId.toString() === player1.toString() ?  (
       <GenreList />
       ) : (
         <></>
