@@ -22,13 +22,15 @@
   .genre-grid {
     display: grid;
     max-width: 90%;
+    margin-top: 10px;
+    margin-bottom: 10px;
     grid-template-columns: repeat(3, 1fr); /* Adjust the number of columns as needed */
     grid-gap: 5px; /* Adjust the gap between grid items as needed */
     text-align: center;
   }
   
   .genre-item {
-    margin-top: 10px;
+    /* margin-top: 5px; */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -228,13 +230,13 @@
 }
 
 .selected {
-  background-color: #6A5ACD;
+  background-color: #6d68ff;
   height: auto;
   width: auto;
   text-decoration: none;
   color: white;
   padding: 10px;
-  font-size: 22px;
+  font-size: 18px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -248,7 +250,7 @@
   text-decoration: none;
   color: white;
   padding: 10px;
-  font-size: 22px;
+  font-size: 18px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -279,9 +281,7 @@ button[disabled] {
   margin-left: 10px;
   background-color: #8A2BE2;
   color: white;
-  /* padding: 10px; */
-  /* margin-top: 80px; */
-  font-size: 22px;
+  font-size: 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -311,8 +311,10 @@ button[disabled] {
 }
 
 .menu-container {
-  display: inline-block;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   margin: 10px;
   text-decoration: none;
   color: white;
@@ -386,7 +388,7 @@ button[disabled] {
   margin-top: 10px;
   padding: 10px;
   color: #FFFFFF;
-  font-size: 28px;
+  font-size: 24px;
   border: none;
   border-radius: 5px;
   cursor: pointer;

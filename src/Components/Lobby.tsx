@@ -121,17 +121,9 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
           </span>
         </div>
         <div className="menu">
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            <li>
-              <button id="copy" className="menu-li-button" onClick={() => handleCopyLobby(props.lobbyId)}>Copy Lobby</button>
-            </li>
-            <li>
-              <button id="leave" className="menu-li-button" onClick={() => handleLeaveGame(props.userId, lobbyId)}>Leave Game</button>
-            </li>
-            <li>
-              <button id="logout" className="menu-li-button" onClick={() => handleLogout(props.userId)}>Logout</button>
-            </li>
-          </ul>
+          <button id="copy" className="menu-li-button" onClick={() => handleCopyLobby(props.lobbyId)}>Copy Lobby</button>
+          <button id="leave" className="menu-li-button" onClick={() => handleLeaveGame(props.userId, lobbyId)}>Leave Game</button>
+          <button id="logout" className="menu-li-button" onClick={() => handleLogout(props.userId)}>Logout</button>
           </div>
         </>
       )}
