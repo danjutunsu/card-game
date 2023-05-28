@@ -25,7 +25,7 @@
     margin-top: 10px;
     margin-bottom: 10px;
     grid-template-columns: repeat(3, 1fr); /* Adjust the number of columns as needed */
-    grid-gap: 5px; /* Adjust the gap between grid items as needed */
+    grid-gap: 5px !important; /* Adjust the gap between grid items as needed */
     text-align: center;
   }
   
@@ -230,6 +230,7 @@
 }
 
 .selected {
+  margin: 5px;
   background-color: #6d68ff;
   height: auto;
   width: auto;
@@ -244,6 +245,7 @@
 }
 
 .unselected {
+  margin: 5px;
   background-color: #8A2BE2;
   height: auto;
   width: auto;
@@ -315,7 +317,6 @@ button[disabled] {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 10px;
   text-decoration: none;
   color: white;
   padding: 10px;
@@ -330,7 +331,6 @@ button[disabled] {
   align-items: center;
   justify-content: center;
   position: relative;
-  margin: 10px;
   background-color: #8A2BE2;
   text-decoration: none;
   color: white;
@@ -385,10 +385,10 @@ button[disabled] {
 .ready-button {
   background-color: #6A5ACD;
   text-decoration: none;
-  margin-top: 10px;
+  margin: 10px;
   padding: 10px;
   color: #FFFFFF;
-  font-size: 24px;
+  font-size: 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -648,8 +648,9 @@ body {
   height: auto;
   text-decoration: none;
   color: white;
+  margin: 5px;
   padding: 10px;
-  font-size: 28px;
+  font-size: 24px;
   border: none;
   border-radius: 5px;
   cursor: pointer;

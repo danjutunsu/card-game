@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { url } from "./Config";
+import { url } from "../Config";
 import axios from "axios";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { AppState } from "./store";
+import { AppState } from "../store";
 
 // const navigate = useNavigate();
 //TODO -- add feature at game end -- compare answers to guesses and show both which players picked

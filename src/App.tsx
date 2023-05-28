@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import './App.css';
-import Card from './Card';
+import Card from './Components/Card';
 import LoginPage from './Components/LoginPage';
 import CreateForm from './Components/CreateForm';
 import './styles.css';

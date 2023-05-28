@@ -19,6 +19,7 @@ interface User {
 interface Genre {
   id: number;
   genre: string;
+  category: string;
 }
 
 const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket: WebSocket}) => {
@@ -152,6 +153,8 @@ const Lobby = () => {
   const [inviteeUsername, setInviteeUsername] = useState('Enter Username');
   const [selectedGenre, setSelectedGenre] = useState('')
   const [player1, setPlayer1] = useState('')
+  const categories = ["Movies & Television", "Literature", "Food & Drink", "Music", "Pop Culture", "Relationships", "Science & Technology", "World Travel"];
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   //create new socket
   const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
@@ -544,6 +547,34 @@ const Lobby = () => {
     handleStatusUpdate: (user_id: string, newStatus: string) => void;
   }
 
+  function CategoryList() {  
+    return (
+      <>
+        {selectedCategory === '' ? (
+          <>
+            <h2 className="lobby-header lobby-stroke">Categories:</h2>
+            <div className="genre-grid">
+              {categories.map((category) => (
+                <div
+                  // className="genre-item"
+                  key={category}
+                  onClick={() => { setSelectedCategory(category); }}
+                >
+                  <button className="unselected">{category}</button>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="lobby-column">
+            <h2 className="lobby-header lobby-stroke">{selectedCategory}:</h2>
+            <button className="unselected" onClick={() => {setSelectedCategory('')}}>⮌ BACK</button>
+          </div>
+        )}
+      </>
+    );
+  }
+
   function GenreList() {
     const [selectedGenres, setSelectedGenres] = useState<{[key: string]: boolean}>({});
 
@@ -573,41 +604,47 @@ const Lobby = () => {
       };
       socket.send(JSON.stringify(message));
     };
-
-
     return (
-      <div className="genre-grid">
+      <div>
         {Array.isArray(genres) &&
           genres.map((genre) => (
-            <div
-              key={genre.id}
-              className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
-              onClick={() => {
-                handleGenreClick(genre.id.toString(), genre.genre);
-                setSelectedGenre(genre.genre);
-              }}
-            >
-              {genre.genre.replaceAll('_', ' ')}
-            </div>
+            genre.category.replaceAll('_', ' ') === selectedCategory ? (
+              <div
+                key={genre.id}
+                className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
+                onClick={() => {
+                  handleGenreClick(genre.id.toString(), genre.genre);
+                  setSelectedGenre(genre.genre);
+                }}
+              >
+                {genre.genre.replaceAll('_', ' ')}
+              </div>
+            ) 
+            // : selectedCategory === '' ? (
+            //   <div
+            //     key={genre.id}
+            //     className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
+            //     onClick={() => {
+            //       handleGenreClick(genre.id.toString(), genre.genre);
+            //       setSelectedGenre(genre.genre);
+            //     }}
+            //   >
+            //     {genre.genre.replaceAll('_', ' ')}
+            //   </div>
+            // ) 
+            : null
           ))}
       </div>
-    );
-  }
-    
+    );    
+  }    
 
   function UserList(props: UserListProps) {
     return (
       <ul>
         {Array.isArray(users) && users.map((user) => (
           <li key={user.user_id} className="lobby-row" style={{listStyle: 'none'}}>
-            <div className="lobby-column lobby-column-stroke"> {toPascalCase(user.username)} 
-            </div>
-            {/* {user.user_id !== userId ? 
-            <button className="invite-button" onClick={() => handleInvite(userId, user.user_id)}>Invite</button> : <></>}
-            {user.user_id === userId ? 
-            <button className="button" onClick={() => handleAccept(userId, user.user_id)}>{accepted ? 'Accepted' : 'Accept?'}
-            </button> : <></>} */}
-            <div className={`lobby-column lobby-column-stroke ${user.status === 'Ready' ? 'ready' : 'idle'}`}>{user.status}</div>
+            {toPascalCase(user.username)} 
+            <div className={`${user.status === 'Ready' ? 'ready' : 'idle'}`}>{user.status}</div>
           </li>
         ))}
       </ul>
@@ -657,21 +694,23 @@ const Lobby = () => {
   return (
     <div className="lobby-container">
       <MenuButton lobbyId={lobbyId} userId={userId} socket={socket} />
+      {users.length < 2 ? (
       <div className="search-container">
         <input className="search-form" type="text" value={inviteeUsername} onClick={() => setInviteeUsername('')} onChange={(e) => setInviteeUsername(e.target.value)} />
         <button disabled={users.length >=2} id="leave" className="invite-button" onClick={() => handleInviteUser(inviteeUsername)}>Invite User</button>
       </div>
-      <p className="lobby-header lobby-stroke">Users In Lobby:</p>
+      ) : null}
+      <h3 className="lobby-header lobby-stroke">Users In Lobby:</h3>
       <UserList users={users} handleReady={handleReady} handleStatusUpdate={handleUserStatusUpdate}/>
-      <button className="ready-button" onClick={() => handleReady(userId)}>Ready?</button> 
-      <p className="lobby-row"></p>
-      <button disabled={!allUsersReady || users.length < 2} className="start-button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
+      <button className="ready-button" onClick={() => handleReady(userId)}>Ready?</button>
+      <CategoryList />
       {waiting ? <div><h1 className="lobby-header lobby-stroke">Your turn is next</h1></div> : <></>}
       {gameStatus === 0 && userId.toString() === player1.toString() ?  (
       <GenreList />
       ) : (
         <></>
       )}
+      <button disabled={!allUsersReady || users.length < 2} className="start-button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
     </div>
   );
 };

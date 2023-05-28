@@ -2,7 +2,7 @@
   import { useContext, useEffect, useState } from "react";
   import LoginForm from "./LoginForm";
   import { url } from "../Config";
-  import Card from "../Card";
+  import Card from "./Card";
   import '../styles.css';
   import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
   import { useNavigate } from 'react-router-dom';
