@@ -7,6 +7,7 @@
  */
 // @remove-on-eject-end
 'use strict';
+const webpack = require('webpack');
 
 const fs = require('fs');
 const path = require('path');
