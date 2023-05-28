@@ -7,7 +7,7 @@
  */
 // @remove-on-eject-end
 'use strict';
-const webpack = require('webpack');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 const fs = require('fs');
 const path = require('path');
@@ -304,9 +304,6 @@ module.exports = function (webpackEnv) {
       ],
     },
     resolve: {
-      fallback: {
-        crypto: require.resolve('crypto-browserify'),
-      },
       // This allows you to set a fallback for where webpack should look for modules.
       // We placed these paths second because we want `node_modules` to "win"
       // if there are any conflicts. This matches Node resolution mechanism.
@@ -349,13 +346,6 @@ module.exports = function (webpackEnv) {
           babelRuntimeEntryHelpers,
           babelRuntimeRegenerator,
         ]),
-        
-        new webpack.ProvidePlugin({
-          process: 'process/browser',
-          Buffer: ['buffer', 'Buffer'],
-          crypto: require.resolve('crypto-browserify'),
-          stream: require.resolve('stream-browserify'),
-        }),
       ],
     },
     module: {
@@ -616,6 +606,7 @@ module.exports = function (webpackEnv) {
       ].filter(Boolean),
     },
     plugins: [
+      new NodePolyfillPlugin(),
       // Generates an `index.html` file with the <script> injected.
       new HtmlWebpackPlugin(
         Object.assign(
