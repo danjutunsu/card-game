@@ -303,7 +303,6 @@ module.exports = function (webpackEnv) {
       ],
     },
     resolve: {
-      fallback: { "crypto": false },
       fallback: {
         crypto: require.resolve('crypto-browserify'),
       },
