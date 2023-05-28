@@ -51,7 +51,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
           })
           .catch((error) => {
             console.error('Error copying text to clipboard:', error);
-            // You can show an error message or handle the error in any desired way
+            // You can show an error message or handle the error in any desired way 
           });
       } else {
         const textArea = document.createElement('textarea');
