@@ -348,6 +348,13 @@ module.exports = function (webpackEnv) {
           babelRuntimeEntryHelpers,
           babelRuntimeRegenerator,
         ]),
+        
+        new webpack.ProvidePlugin({
+          process: 'process/browser',
+          Buffer: ['buffer', 'Buffer'],
+          crypto: require.resolve('crypto-browserify'),
+          stream: require.resolve('stream-browserify'),
+        }),
       ],
     },
     module: {
