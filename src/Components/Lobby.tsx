@@ -417,17 +417,19 @@ const Lobby = () => {
   }
   
   async function getTurn(gameId: number) {
-    try {
-        const response = await axios.get(`${url}/api/games/turn`, {
-        params: {
-          gameId: gameId
-        }
-      });
-      setTurn(response.data.turn_id);
-      
-    } catch (err) {
-      console.log(err);
-      console.log("Error getting turn ID");
+    if (gameId) {
+      try {
+          const response = await axios.get(`${url}/api/games/turn`, {
+          params: {
+            gameId: gameId
+          }
+        });
+        setTurn(response.data.turn_id);
+        
+      } catch (err) {
+        console.log(err);
+        console.log("Error getting turn ID");
+      }
     }
   }
 
