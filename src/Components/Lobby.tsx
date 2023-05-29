@@ -164,16 +164,17 @@ const Lobby = () => {
     localStorage.setItem('uuid', lobbyId);
   }
 
-  axios.put(`${url}/api/lobby/${lobbyId}`, {
-    userId: userId
-  })
-  .then(response => {
-    console.log(response.data);
-  })
-  .catch(error => {
-    console.error(error);
-  });
-
+  if (lobbyId) {
+    axios.put(`${url}/api/lobby/${lobbyId}`, {
+      userId: userId
+    })
+    .then(response => {
+      console.log(response.data);
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  }
 
   // Event: Connection opened
   socket.addEventListener('open', (event) => {
@@ -308,16 +309,18 @@ const Lobby = () => {
   };
 
   const fetchPlayer1 = async (game_id: number) => {
-    try {
-      const response = await axios.get(`${url}/api/games/player1`, {
-        params: {
-          game_id: game_id
-        }
-      });
-      console.log(`PLAYER1: ${response.data[0].player1_id}`);
-      setPlayer1(response.data[0].player1_id);
-    } catch (error) {
-      console.error(error);
+    if (gameId) {
+      try {
+        const response = await axios.get(`${url}/api/games/player1`, {
+          params: {
+            game_id: game_id
+          }
+        });
+        console.log(`PLAYER1: ${response.data[0].player1_id}`);
+        setPlayer1(response.data[0].player1_id);
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
   
