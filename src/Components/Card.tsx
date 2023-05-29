@@ -50,7 +50,7 @@ const Card = () => {
   const gameId = useSelector((state: AppState) => state.gameId);
 
   //create new socket
-  const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
+  const socket = new WebSocket(`ws://localhost:3002?userId=${userId}`)
 
   const handleEnd = async () => {
     try {
