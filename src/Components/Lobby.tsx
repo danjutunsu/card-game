@@ -157,7 +157,7 @@ const Lobby = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
 
   //create new socket
-  const socket = new WebSocket(`ws://10.0.0.197:3002?userId=${userId}`)
+  const socket = new WebSocket(`ws://localhost:3002?userId=${userId}`)
 
   if (lobbyId) {
     dispatch({ type: 'SET_UUID', payload: lobbyId });
