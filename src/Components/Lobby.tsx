@@ -704,7 +704,7 @@ const Lobby = () => {
       <div>
         {Array.isArray(genres) &&
           genres.map((genre) => (
-            genre.category.replaceAll('_', ' ').toString() === selectedCategory.toString() ? (
+            genre.category.replaceAll('_', ' ') === selectedCategory ? (
               <div
                 key={genre.id}
                 className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
@@ -715,7 +715,7 @@ const Lobby = () => {
               >
                 {genre.genre.replaceAll('_', ' ')}
               </div>
-            ) : null
+            ) : <button>failed</button>
           ))}
       </div>
     );    
