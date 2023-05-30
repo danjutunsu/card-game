@@ -271,19 +271,21 @@ const Lobby = () => {
     fetchUsers(params.lobbyId);
     console.log("EXECUTING_")
     
-    const response = await axios.get(`${url}/api/games/status`, {
-      params: {
-        player1: userId,
-        player2: userId2
+    if (userId && userId2) {
+      const response = await axios.get(`${url}/api/games/status`, {
+        params: {
+          player1: userId,
+          player2: userId2
+        }
+      })
+      const jsonData = await response.data.game_status;
+      
+      setGameStatus(jsonData)
+      if (jsonData === "0") {
+        // console.log("ANSWERING")
       }
-    })
-    const jsonData = await response.data.game_status;
-    
-    setGameStatus(jsonData)
-    if (jsonData === "0") {
-      // console.log("ANSWERING")
+      return jsonData;
     }
-    return jsonData;
   }
 
   // useEffect(() => {
@@ -413,30 +415,32 @@ const Lobby = () => {
   }
 
   async function getGameID(player1: string, player2: string) {
-    try {
-      const response = await axios.get(`${url}/api/games/id`, {
-        params: {
-          player1: player1,
-          player2: player2
-        }
-      });
-  
-      if (!response.data.id) {
-        // Game ID doesn't exist, insert a new row
-        await axios.post(`${url}/api/games`, {
-          player1: player1,
-          player2: player2
+    if (player1 && player2) {
+      try {
+        const response = await axios.get(`${url}/api/games/id`, {
+          params: {
+            player1: player1,
+            player2: player2
+          }
         });
+    
+        if (!response.data.id) {
+          // Game ID doesn't exist, insert a new row
+          await axios.post(`${url}/api/games`, {
+            player1: player1,
+            player2: player2
+          });
+        }
+    
+        console.log(`Player1: ${player1} Player2: ${player2}`);
+        console.log('data: ' + response.data.id);
+        
+        dispatch({ type: 'SET_GAMEID', payload: response.data.id });
+        localStorage.setItem('gameId', response.data.id);
+      } catch (err) {
+        console.log(err);
+        console.log("Error getting Game ID");
       }
-  
-      console.log(`Player1: ${player1} Player2: ${player2}`);
-      console.log('data: ' + response.data.id);
-      
-      dispatch({ type: 'SET_GAMEID', payload: response.data.id });
-      localStorage.setItem('gameId', response.data.id);
-    } catch (err) {
-      console.log(err);
-      console.log("Error getting Game ID");
     }
   }
   
