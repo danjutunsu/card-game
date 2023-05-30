@@ -675,6 +675,7 @@ const Lobby = () => {
     const [selectedGenres, setSelectedGenres] = useState<{[key: string]: boolean}>({});
 
     const handleGenreClick = async (genreId: string, genre: string) => {
+      console.log(`SETTING GENRE IN METHOD`)
       setSelectedGenres(({}))
       setSelectedGenres((prevState) => ({
         ...prevState,
