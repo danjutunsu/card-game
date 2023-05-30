@@ -50,7 +50,7 @@ const Card = () => {
   const gameId = useSelector((state: AppState) => state.gameId);
   const [ip, setIp] = useState()
 
-  const socket = new WebSocket(`ws://https://master--frontend-legendary-monstera-8d33f0.netlify.app?userId=${userId}`)
+  const socket = new WebSocket(`wss://https://master--frontend-legendary-monstera-8d33f0.netlify.app?userId=${userId}`)
 
   const handleEnd = async () => {
     try {
