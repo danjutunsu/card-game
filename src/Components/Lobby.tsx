@@ -172,41 +172,13 @@ const Lobby = () => {
       // Process the received message
     });
 
-    // Save the WebSocket connection in a state variable if needed
-    // setSocket(socket);
-
-    return () => {
-      // Clean up the WebSocket connection if needed
-      socket.close();
-    };
-  }, [userId]);
-
-  dispatch({ type: 'SET_UUID', payload: lobbyId ?? '' });
-localStorage.setItem('uuid', lobbyId ?? '');
-
-if (lobbyId) {
-  axios
-    .put(`${url}/api/lobby/${lobbyId}`, {
-      userId: userId,
-    })
-    .then(response => {
-      console.log(response.data);
-    })
-    .catch(error => {
-      console.error(error);
-    });
-}
-
-  
-
-  
-  // Event: Connection opened
-  getWebSocket().addEventListener('open', (event) => {
+    // Event: Connection opened
+    socket.addEventListener('open', (event) => {
     setStatus('Idle')
   });
 
   // // Listen for messages
-  getWebSocket().addEventListener('message', function (event) {
+  socket.addEventListener('message', function (event) {
     const data = JSON.parse(event.data)
     if (data.user_status_update) {
       const { userId, status} = data.user_status_update;
@@ -236,7 +208,7 @@ if (lobbyId) {
         navigate(`/lobby/${data.invitee.lobbyId}`)
         fetchUsers(params.lobbyId)
         // Status button clicked
-        getWebSocket().send(JSON.stringify({
+        socket.send(JSON.stringify({
           type: 'refresh',
           payload: {
             user1: userId,
@@ -245,7 +217,7 @@ if (lobbyId) {
         }));
       } else {
         // Status button clicked
-        getWebSocket().send(JSON.stringify({
+        socket.send(JSON.stringify({
           type: 'user_rejected',
           payload: {
             reject: userId,
@@ -268,6 +240,36 @@ if (lobbyId) {
   getWebSocket().addEventListener('close', function (event) {
     console.log('WebSocket connection closed');
   });
+
+    // Save the WebSocket connection in a state variable if needed
+    // setSocket(socket);
+
+    return () => {
+      // Clean up the WebSocket connection if needed
+      socket.close();
+    };
+  }, [userId]);
+
+  dispatch({ type: 'SET_UUID', payload: lobbyId ?? '' });
+localStorage.setItem('uuid', lobbyId ?? '');
+
+if (lobbyId) {
+  axios
+    .put(`${url}/api/lobby/${lobbyId}`, {
+      userId: userId,
+    })
+    .then(response => {
+      console.log(response.data);
+    })
+    .catch(error => {
+      console.error(error);
+    });
+}
+
+  
+
+  
+  
 
   async function getIp() {
     try {
