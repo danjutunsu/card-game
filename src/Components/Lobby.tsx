@@ -177,6 +177,8 @@ const Lobby = () => {
     setStatus('Idle')
   });
 
+  console.log(`NEW SOCKET: ${socket}`)
+
   // // Listen for messages
   socket.addEventListener('message', function (event) {
     const data = JSON.parse(event.data)
