@@ -691,14 +691,15 @@ const Lobby = () => {
         console.log(err)
         console.log(`Error updating the genre`)
       }
-  
-      const message = {
-        payload: {
-          message: 'set genre',
-          genre: genre,
-        },
-      };
-      socket.send(JSON.stringify(message));
+      socket.onopen = () => {
+        const message = {
+          payload: {
+            message: 'set genre',
+            genre: genre,
+          },
+        };
+        socket.send(JSON.stringify(message));
+      }
     };
     return (
       <div>
