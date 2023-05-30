@@ -239,7 +239,7 @@ const Lobby = () => {
   });
 
   // Connection closed
-  getWebSocket().addEventListener('close', function (event) {
+  socket.addEventListener('close', function (event) {
     console.log('WebSocket connection closed');
   });
 
@@ -267,11 +267,7 @@ if (lobbyId) {
       console.error(error);
     });
 }
-
-  
-
-  
-  
+let socket = getWebSocket();
 
   async function getIp() {
     try {
@@ -422,7 +418,7 @@ if (lobbyId) {
             // handleUserStatusUpdate(userId.toString(), "In Progress")
             // Status button clicked
             inProgress(userId)
-            getWebSocket().send(JSON.stringify({
+            socket.send(JSON.stringify({
               type: 'user_status_update',
               payload: {
                 userId: userId,
@@ -544,7 +540,7 @@ if (lobbyId) {
       const updatedUser = response.data; // Get updated user object with new status
       if (updatedUser.status === 'Ready') {
         try {
-          getWebSocket().send(JSON.stringify({
+          socket.send(JSON.stringify({
             type: 'user_status_update',
             payload: {
               userId: userId,
@@ -564,7 +560,7 @@ if (lobbyId) {
           console.error(error);
         }
       } else {
-        getWebSocket().send(JSON.stringify({
+        socket.send(JSON.stringify({
           type: 'user_status_update',
           payload: {
             userId: userId,
@@ -597,7 +593,7 @@ if (lobbyId) {
     if (sender !== recipient) {
       try {
         // Invite clicked
-        getWebSocket().send(JSON.stringify({
+        socket.send(JSON.stringify({
           type: 'invite',
           payload: {
             sender: sender,
@@ -633,7 +629,7 @@ if (lobbyId) {
         console.log(`USERNAME RESPONSE: ${response.data}`)
         
         // Invite sent
-        getWebSocket().send(JSON.stringify({
+        socket.send(JSON.stringify({
           type: 'invitee',
           payload: {
             userId: response.data,
@@ -710,7 +706,7 @@ if (lobbyId) {
         console.log(err)
         console.log(`Error updating the genre`)
       }
-      getWebSocket().onopen = () => {
+      socket.onopen = () => {
         console.log(`SETTING GENRE IN WS`)
         const message = {
           payload: {
@@ -718,7 +714,7 @@ if (lobbyId) {
             genre: genre,
           },
         };
-        getWebSocket().send(JSON.stringify(message));
+        socket.send(JSON.stringify(message));
       }
     };
     return (
@@ -759,7 +755,7 @@ if (lobbyId) {
 
   return (
     <div className="lobby-container">
-      <MenuButton lobbyId={lobbyId} userId={userId} socket={getWebSocket()} />
+      <MenuButton lobbyId={lobbyId} userId={userId} socket={socket} />
       {users.length < 2 ? (
       <div className="search-container">
         <input className="search-form" type="text" value={inviteeUsername} onClick={() => setInviteeUsername('')} onChange={(e) => setInviteeUsername(e.target.value)} />
