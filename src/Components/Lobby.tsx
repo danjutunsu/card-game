@@ -567,15 +567,6 @@ let socket = getWebSocket();
         const allReady = users.every(user => user.status === 'Ready');
         setAllUsersReady(allReady); // Update flag based on current state of users
       }
-    
-      // // Status button clicked
-      // socket.send(JSON.stringify({
-      //   type: 'user_status_update',
-      //   payload: {
-      //     userId: userId,
-      //     status: status
-      //   }
-      // }));
     } catch (error) {
       console.error(error);
     }
