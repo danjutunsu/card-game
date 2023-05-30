@@ -588,8 +588,10 @@ const Lobby = () => {
                 <div
                   // className="genre-item"
                   key={category}
-                  onClick={() => { setSelectedCategory("Books");
-                  console.log(`CATEGORY: ${category} ${selectedCategory}`)
+                  onClick={() => { setSelectedCategory(category); 
+                    console.log(`CATEGORY: ${category}`)
+                    console.log(`SELECTEDCATEGORY: ${selectedCategory}`)
+                
                 }}
                 >
                   <button className="unselected">{category}</button>
@@ -640,7 +642,7 @@ const Lobby = () => {
       <div>
         {Array.isArray(genres) &&
           genres.map((genre) => (
-            genre.category.replaceAll('_', ' ') === selectedCategory.toString() ? (
+            genre.category.replaceAll('_', ' ') === selectedCategory ? (
               <div
                 key={genre.id}
                 className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
@@ -652,6 +654,18 @@ const Lobby = () => {
                 {genre.genre.replaceAll('_', ' ')}
               </div>
             ) 
+            // : selectedCategory === '' ? (
+            //   <div
+            //     key={genre.id}
+            //     className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
+            //     onClick={() => {
+            //       handleGenreClick(genre.id.toString(), genre.genre);
+            //       setSelectedGenre(genre.genre);
+            //     }}
+            //   >
+            //     {genre.genre.replaceAll('_', ' ')}
+            //   </div>
+            // ) 
             : null
           ))}
       </div>
