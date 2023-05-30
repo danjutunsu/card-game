@@ -640,7 +640,7 @@ const Lobby = () => {
       <div>
         {Array.isArray(genres) &&
           genres.map((genre) => (
-            genre.category.replaceAll('_', ' ') === selectedCategory ? (
+            genre.category.replaceAll('_', ' ') === selectedCategory.toString() ? (
               <div
                 key={genre.id}
                 className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
