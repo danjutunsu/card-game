@@ -749,6 +749,8 @@ const Lobby = () => {
       <h3 className="lobby-header lobby-stroke">Users In Lobby:</h3>
       <UserList users={users} handleReady={handleReady} handleStatusUpdate={handleUserStatusUpdate}/>
       <button className="ready-button" onClick={() => handleReady(userId)}>Ready?</button>
+      <GenreList />
+
       <CategoryList />
       {waiting ? <div><h1 className="lobby-header lobby-stroke">Your turn is next</h1></div> : <></>}
       
