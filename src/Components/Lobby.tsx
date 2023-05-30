@@ -692,6 +692,7 @@ const Lobby = () => {
         console.log(`Error updating the genre`)
       }
       socket.onopen = () => {
+        console.log(`SETTING GENRE IN WS`)
         const message = {
           payload: {
             message: 'set genre',
