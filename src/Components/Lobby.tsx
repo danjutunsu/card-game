@@ -588,7 +588,9 @@ const Lobby = () => {
                 <div
                   // className="genre-item"
                   key={category}
-                  onClick={() => { setSelectedCategory("Movies & Television"); }}
+                  onClick={() => { setSelectedCategory("Books");
+                  console.log(`CATEGORY: ${category}`)
+                }}
                 >
                   <button className="unselected">{category}</button>
                 </div>
