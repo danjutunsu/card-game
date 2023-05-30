@@ -155,9 +155,19 @@ const Lobby = () => {
   const [player1, setPlayer1] = useState('')
   const categories = ["Movies & Television", "Literature", "Food & Drink", "Music", "Pop Culture", "Relationships", "Science & Technology", "World Travel"];
   const [selectedCategory, setSelectedCategory] = useState('');
+  // const [ip, setIp] = useState('127.0.0.1')
 
   //create new socket
   const socket = new WebSocket(`ws://localhost:3002?userId=${userId}`)
+
+  // getIp();
+
+  // useEffect(() => {
+  //   //create new socket
+  //   const ipv4Address = ip.replace(/^::ffff:/, '');
+  // const socket = new WebSocket(`ws://${ipv4Address}:3002?userId=${userId}`)
+
+  // }, [ip])
 
   if (lobbyId) {
     dispatch({ type: 'SET_UUID', payload: lobbyId });
@@ -244,6 +254,17 @@ const Lobby = () => {
   socket.addEventListener('close', function (event) {
     console.log('WebSocket connection closed');
   });
+
+  async function getIp() {
+    try {
+      const response = await axios.get(`${url}/api/ip`);
+      const data = response.data;
+      // setIp(data)
+      console.log(`IP: ${data}`)
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   const getGameStatus = async () => 
   {

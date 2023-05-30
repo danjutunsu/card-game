@@ -48,8 +48,8 @@ const Card = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const gameId = useSelector((state: AppState) => state.gameId);
+  const [ip, setIp] = useState()
 
-  //create new socket
   const socket = new WebSocket(`ws://localhost:3002?userId=${userId}`)
 
   const handleEnd = async () => {
@@ -99,6 +99,18 @@ const Card = () => {
   useEffect(() => {
     getGenre(userId, userId2);
   }, [userPoints]);
+
+  async function getIp() {
+    try {
+      const response = await axios.get(`${url}/api/ip`);
+      const data = response.data;
+      console.log(`IP: ${data}`)
+      setIp(data)
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   async function getGenre(player1:string, player2:string) {
     try {
