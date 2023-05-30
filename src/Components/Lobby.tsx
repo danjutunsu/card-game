@@ -158,7 +158,7 @@ const Lobby = () => {
   // const [ip, setIp] = useState('127.0.0.1')
 
   //create new socket
-  const socket = new WebSocket(`wss://https://master--frontend-legendary-monstera-8d33f0.netlify.app?userId=${userId}`)
+  const socket = new WebSocket(`wss://master--frontend-legendary-monstera-8d33f0.netlify.app?userId=${userId}`)
 
   // getIp();
 
