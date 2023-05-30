@@ -158,7 +158,7 @@ const Lobby = () => {
   // const [ip, setIp] = useState('127.0.0.1')
 
   //create new socket
-  const socket = new WebSocket(`ws://71.231.200.46:3002?userId=${userId}`)
+  const socket = new WebSocket(`ws://127.0.0.1:3002?userId=${userId}`)
 
   // getIp();
 
