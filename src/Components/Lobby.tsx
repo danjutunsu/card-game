@@ -165,78 +165,70 @@ const Lobby = () => {
     const socket = initializeWebSocket(userId);
 
     // Handle WebSocket events, such as message receiving or connection status changes, using event listeners
-
-    // For example:
-    socket.addEventListener('message', (event) => {
-      const message = JSON.parse(event.data);
-      // Process the received message
+    socket.addEventListener('message', function (event) {
+      const data = JSON.parse(event.data)
+      if (data.user_status_update) {
+        const { userId, status} = data.user_status_update;
+        handleUserStatusUpdate(data.user_status_update.userId, data.user_status_update.status);
+      }
+      else if (data.end_game) {
+        navigate(`/stats`)
+      } else if (data.genreToSet) {
+        console.log(`SETTING GENRE TO ${data.genreToSet}`)
+        setGenre(data.genreToSet)
+        dispatch({ type: 'SET_GENRE', payload: data.genreToSet });
+        localStorage.setItem('genre', genre);
+      } else if (data.invite) {
+        setInvited(true)
+      } else if (data.logout) {
+        // const { sender, recipient } = data.invite;
+        fetchUsers(params.lobbyId);
+      } else if (data.leave) {
+        // const { sender, recipient } = data.invite;
+        fetchUsers(params.lobbyId);
+      } else if (data.invitee) {
+        // const { sender, recipient } = data.invite;
+        console.log(`INVITED`)
+        // console.log(data.invitee.lobbyId)
+        const result = window.confirm(`Invited to join a game`)
+        if (result) {
+          navigate(`/lobby/${data.invitee.lobbyId}`)
+          fetchUsers(params.lobbyId)
+          // Status button clicked
+          socket.send(JSON.stringify({
+            type: 'refresh',
+            payload: {
+              user1: userId,
+              user2: data.invitee.sender
+            }
+          }));
+        } else {
+          // Status button clicked
+          socket.send(JSON.stringify({
+            type: 'user_rejected',
+            payload: {
+              reject: userId,
+              request: data.invitee.sender
+            }
+          }));
+        }
+      } else if (data.user_rejected) {
+        // const { sender, recipient } = data.invite;
+        alert(`USER ${data.user_rejected.reject} rejected the invitation`)
+        fetchUsers(params.lobbyId);
+      } else if (data.refresh) {
+        // const { sender, recipient } = data.invite;
+        console.log(`REFRESH`)
+        fetchUsers(params.lobbyId);
+      }
     });
 
-    // Event: Connection opened
-    socket.addEventListener('open', (event) => {
+  // Event: Connection opened
+  socket.addEventListener('open', (event) => {
     setStatus('Idle')
   });
 
   console.log(`NEW SOCKET: ${socket.url}`)
-
-  // // Listen for messages
-  socket.addEventListener('message', function (event) {
-    const data = JSON.parse(event.data)
-    if (data.user_status_update) {
-      const { userId, status} = data.user_status_update;
-      handleUserStatusUpdate(data.user_status_update.userId, data.user_status_update.status);
-    }
-    else if (data.end_game) {
-      navigate(`/stats`)
-    } else if (data.genreToSet) {
-      console.log(`SETTING GENRE TO ${data.genreToSet}`)
-      setGenre(data.genreToSet)
-      dispatch({ type: 'SET_GENRE', payload: data.genreToSet });
-      localStorage.setItem('genre', genre);
-    } else if (data.invite) {
-      setInvited(true)
-    } else if (data.logout) {
-      // const { sender, recipient } = data.invite;
-      fetchUsers(params.lobbyId);
-    } else if (data.leave) {
-      // const { sender, recipient } = data.invite;
-      fetchUsers(params.lobbyId);
-    } else if (data.invitee) {
-      // const { sender, recipient } = data.invite;
-      console.log(`INVITED`)
-      // console.log(data.invitee.lobbyId)
-      const result = window.confirm(`Invited to join a game`)
-      if (result) {
-        navigate(`/lobby/${data.invitee.lobbyId}`)
-        fetchUsers(params.lobbyId)
-        // Status button clicked
-        socket.send(JSON.stringify({
-          type: 'refresh',
-          payload: {
-            user1: userId,
-            user2: data.invitee.sender
-          }
-        }));
-      } else {
-        // Status button clicked
-        socket.send(JSON.stringify({
-          type: 'user_rejected',
-          payload: {
-            reject: userId,
-            request: data.invitee.sender
-          }
-        }));
-      }
-    } else if (data.user_rejected) {
-      // const { sender, recipient } = data.invite;
-      alert(`USER ${data.user_rejected.reject} rejected the invitation`)
-      fetchUsers(params.lobbyId);
-    } else if (data.refresh) {
-      // const { sender, recipient } = data.invite;
-      console.log(`REFRESH`)
-      fetchUsers(params.lobbyId);
-    }
-  });
 
   // Connection closed
   socket.addEventListener('close', function (event) {
