@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../store";
 import { useNavigate, useParams } from "react-router-dom";
 import {v4 as uuidv4} from 'uuid';
+import { getWebSocket, initializeWebSocket } from "./WebSocketService";
 
 interface Lobby {
   lobbyId: string
@@ -158,25 +159,35 @@ const Lobby = () => {
   // const [ip, setIp] = useState('127.0.0.1')
 
   //create new socket
-  const socket = new WebSocket(`wss://triviafriends.herokuapp.com?userId=${userId}`)
+  // const socket = new WebSocket(`wss://triviafriends.herokuapp.com?userId=${userId}`)
 
-  // getIp();
+  useEffect(() => {
+    const socket = initializeWebSocket(userId);
 
-  // useEffect(() => {
-  //   //create new socket
-  //   const ipv4Address = ip.replace(/^::ffff:/, '');
-  // const socket = new WebSocket(`ws://${ipv4Address}:3002?userId=${userId}`)
+    // Handle WebSocket events, such as message receiving or connection status changes, using event listeners
 
-  // }, [ip])
+    // For example:
+    socket.addEventListener('message', (event) => {
+      const message = JSON.parse(event.data);
+      // Process the received message
+    });
 
-  if (lobbyId) {
-    dispatch({ type: 'SET_UUID', payload: lobbyId });
-    localStorage.setItem('uuid', lobbyId);
-  }
+    // Save the WebSocket connection in a state variable if needed
+    // setSocket(socket);
 
-  if (lobbyId) {
-    axios.put(`${url}/api/lobby/${lobbyId}`, {
-      userId: userId
+    return () => {
+      // Clean up the WebSocket connection if needed
+      socket.close();
+    };
+  }, [userId]);
+
+  dispatch({ type: 'SET_UUID', payload: lobbyId ?? '' });
+localStorage.setItem('uuid', lobbyId ?? '');
+
+if (lobbyId) {
+  axios
+    .put(`${url}/api/lobby/${lobbyId}`, {
+      userId: userId,
     })
     .then(response => {
       console.log(response.data);
@@ -184,15 +195,18 @@ const Lobby = () => {
     .catch(error => {
       console.error(error);
     });
-  }
+}
 
+  
+
+  
   // Event: Connection opened
-  socket.addEventListener('open', (event) => {
+  getWebSocket().addEventListener('open', (event) => {
     setStatus('Idle')
   });
 
   // // Listen for messages
-  socket.addEventListener('message', function (event) {
+  getWebSocket().addEventListener('message', function (event) {
     const data = JSON.parse(event.data)
     if (data.user_status_update) {
       const { userId, status} = data.user_status_update;
@@ -222,7 +236,7 @@ const Lobby = () => {
         navigate(`/lobby/${data.invitee.lobbyId}`)
         fetchUsers(params.lobbyId)
         // Status button clicked
-        socket.send(JSON.stringify({
+        getWebSocket().send(JSON.stringify({
           type: 'refresh',
           payload: {
             user1: userId,
@@ -231,7 +245,7 @@ const Lobby = () => {
         }));
       } else {
         // Status button clicked
-        socket.send(JSON.stringify({
+        getWebSocket().send(JSON.stringify({
           type: 'user_rejected',
           payload: {
             reject: userId,
@@ -251,7 +265,7 @@ const Lobby = () => {
   });
 
   // Connection closed
-  socket.addEventListener('close', function (event) {
+  getWebSocket().addEventListener('close', function (event) {
     console.log('WebSocket connection closed');
   });
 
@@ -404,7 +418,7 @@ const Lobby = () => {
             // handleUserStatusUpdate(userId.toString(), "In Progress")
             // Status button clicked
             inProgress(userId)
-            socket.send(JSON.stringify({
+            getWebSocket().send(JSON.stringify({
               type: 'user_status_update',
               payload: {
                 userId: userId,
@@ -526,7 +540,7 @@ const Lobby = () => {
       const updatedUser = response.data; // Get updated user object with new status
       if (updatedUser.status === 'Ready') {
         try {
-          socket.send(JSON.stringify({
+          getWebSocket().send(JSON.stringify({
             type: 'user_status_update',
             payload: {
               userId: userId,
@@ -546,7 +560,7 @@ const Lobby = () => {
           console.error(error);
         }
       } else {
-        socket.send(JSON.stringify({
+        getWebSocket().send(JSON.stringify({
           type: 'user_status_update',
           payload: {
             userId: userId,
@@ -579,7 +593,7 @@ const Lobby = () => {
     if (sender !== recipient) {
       try {
         // Invite clicked
-        socket.send(JSON.stringify({
+        getWebSocket().send(JSON.stringify({
           type: 'invite',
           payload: {
             sender: sender,
@@ -615,7 +629,7 @@ const Lobby = () => {
         console.log(`USERNAME RESPONSE: ${response.data}`)
         
         // Invite sent
-        socket.send(JSON.stringify({
+        getWebSocket().send(JSON.stringify({
           type: 'invitee',
           payload: {
             userId: response.data,
@@ -692,7 +706,7 @@ const Lobby = () => {
         console.log(err)
         console.log(`Error updating the genre`)
       }
-      socket.onopen = () => {
+      getWebSocket().onopen = () => {
         console.log(`SETTING GENRE IN WS`)
         const message = {
           payload: {
@@ -700,7 +714,7 @@ const Lobby = () => {
             genre: genre,
           },
         };
-        socket.send(JSON.stringify(message));
+        getWebSocket().send(JSON.stringify(message));
       }
     };
     return (
@@ -741,7 +755,7 @@ const Lobby = () => {
 
   return (
     <div className="lobby-container">
-      <MenuButton lobbyId={lobbyId} userId={userId} socket={socket} />
+      <MenuButton lobbyId={lobbyId} userId={userId} socket={getWebSocket()} />
       {users.length < 2 ? (
       <div className="search-container">
         <input className="search-form" type="text" value={inviteeUsername} onClick={() => setInviteeUsername('')} onChange={(e) => setInviteeUsername(e.target.value)} />
