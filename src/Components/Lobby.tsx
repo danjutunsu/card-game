@@ -177,7 +177,7 @@ const Lobby = () => {
     setStatus('Idle')
   });
 
-  console.log(`NEW SOCKET: ${socket}`)
+  console.log(`NEW SOCKET: ${socket.url}`)
 
   // // Listen for messages
   socket.addEventListener('message', function (event) {
