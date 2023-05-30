@@ -683,9 +683,10 @@ const Lobby = () => {
   
     useEffect(() => {
       // Fetch genres based on selectedCategory
+      console.log(`SELECTED CATEGORY: ${selectedCategory}`)
+
       const fetchGenres = async () => {
         try {
-          console.log(`SELECTED CATEGORY: ${selectedCategory}`)
           const response = await axios.get(`${url}/api/genres?category=${selectedCategory}`);
           const genresData = response.data;
           setGenres(genresData);
