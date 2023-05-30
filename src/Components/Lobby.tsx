@@ -319,6 +319,8 @@ const Lobby = () => {
   };
 
   const fetchGenres = async () => {
+    console.log(`HERE`)
+
     try {
       const response = await axios.get(`${url}/api/questions/genres`);
       setGenres(response.data);
@@ -334,6 +336,7 @@ const Lobby = () => {
   useEffect(() => {
     // Fetch genres based on selectedCategory
     const fetchGenres = async () => {
+      console.log(`OR HERE`)
       try {
         const response = await axios.get(`${url}/api/questions/genres`);
         setGenres(response.data);
