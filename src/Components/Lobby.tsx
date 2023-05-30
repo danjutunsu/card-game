@@ -577,138 +577,6 @@ const Lobby = () => {
     handleStatusUpdate: (user_id: string, newStatus: string) => void;
   }
 
-  function CategoryList() {  
-    return (
-      <>
-        {selectedCategory === '' ? (
-          <>
-            <h2 className="lobby-header lobby-stroke">Categories:</h2>
-            <div className="genre-grid">
-              {categories.map((category) => (
-                <div
-                  // className="genre-item"
-                  key={category}
-                  onClick={() => { 
-                    setSelectedCategory(category); 
-                    console.log(`CATEGORY: ${category}`)
-                    console.log(`SELECTEDCATEGORY: ${selectedCategory}`)
-                
-                }}
-                >
-                  <button className="unselected">{category}</button>
-                </div>
-              ))}
-            </div>
-          </>
-        ) : (
-          <div className="lobby-column">
-            <h2 className="lobby-header lobby-stroke">{selectedCategory}:</h2>
-            <button className="unselected" onClick={() => {setSelectedCategory('')}}>⮌ BACK</button>
-          </div>
-        )}
-      </>
-    );
-  }
-
-  
-  useEffect(() => {
-    // This code will run whenever selectedCategory changes
-    // You can perform any necessary logic or API calls here
-
-    // Example API call to fetch genres based on the selected category
-    const fetchGenres = async () => {
-      try {
-        const response = await axios.get(`${url}/api/genres?category=${selectedCategory}`);
-        const genresData = response.data;
-        // Update genres state with the fetched genres
-        setGenres(genresData);
-      } catch (err) {
-        console.log(err);
-        console.log('Error fetching genres');
-      }
-    };
-
-    // Call the fetchGenres function
-    fetchGenres();
-  }, [selectedCategory]); // Specify selectedCategory as the dependency
-
-
-  function GenreList() {
-    const [selectedGenres, setSelectedGenres] = useState<{[key: string]: boolean}>({});
-
-    const handleGenreClick = async (genreId: string, genre: string) => {
-      setSelectedGenres(({}))
-      setSelectedGenres((prevState) => ({
-        ...prevState,
-        [genreId]: !prevState[genreId],
-      }));
-
-      try {
-        const response = await axios.put(`${url}/api/games/genre`, {
-          player1: userId,
-          player2: userId2,
-          genre: genre
-        });
-      } catch (err) {
-        console.log(err)
-        console.log(`Error updating the genre`)
-      }
-  
-      const message = {
-        payload: {
-          message: 'set genre',
-          genre: genre,
-        },
-      };
-      socket.send(JSON.stringify(message));
-    };
-    return (
-      <div>
-        {Array.isArray(genres) &&
-          genres.map((genre) => (
-            genre.category.replaceAll('_', ' ') === selectedCategory ? (
-              <div
-                key={genre.id}
-                className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
-                onClick={() => {
-                  handleGenreClick(genre.id.toString(), genre.genre);
-                  setSelectedGenre(genre.genre);
-                }}
-              >
-                {genre.genre.replaceAll('_', ' ')}
-              </div>
-            ) 
-            // : selectedCategory === '' ? (
-            //   <div
-            //     key={genre.id}
-            //     className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
-            //     onClick={() => {
-            //       handleGenreClick(genre.id.toString(), genre.genre);
-            //       setSelectedGenre(genre.genre);
-            //     }}
-            //   >
-            //     {genre.genre.replaceAll('_', ' ')}
-            //   </div>
-            // ) 
-            : null
-          ))}
-      </div>
-    );    
-  }    
-
-  function UserList(props: UserListProps) {
-    return (
-      <ul>
-        {Array.isArray(users) && users.map((user) => (
-          <li key={user.user_id} className="lobby-row" style={{listStyle: 'none'}}>
-            {toPascalCase(user.username)} 
-            <div className={`${user.status === 'Ready' ? 'ready' : 'idle'}`}>{user.status}</div>
-          </li>
-        ))}
-      </ul>
-    );
-  }
-  
   function toPascalCase(str: string): string {
     return str.replace(/(\w)(\w*)/g, function(_, firstChar, rest) {
       return firstChar.toUpperCase() + rest.toLowerCase();
@@ -748,6 +616,121 @@ const Lobby = () => {
       )
     );
   };
+
+  function CategoryList() {  
+    return (
+      <>
+        {selectedCategory === '' ? (
+          <>
+            <h2 className="lobby-header lobby-stroke">Categories:</h2>
+            <div className="genre-grid">
+              {categories.map((category) => (
+                <div
+                  // className="genre-item"
+                  key={category}
+                  onClick={() => { 
+                    setSelectedCategory(category); 
+                    console.log(`CATEGORY: ${category}`)
+                    console.log(`SELECTEDCATEGORY: ${selectedCategory}`)
+                
+                }}
+                >
+                  <button className="unselected">{category}</button>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="lobby-column">
+            <h2 className="lobby-header lobby-stroke">{selectedCategory}:</h2>
+            <button className="unselected" onClick={() => {setSelectedCategory('')}}>⮌ BACK</button>
+          </div>
+        )}
+      </>
+    );
+  }
+
+  function GenreList() {
+    const [selectedGenres, setSelectedGenres] = useState<{[key: string]: boolean}>({});
+    const [genres, setGenres] = useState<Genre[]>([]); // Add genres state
+  
+    const handleGenreClick = async (genreId: string, genre: string) => {
+      setSelectedGenres({});
+      setSelectedGenres((prevState) => ({
+        ...prevState,
+        [genreId]: !prevState[genreId],
+      }));
+  
+      try {
+        const response = await axios.put(`${url}/api/games/genre`, {
+          player1: userId,
+          player2: userId2,
+          genre: genre,
+        });
+      } catch (err) {
+        console.log(err);
+        console.log(`Error updating the genre`);
+      }
+  
+      const message = {
+        payload: {
+          message: 'set genre',
+          genre: genre,
+        },
+      };
+      socket.send(JSON.stringify(message));
+    };
+  
+    useEffect(() => {
+      // Fetch genres based on selectedCategory
+      const fetchGenres = async () => {
+        try {
+          const response = await axios.get(`${url}/api/genres?category=${selectedCategory}`);
+          const genresData = response.data;
+          setGenres(genresData);
+        } catch (err) {
+          console.log(err);
+          console.log('Error fetching genres');
+        }
+      };
+  
+      fetchGenres();
+    }, [selectedCategory]);
+  
+    return (
+      <div>
+        {Array.isArray(genres) &&
+          genres.map((genre) => (
+            genre.category.replaceAll('_', ' ') === selectedCategory ? (
+              <div
+                key={genre.id}
+                className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
+                onClick={() => {
+                  handleGenreClick(genre.id.toString(), genre.genre);
+                  setSelectedGenre(genre.genre);
+                }}
+              >
+                {genre.genre.replaceAll('_', ' ')}
+              </div>
+            ) 
+            : null
+          ))}
+      </div>
+    );
+  }   
+
+  function UserList(props: UserListProps) {
+    return (
+      <ul>
+        {Array.isArray(users) && users.map((user) => (
+          <li key={user.user_id} className="lobby-row" style={{listStyle: 'none'}}>
+            {toPascalCase(user.username)} 
+            <div className={`${user.status === 'Ready' ? 'ready' : 'idle'}`}>{user.status}</div>
+          </li>
+        ))}
+      </ul>
+    );
+  }
 
   return (
     <div className="lobby-container">
