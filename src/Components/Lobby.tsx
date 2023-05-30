@@ -588,7 +588,8 @@ const Lobby = () => {
                 <div
                   // className="genre-item"
                   key={category}
-                  onClick={() => { setSelectedCategory(category); 
+                  onClick={() => { 
+                    setSelectedCategory(category); 
                     console.log(`CATEGORY: ${category}`)
                     console.log(`SELECTEDCATEGORY: ${selectedCategory}`)
                 
@@ -608,6 +609,29 @@ const Lobby = () => {
       </>
     );
   }
+
+  
+  useEffect(() => {
+    // This code will run whenever selectedCategory changes
+    // You can perform any necessary logic or API calls here
+
+    // Example API call to fetch genres based on the selected category
+    const fetchGenres = async () => {
+      try {
+        const response = await axios.get(`${url}/api/genres?category=${selectedCategory}`);
+        const genresData = response.data;
+        // Update genres state with the fetched genres
+        setGenres(genresData);
+      } catch (err) {
+        console.log(err);
+        console.log('Error fetching genres');
+      }
+    };
+
+    // Call the fetchGenres function
+    fetchGenres();
+  }, [selectedCategory]); // Specify selectedCategory as the dependency
+
 
   function GenreList() {
     const [selectedGenres, setSelectedGenres] = useState<{[key: string]: boolean}>({});
