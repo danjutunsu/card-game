@@ -154,7 +154,7 @@ const Lobby = () => {
   const [selectedGenre, setSelectedGenre] = useState('')
   const [player1, setPlayer1] = useState('')
   const categories = ["Movies & Television", "Literature", "Food & Drink", "Music", "Pop Culture", "Relationships", "Science & Technology", "World Travel"];
-  const [selectedCategory, setSelectedCategory] = useState('Movies');
+  const [selectedCategory, setSelectedCategory] = useState('');
   // const [ip, setIp] = useState('127.0.0.1')
 
   //create new socket
@@ -704,7 +704,7 @@ const Lobby = () => {
       <div>
         {Array.isArray(genres) &&
           genres.map((genre) => (
-            genre.category.replaceAll('_', ' ') === selectedCategory ? (
+            genre.category.replaceAll('_', ' ').toString() === selectedCategory.toString() ? (
               <div
                 key={genre.id}
                 className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
