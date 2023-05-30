@@ -715,7 +715,10 @@ const Lobby = () => {
               >
                 {genre.genre.replaceAll('_', ' ')}
               </div>
-            ) : <button>failed</button>
+            ) : 
+            <div>
+              <button>failed</button>
+            </div>
           ))}
       </div>
     );    
