@@ -231,16 +231,16 @@ const Lobby = () => {
   console.log(`NEW SOCKET: ${socket.url}`)
 
   // Connection closed
-  // socket.addEventListener('close', function (event) {
-  //   console.log('WebSocket connection closed');
-  // });
+  socket.addEventListener('close', function (event) {
+    console.log('WebSocket connection closed');
+  });
 
     // Save the WebSocket connection in a state variable if needed
     // setSocket(socket);
 
     return () => {
       // Clean up the WebSocket connection if needed
-      socket.close();
+      // socket.close();
     };
   }, [userId]);
 
