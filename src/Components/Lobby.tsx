@@ -331,6 +331,24 @@ const Lobby = () => {
     }
   };
 
+  useEffect(() => {
+    // Fetch genres based on selectedCategory
+    const fetchGenres = async () => {
+      try {
+        const response = await axios.get(`${url}/api/questions/genres`);
+        setGenres(response.data);
+        console.log('genres:')
+        genres.forEach(element => {
+          console.log(element.genre)
+        })
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchGenres();
+  }, [selectedCategory]);
+
   const fetchPlayer1 = async (game_id: number) => {
     if (gameId) {
       try {
@@ -652,24 +670,23 @@ const Lobby = () => {
 
   function GenreList() {
     const [selectedGenres, setSelectedGenres] = useState<{[key: string]: boolean}>({});
-    const [genres, setGenres] = useState<Genre[]>([]); // Add genres state
-  
+
     const handleGenreClick = async (genreId: string, genre: string) => {
-      setSelectedGenres({});
+      setSelectedGenres(({}))
       setSelectedGenres((prevState) => ({
         ...prevState,
         [genreId]: !prevState[genreId],
       }));
-  
+
       try {
         const response = await axios.put(`${url}/api/games/genre`, {
           player1: userId,
           player2: userId2,
-          genre: genre,
+          genre: genre
         });
       } catch (err) {
-        console.log(err);
-        console.log(`Error updating the genre`);
+        console.log(err)
+        console.log(`Error updating the genre`)
       }
   
       const message = {
@@ -680,25 +697,6 @@ const Lobby = () => {
       };
       socket.send(JSON.stringify(message));
     };
-  
-    useEffect(() => {
-      // Fetch genres based on selectedCategory
-      console.log(`SELECTED CATEGORY: ${selectedCategory}`)
-
-      const fetchGenres = async () => {
-        try {
-          const response = await axios.get(`${url}/api/genres?category=${selectedCategory}`);
-          const genresData = response.data;
-          setGenres(genresData);
-        } catch (err) {
-          console.log(err);
-          console.log('Error fetching genres');
-        }
-      };
-  
-      fetchGenres();
-    }, [selectedCategory]);
-  
     return (
       <div>
         {Array.isArray(genres) &&
@@ -715,11 +713,23 @@ const Lobby = () => {
                 {genre.genre.replaceAll('_', ' ')}
               </div>
             ) 
+            // : selectedCategory === '' ? (
+            //   <div
+            //     key={genre.id}
+            //     className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
+            //     onClick={() => {
+            //       handleGenreClick(genre.id.toString(), genre.genre);
+            //       setSelectedGenre(genre.genre);
+            //     }}
+            //   >
+            //     {genre.genre.replaceAll('_', ' ')}
+            //   </div>
+            // ) 
             : null
           ))}
       </div>
-    );
-  }   
+    );    
+  }    
 
   function UserList(props: UserListProps) {
     return (
