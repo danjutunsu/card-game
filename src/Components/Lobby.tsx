@@ -154,7 +154,7 @@ const Lobby = () => {
   const [selectedGenre, setSelectedGenre] = useState('')
   const [player1, setPlayer1] = useState('')
   const categories = ["Movies & Television", "Literature", "Food & Drink", "Music", "Pop Culture", "Relationships", "Science & Technology", "World Travel"];
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('Movies');
   // const [ip, setIp] = useState('127.0.0.1')
 
   //create new socket
@@ -715,20 +715,7 @@ const Lobby = () => {
               >
                 {genre.genre.replaceAll('_', ' ')}
               </div>
-            ) 
-            // : selectedCategory === '' ? (
-            //   <div
-            //     key={genre.id}
-            //     className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
-            //     onClick={() => {
-            //       handleGenreClick(genre.id.toString(), genre.genre);
-            //       setSelectedGenre(genre.genre);
-            //     }}
-            //   >
-            //     {genre.genre.replaceAll('_', ' ')}
-            //   </div>
-            // ) 
-            : null
+            ) : null
           ))}
       </div>
     );    
