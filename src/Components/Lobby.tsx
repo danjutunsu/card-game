@@ -158,7 +158,7 @@ const Lobby = () => {
   // const [ip, setIp] = useState('127.0.0.1')
 
   //create new socket
-  const socket = new WebSocket(`wss:10.0.0.197?userId=${userId}`)
+  const socket = new WebSocket(`wss://triviafriends.herokuapp.com?userId=${userId}`)
 
   // getIp();
 
