@@ -46,7 +46,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/card" element={<Card />} />
-        <Route path="/lobby" element={<Lobby />} />
+        <Route path="/lobby/:lobbyId" element={<Lobby />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/waiting" element={<WaitingRoom />} />
         <Route path="/create" element={<CreateForm />} />
