@@ -559,7 +559,6 @@ const fetchGenres = async () => {
           console.log(`${element.username} status: ${element.status}`)
         });
       } else {
-        socket.addEventListener('open', () => {
           socket.send(JSON.stringify({
             type: 'user_status_update',
             payload: {
@@ -568,7 +567,6 @@ const fetchGenres = async () => {
             }
           }));
           console.log(`SETTING TO READY`)
-        });
   
         users.forEach((element: any) => {
           console.log(`${element.username} status: ${element.status}`)
