@@ -228,12 +228,13 @@ const Lobby = () => {
     setStatus('Idle')
   });
 
-  console.log(`NEW SOCKET: ${socket.url}`)
-
   // Connection closed
   socket.addEventListener('close', function (event) {
     console.log('WebSocket connection closed');
   });
+  
+  console.log(`NEW SOCKET: ${socket.url}`)
+
 
     // Save the WebSocket connection in a state variable if needed
     // setSocket(socket);
@@ -531,6 +532,7 @@ let socket = getWebSocket();
       const response = await axios.put(`${url}/api/lobby?userId=${id}`);
       const updatedUser = response.data; // Get updated user object with new status
       if (updatedUser.status === 'Ready') {
+        console.log(`SETTING TO IDLE`)
         try {
           socket.send(JSON.stringify({
             type: 'user_status_update',
@@ -552,6 +554,8 @@ let socket = getWebSocket();
           console.error(error);
         }
       } else {
+        console.log(`SETTING TO READY`)
+
         socket.send(JSON.stringify({
           type: 'user_status_update',
           payload: {
