@@ -28,7 +28,7 @@ function App() {
 
   const getUserPoints = async (uid: number) => {
     try {
-        const response = await axios.get(`${url}/api/points`, {
+        const response = await axios.get(`${url}/points`, {
             params: 
             {
                 userId: uid,
