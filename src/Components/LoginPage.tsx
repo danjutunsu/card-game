@@ -54,7 +54,8 @@
           // navigate('/card', { state: { id: userId } });
             handleUpdateUUID(response.data.userId, randomId)
             console.log(`UserId: ${loggedInUser} RandomID: ${randomId}`)
-            navigate(`/lobby/${randomId}`)
+            // navigate(`/lobby/${randomId}`)
+            navigate(`/lobby`)
         }, 1000);
       } else {
         // if the login fails, display an error message
