@@ -38,7 +38,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
 
   useEffect(() => {
     getUname(userId)
-  }, [0])
+  }, [userId])
 
   const handleCopyLobby = (uuid: string | undefined) => {
     if (uuid) {
