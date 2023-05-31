@@ -156,7 +156,6 @@ const Lobby = () => {
   const [player1, setPlayer1] = useState('')
   const categories = ["Movies & Television", "Literature", "Food & Drink", "Music", "Pop Culture", "Relationships", "Science & Technology", "World Travel"];
   const [selectedCategory, setSelectedCategory] = useState('');
-  // const [ip, setIp] = useState('127.0.0.1')
 
   //create new socket
   // const socket = new WebSocket(`wss://triviafriends.herokuapp.com?userId=${userId}`)
@@ -249,7 +248,7 @@ const Lobby = () => {
     //   // Clean up the WebSocket connection if needed
     //   // socket.close();
     // };
-  }, [userId]);
+  });
 
   dispatch({ type: 'SET_UUID', payload: lobbyId ?? '' });
 localStorage.setItem('uuid', lobbyId ?? '');
