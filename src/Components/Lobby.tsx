@@ -70,7 +70,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
     try {
       const message = { payload: 'leave' };
       props.socket.send(JSON.stringify(message));
-      await axios.put(`${url}/api/lobby/leave`, {
+      await axios.put(`${url}/lobby/leave`, {
           userId: userId,
           uuid: uuid
       });
@@ -84,7 +84,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
     try {
       const message = { payload: 'logout' };
       props.socket.send(JSON.stringify(message));
-      await axios.delete(`${url}/api/lobby?userId=${userId}`);
+      await axios.delete(`${url}/lobby?userId=${userId}`);
       navigate('/')
     } catch (error) {
       console.error(error);
@@ -175,7 +175,7 @@ const Lobby = () => {
   }
 
   if (lobbyId) {
-    axios.put(`${url}/api/lobby/${lobbyId}`, {
+    axios.put(`${url}/lobby/${lobbyId}`, {
       userId: userId
     })
     .then(response => {
@@ -296,7 +296,7 @@ const Lobby = () => {
 
   const fetchUsers = async (uuid: string | undefined) => {
     try {
-      const response = await axios.get(`${url}/api/lobby`, {
+      const response = await axios.get(`${url}/lobby`, {
         params: {
           uuid: uuid
         }
@@ -425,7 +425,7 @@ const Lobby = () => {
   async function inProgress(userId: string) {
     setStatus('In Progress');
     try {
-      const response = await axios.put(`${url}/api/lobby/inprogress`, null, {
+      const response = await axios.put(`${url}/lobby/inprogress`, null, {
         params: {
           userId: userId
         }
@@ -522,7 +522,7 @@ const Lobby = () => {
 
   const handleReady = async (id: string) => {
     try {
-      const response = await axios.put(`${url}/api/lobby?userId=${id}`);
+      const response = await axios.put(`${url}/lobby?userId=${id}`);
       const updatedUser = response.data; // Get updated user object with new status
       if (updatedUser.status === 'Ready') {
         try {
@@ -535,8 +535,8 @@ const Lobby = () => {
           }));
 
           setStatus('Idle');
-          await axios.put(`${url}/api/lobby`); // Update status of all users
-          const response = await axios.get(`${url}/api/lobby`);
+          await axios.put(`${url}/lobby`); // Update status of all users
+          const response = await axios.get(`${url}/lobby`);
           // setUsers(response.data.users);
           setAllUsersReady(response.data.allUsersReady); // Update flag based on response
           users.forEach((element: any) => {
