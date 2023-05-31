@@ -160,7 +160,7 @@ const Lobby = () => {
 
   //create new socket
   // const socket = new WebSocket(`wss://triviafriends.herokuapp.com?userId=${userId}`)
-
+  
   useEffect(() => {
     const socket = initializeWebSocket(userId);
 
@@ -543,7 +543,6 @@ const fetchGenres = async () => {
       const updatedUser = response.data; // Get updated user object with new status
       if (updatedUser.status === 'Ready') {
         try {
-          if (socket.readyState === WebSocket.OPEN) {
           socket.send(JSON.stringify({
             type: 'user_status_update',
             payload: {
@@ -561,12 +560,10 @@ const fetchGenres = async () => {
           users.forEach((element: any) => {
             console.log(`${element.username} status: ${element.status}`)
           });
-        }
         } catch (error) {
           console.error(error);
         }
       } else {
-        if (socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify({
           type: 'user_status_update',
           payload: {
@@ -583,7 +580,7 @@ const fetchGenres = async () => {
         setStatus('Ready');
         const allReady = users.every(user => user.status === 'Ready');
         setAllUsersReady(allReady); // Update flag based on current state of users
-        }}
+      }
     } catch (error) {
       console.error(error);
     }
