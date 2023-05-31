@@ -535,7 +535,7 @@ const fetchGenres = async () => {
   }, [users])
 
   const handleReady = async (id: string) => {
-    console.log(`SOCKET: ${socket.url}`)
+    console.log(`SOCKET: ${socket}`)
   
     try {
       const response = await axios.put(`${url}/api/lobby?userId=${id}`);
