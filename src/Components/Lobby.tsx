@@ -166,6 +166,8 @@ const Lobby = () => {
 
     // Handle WebSocket events, such as message receiving or connection status changes, using event listeners
     socket.addEventListener('message', function (event) {
+      console.log('Received message from server:', event.data);
+
       const data = JSON.parse(event.data)
       if (data.user_status_update) {
         const { userId, status} = data.user_status_update;
@@ -223,21 +225,25 @@ const Lobby = () => {
       }
     });
 
-  // Event: Connection opened
-  socket.addEventListener('open', (event) => {
-    setStatus('Idle')
-  });
+    // Event: Connection opened
+    socket.addEventListener('open', (event) => {
+      console.log('WebSocket connection established');
 
-  // Connection closed
-  socket.addEventListener('close', function (event) {
-    console.log('WebSocket connection closed');
-  });
-  
-  console.log(`NEW SOCKET: ${socket.url}`)
+      setStatus('Idle')
+    });
+
+    // Connection closed
+    socket.addEventListener('close', function (event) {
+      console.log('WebSocket connection closed');
+    });
+    
+    console.log(`NEW SOCKET: ${socket.url}`)
 
 
-    // Save the WebSocket connection in a state variable if needed
-    // setSocket(socket);
+    
+    // Retrieve the WebSocket object
+    const retrievedSocket = getWebSocket();
+    console.log(retrievedSocket === socket); // true
 
     return () => {
       // Clean up the WebSocket connection if needed
