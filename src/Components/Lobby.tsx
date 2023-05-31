@@ -541,7 +541,6 @@ const fetchGenres = async () => {
       const response = await axios.put(`${url}/api/lobby?userId=${id}`);
       const updatedUser = response.data; // Get updated user object with new status
       if (updatedUser.status === 'Ready') {
-        socket.addEventListener('open', () => {
           socket.send(JSON.stringify({
             type: 'user_status_update',
             payload: {
@@ -552,7 +551,6 @@ const fetchGenres = async () => {
           console.log(`SETTING TO IDLE`)
   
           setStatus('Idle');
-        });
         await axios.put(`${url}/api/lobby`); // Update status of all users
         const response = await axios.get(`${url}/api/lobby`);
         // setUsers(response.data.users);
