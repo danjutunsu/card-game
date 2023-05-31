@@ -537,12 +537,12 @@ const fetchGenres = async () => {
 
   const handleReady = async (id: string) => {
     console.log(`SOCKET: ${socket.url}`)
-
+  
     try {
       const response = await axios.put(`${url}/api/lobby?userId=${id}`);
       const updatedUser = response.data; // Get updated user object with new status
       if (updatedUser.status === 'Ready') {
-        try {
+        socket.addEventListener('open', () => {
           socket.send(JSON.stringify({
             type: 'user_status_update',
             payload: {
@@ -551,32 +551,32 @@ const fetchGenres = async () => {
             }
           }));
           console.log(`SETTING TO IDLE`)
-
+  
           setStatus('Idle');
-          await axios.put(`${url}/api/lobby`); // Update status of all users
-          const response = await axios.get(`${url}/api/lobby`);
-          // setUsers(response.data.users);
-          setAllUsersReady(response.data.allUsersReady); // Update flag based on response
-          users.forEach((element: any) => {
-            console.log(`${element.username} status: ${element.status}`)
-          });
-        } catch (error) {
-          console.error(error);
-        }
-      } else {
-        socket.send(JSON.stringify({
-          type: 'user_status_update',
-          payload: {
-            userId: userId,
-            status: "Idle"
-          }
-        }));
-        console.log(`SETTING TO READY`)
-
+        });
+        await axios.put(`${url}/api/lobby`); // Update status of all users
+        const response = await axios.get(`${url}/api/lobby`);
+        // setUsers(response.data.users);
+        setAllUsersReady(response.data.allUsersReady); // Update flag based on response
         users.forEach((element: any) => {
           console.log(`${element.username} status: ${element.status}`)
         });
-
+      } else {
+        socket.addEventListener('open', () => {
+          socket.send(JSON.stringify({
+            type: 'user_status_update',
+            payload: {
+              userId: userId,
+              status: "Idle"
+            }
+          }));
+          console.log(`SETTING TO READY`)
+        });
+  
+        users.forEach((element: any) => {
+          console.log(`${element.username} status: ${element.status}`)
+        });
+  
         setStatus('Ready');
         const allReady = users.every(user => user.status === 'Ready');
         setAllUsersReady(allReady); // Update flag based on current state of users
@@ -585,6 +585,7 @@ const fetchGenres = async () => {
       console.error(error);
     }
   }
+  
 
   const handleInvite = async (sender: string, recipient: string) => {
     if (sender !== recipient) {
