@@ -303,7 +303,7 @@ let socket = getWebSocket();
 
   const fetchUsers = async (uuid: string | undefined) => {
     try {
-      const response = await axios.get(`${url}/lobby`, {
+      const response = await axios.get(`${url}/api/lobby`, {
         params: {
           uuid: uuid
         }
