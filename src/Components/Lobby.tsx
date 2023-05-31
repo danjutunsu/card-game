@@ -161,7 +161,7 @@ const Lobby = () => {
   // const socket = new WebSocket(`wss://triviafriends.herokuapp.com?userId=${userId}`)
   
   useEffect(() => {
-    const socket = initializeWebSocket(userId);
+    const socket = initializeWebSocket();
 
     // Handle WebSocket events, such as message receiving or connection status changes, using event listeners
     socket.addEventListener('message', function (event) {
