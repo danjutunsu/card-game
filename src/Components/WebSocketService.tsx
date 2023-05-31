@@ -1,7 +1,7 @@
 let socket: WebSocket;
 
 export function initializeWebSocket(userId: string) {
-socket = new WebSocket(`wss://triviafriends.herokuapp.com?userId=${userId}`);
+socket = new WebSocket(`wss://triviafriends.herokuapp.com`);
 
 // Add event listeners and handle WebSocket events here
 
