@@ -30,7 +30,7 @@
     console.log(`RandomID: ${randomId}`)
 //
     try {
-      const response = await axios.post(`${url}/api/login`, {
+      const response = await axios.post(`${url}/login`, {
         username: username,
         password: password,
       });
@@ -68,7 +68,7 @@
 
   const handleUpdateUUID = async (id: string, uuid: string | undefined) => {
     try {
-      const response = await axios.put(`${url}/api/lobby/uuid`, {
+      const response = await axios.put(`${url}/lobby/uuid`, {
         id: id,
         uuid: uuid
       });
