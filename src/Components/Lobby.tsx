@@ -248,7 +248,7 @@ const Lobby = () => {
     //   // Clean up the WebSocket connection if needed
     //   // socket.close();
     // };
-  });
+  }, [userId]);
 
   dispatch({ type: 'SET_UUID', payload: lobbyId ?? '' });
 localStorage.setItem('uuid', lobbyId ?? '');
