@@ -4,7 +4,7 @@ import Card from './Components/Card';
 import LoginPage from './Components/LoginPage';
 import CreateForm from './Components/CreateForm';
 import './styles.css';
-import { BrowserRouter, Route, Routes, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Link, useLocation, HashRouter } from 'react-router-dom';
 import Statistics from './Components/Statistics';
 import axios from 'axios';
 import { url } from './Config';
@@ -42,7 +42,7 @@ function App() {
   }   
 
   return (
-      <><BrowserRouter>
+      <><HashRouter>
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/card/" element={<Card />} />
@@ -52,7 +52,7 @@ function App() {
         <Route path="/create" element={<CreateForm />} />
         <Route path="/stats" element={<Statistics />} />
       </Routes>
-    </BrowserRouter></>
+    </HashRouter></>
   );
 }
 
