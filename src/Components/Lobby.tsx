@@ -675,6 +675,7 @@ const Lobby = () => {
     const [selectedGenres, setSelectedGenres] = useState<{[key: string]: boolean}>({});
 
     const handleGenreClick = async (genreId: string, genre: string) => {
+      console.log(`SETTING GENRE IN METHOD`)
       setSelectedGenres(({}))
       setSelectedGenres((prevState) => ({
         ...prevState,
@@ -691,14 +692,16 @@ const Lobby = () => {
         console.log(err)
         console.log(`Error updating the genre`)
       }
-  
-      const message = {
-        payload: {
-          message: 'set genre',
-          genre: genre,
-        },
-      };
-      socket.send(JSON.stringify(message));
+      socket.onopen = () => {
+        console.log(`SETTING GENRE IN WS`)
+        const message = {
+          payload: {
+            message: 'set genre',
+            genre: genre,
+          },
+        };
+        socket.send(JSON.stringify(message));
+      }
     };
     return (
       <div>
