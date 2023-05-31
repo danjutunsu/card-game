@@ -566,6 +566,7 @@ const fetchGenres = async () => {
           console.error(error);
         }
       } else {
+        if (socket.readyState === WebSocket.OPEN) {
         socket.send(JSON.stringify({
           type: 'user_status_update',
           payload: {
@@ -582,7 +583,7 @@ const fetchGenres = async () => {
         setStatus('Ready');
         const allReady = users.every(user => user.status === 'Ready');
         setAllUsersReady(allReady); // Update flag based on current state of users
-      }
+        }}
     } catch (error) {
       console.error(error);
     }
