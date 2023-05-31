@@ -275,7 +275,7 @@ let socket = getWebSocket();
 
   const getGameStatus = async () => 
   {
-    fetchUsers(params.lobbyId);
+    fetchUsers(lobbyId);
     console.log("EXECUTING_")
     
     if (userId && userId2) {
