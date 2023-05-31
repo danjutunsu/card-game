@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../store";
 import { useNavigate, useParams } from "react-router-dom";
 import {v4 as uuidv4} from 'uuid';
-import { getWebSocket, initializeWebSocket } from "./WebSocketService";
 
 interface Lobby {
   lobbyId: string
@@ -38,7 +37,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
 
   useEffect(() => {
     getUname(userId)
-  }, [userId])
+  }, [0])
 
   const handleCopyLobby = (uuid: string | undefined) => {
     if (uuid) {
@@ -156,107 +155,28 @@ const Lobby = () => {
   const [player1, setPlayer1] = useState('')
   const categories = ["Movies & Television", "Literature", "Food & Drink", "Music", "Pop Culture", "Relationships", "Science & Technology", "World Travel"];
   const [selectedCategory, setSelectedCategory] = useState('');
+  // const [ip, setIp] = useState('127.0.0.1')
 
   //create new socket
-  // const socket = new WebSocket(`wss://triviafriends.herokuapp.com?userId=${userId}`)
-  
-  useEffect(() => {
-    const socket = initializeWebSocket(userId);
+  const socket = new WebSocket(`wss://triviafriends.herokuapp.com?userId=${userId}`)
 
-    // Handle WebSocket events, such as message receiving or connection status changes, using event listeners
-    socket.addEventListener('message', function (event) {
-      console.log('Received message from server:', event.data);
+  // getIp();
 
-      const data = JSON.parse(event.data)
-      if (data.user_status_update) {
-        const { userId, status} = data.user_status_update;
-        handleUserStatusUpdate(data.user_status_update.userId, data.user_status_update.status);
-      }
-      else if (data.end_game) {
-        navigate(`/stats`)
-      } else if (data.genreToSet) {
-        console.log(`SETTING GENRE TO ${data.genreToSet}`)
-        setGenre(data.genreToSet)
-        dispatch({ type: 'SET_GENRE', payload: data.genreToSet });
-        localStorage.setItem('genre', genre);
-      } else if (data.invite) {
-        setInvited(true)
-      } else if (data.logout) {
-        // const { sender, recipient } = data.invite;
-        fetchUsers(params.lobbyId);
-      } else if (data.leave) {
-        // const { sender, recipient } = data.invite;
-        fetchUsers(params.lobbyId);
-      } else if (data.invitee) {
-        // const { sender, recipient } = data.invite;
-        console.log(`INVITED`)
-        // console.log(data.invitee.lobbyId)
-        const result = window.confirm(`Invited to join a game`)
-        if (result) {
-          navigate(`/lobby/${data.invitee.lobbyId}`)
-          fetchUsers(params.lobbyId)
-          // Status button clicked
-          socket.send(JSON.stringify({
-            type: 'refresh',
-            payload: {
-              user1: userId,
-              user2: data.invitee.sender
-            }
-          }));
-        } else {
-          // Status button clicked
-          socket.send(JSON.stringify({
-            type: 'user_rejected',
-            payload: {
-              reject: userId,
-              request: data.invitee.sender
-            }
-          }));
-        }
-      } else if (data.user_rejected) {
-        // const { sender, recipient } = data.invite;
-        alert(`USER ${data.user_rejected.reject} rejected the invitation`)
-        fetchUsers(params.lobbyId);
-      } else if (data.refresh) {
-        // const { sender, recipient } = data.invite;
-        console.log(`REFRESH`)
-        fetchUsers(params.lobbyId);
-      }
-    });
+  // useEffect(() => {
+  //   //create new socket
+  //   const ipv4Address = ip.replace(/^::ffff:/, '');
+  // const socket = new WebSocket(`ws://${ipv4Address}:3002?userId=${userId}`)
 
-    // Event: Connection opened
-    socket.addEventListener('open', (event) => {
-      console.log('WebSocket connection established');
+  // }, [ip])
 
-      setStatus('Idle')
-    });
+  if (lobbyId) {
+    dispatch({ type: 'SET_UUID', payload: lobbyId });
+    localStorage.setItem('uuid', lobbyId);
+  }
 
-    // Connection closed
-    socket.addEventListener('close', function (event) {
-      console.log('WebSocket connection closed');
-    });
-    
-    console.log(`NEW SOCKET: ${socket.url}`)
-
-
-    
-    // Retrieve the WebSocket object
-    const retrievedSocket = getWebSocket();
-    console.log(retrievedSocket === socket); // true
-
-    // return () => {
-    //   // Clean up the WebSocket connection if needed
-    //   // socket.close();
-    // };
-  }, [userId]);
-
-  dispatch({ type: 'SET_UUID', payload: lobbyId ?? '' });
-localStorage.setItem('uuid', lobbyId ?? '');
-
-if (lobbyId) {
-  axios
-    .put(`${url}/api/lobby/${lobbyId}`, {
-      userId: userId,
+  if (lobbyId) {
+    axios.put(`${url}/api/lobby/${lobbyId}`, {
+      userId: userId
     })
     .then(response => {
       console.log(response.data);
@@ -264,84 +184,150 @@ if (lobbyId) {
     .catch(error => {
       console.error(error);
     });
-}
-let socket = getWebSocket();
-
-async function getIp() {
-  try {
-    const response = await axios.get(`${url}/api/ip`);
-    const data = response.data;
-    // setIp(data)
-    console.log(`IP: ${data}`)
-  } catch (error) {
-    console.error(error);
   }
-}
 
-const getGameStatus = async () => 
-{
-  fetchUsers(lobbyId);
-  console.log("EXECUTING_")
-  
+  // Event: Connection opened
+  socket.addEventListener('open', (event) => {
+    setStatus('Idle')
+  });
 
-
-  if (userId && userId2) {
-    const response = await axios.get(`${url}/api/games/status`, {
-      params: {
-        player1: userId,
-        player2: userId2
-      }
-    })
-    const jsonData = await response.data.game_status;
-    
-    setGameStatus(jsonData)
-    if (jsonData === "0") {
-      // console.log("ANSWERING")
+  // // Listen for messages
+  socket.addEventListener('message', function (event) {
+    const data = JSON.parse(event.data)
+    if (data.user_status_update) {
+      const { userId, status} = data.user_status_update;
+      handleUserStatusUpdate(data.user_status_update.userId, data.user_status_update.status);
     }
-    return jsonData;
-  }
-}
-
-// useEffect(() => {
-//   getPlayer1(userId, userId2)
-//   console.log(`UserID:${userId}`)
-//   console.log(`UserID2:${userId2}`)
-// }, [users])
-
-const fetchUsers = async (uuid: string | undefined) => {
-  try {
-    const response = await axios.get(`${url}/api/lobby`, {
-      params: {
-        uuid: uuid
+    else if (data.end_game) {
+      navigate(`/stats`)
+    } else if (data.genreToSet) {
+      console.log(`SETTING GENRE TO ${data.genreToSet}`)
+      setGenre(data.genreToSet)
+      dispatch({ type: 'SET_GENRE', payload: data.genreToSet });
+      localStorage.setItem('genre', genre);
+    } else if (data.invite) {
+      setInvited(true)
+    } else if (data.logout) {
+      // const { sender, recipient } = data.invite;
+      fetchUsers(params.lobbyId);
+    } else if (data.leave) {
+      // const { sender, recipient } = data.invite;
+      fetchUsers(params.lobbyId);
+    } else if (data.invitee) {
+      // const { sender, recipient } = data.invite;
+      console.log(`INVITED`)
+      // console.log(data.invitee.lobbyId)
+      const result = window.confirm(`Invited to join a game`)
+      if (result) {
+        navigate(`/lobby/${data.invitee.lobbyId}`)
+        fetchUsers(params.lobbyId)
+        // Status button clicked
+        socket.send(JSON.stringify({
+          type: 'refresh',
+          payload: {
+            user1: userId,
+            user2: data.invitee.sender
+          }
+        }));
+      } else {
+        // Status button clicked
+        socket.send(JSON.stringify({
+          type: 'user_rejected',
+          payload: {
+            reject: userId,
+            request: data.invitee.sender
+          }
+        }));
       }
-    });
-    setUsers(response.data.users);
-    const usersList = response.data.users
-    console.log("USERS:")
-    usersList.forEach((element: { user_id: string; }) => {
-      console.log(element)
-      if (element.user_id !== userId) {
-        console.log("SETTING NEW USER")
-        dispatch({ type: 'SET_USER_ID_2', payload: element.user_id});
-        localStorage.setItem('userId2', element.user_id);
-      }
-    })      
-    setAllUsersReady(response.data.allUsersReady); // Set flag based on response
-  } catch (error) {
-    console.error(error);
+    } else if (data.user_rejected) {
+      // const { sender, recipient } = data.invite;
+      alert(`USER ${data.user_rejected.reject} rejected the invitation`)
+      fetchUsers(params.lobbyId);
+    } else if (data.refresh) {
+      // const { sender, recipient } = data.invite;
+      console.log(`REFRESH`)
+      fetchUsers(params.lobbyId);
+    }
+  });
+
+  // Connection closed
+  socket.addEventListener('close', function (event) {
+    console.log('WebSocket connection closed');
+  });
+
+  async function getIp() {
+    try {
+      const response = await axios.get(`${url}/api/ip`);
+      const data = response.data;
+      // setIp(data)
+      console.log(`IP: ${data}`)
+    } catch (error) {
+      console.error(error);
+    }
   }
-};
 
-const fetchGenres = async () => {
-  console.log(`HERE`)
+  const getGameStatus = async () => 
+  {
+    fetchUsers(params.lobbyId);
+    console.log("EXECUTING_")
+    
+    if (userId && userId2) {
+      const response = await axios.get(`${url}/api/games/status`, {
+        params: {
+          player1: userId,
+          player2: userId2
+        }
+      })
+      const jsonData = await response.data.game_status;
+      
+      setGameStatus(jsonData)
+      if (jsonData === "0") {
+        // console.log("ANSWERING")
+      }
+      return jsonData;
+    }
+  }
 
-  try {
-    const response = await axios.get(`${url}/api/questions/genres`);
-    setGenres(response.data);
-    console.log('genres:')
-    genres.forEach(element => {
-      console.log(element.genre)
-    })
+  // useEffect(() => {
+  //   getPlayer1(userId, userId2)
+  //   console.log(`UserID:${userId}`)
+  //   console.log(`UserID2:${userId2}`)
+  // }, [users])
+
+  const fetchUsers = async (uuid: string | undefined) => {
+    try {
+      const response = await axios.get(`${url}/api/lobby`, {
+        params: {
+          uuid: uuid
+        }
+      });
+      setUsers(response.data.users);
+      const usersList = response.data.users
+      console.log("USERS:")
+      usersList.forEach((element: { user_id: string; }) => {
+        console.log(element)
+        if (element.user_id !== userId) {
+          console.log("SETTING NEW USER")
+          dispatch({ type: 'SET_USER_ID_2', payload: element.user_id});
+          localStorage.setItem('userId2', element.user_id);
+        }
+      })      
+      setAllUsersReady(response.data.allUsersReady); // Set flag based on response
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchGenres = async () => {
+    console.log(`HERE`)
+
+    try {
+      const response = await axios.get(`${url}/api/questions/genres`);
+      setGenres(response.data);
+      console.log('genres:')
+      genres.forEach(element => {
+        console.log(element.genre)
+      })
     } catch (error) {
       console.error(error);
     }
@@ -535,12 +521,11 @@ const fetchGenres = async () => {
   }, [users])
 
   const handleReady = async (id: string) => {
-    console.log(`SOCKET: ${socket}`)
-  
     try {
       const response = await axios.put(`${url}/api/lobby?userId=${id}`);
       const updatedUser = response.data; // Get updated user object with new status
       if (updatedUser.status === 'Ready') {
+        try {
           socket.send(JSON.stringify({
             type: 'user_status_update',
             payload: {
@@ -548,39 +533,47 @@ const fetchGenres = async () => {
               status: "Ready"
             }
           }));
-          console.log(`SETTING TO IDLE`)
-  
+
           setStatus('Idle');
-        await axios.put(`${url}/api/lobby`); // Update status of all users
-        const response = await axios.get(`${url}/api/lobby`);
-        // setUsers(response.data.users);
-        setAllUsersReady(response.data.allUsersReady); // Update flag based on response
-        users.forEach((element: any) => {
-          console.log(`${element.username} status: ${element.status}`)
-        });
+          await axios.put(`${url}/api/lobby`); // Update status of all users
+          const response = await axios.get(`${url}/api/lobby`);
+          // setUsers(response.data.users);
+          setAllUsersReady(response.data.allUsersReady); // Update flag based on response
+          users.forEach((element: any) => {
+            console.log(`${element.username} status: ${element.status}`)
+          });
+        } catch (error) {
+          console.error(error);
+        }
       } else {
-          socket.send(JSON.stringify({
-            type: 'user_status_update',
-            payload: {
-              userId: userId,
-              status: "Idle"
-            }
-          }));
-          console.log(`SETTING TO READY`)
-  
+        socket.send(JSON.stringify({
+          type: 'user_status_update',
+          payload: {
+            userId: userId,
+            status: "Idle"
+          }
+        }));
         users.forEach((element: any) => {
           console.log(`${element.username} status: ${element.status}`)
         });
-  
+
         setStatus('Ready');
         const allReady = users.every(user => user.status === 'Ready');
         setAllUsersReady(allReady); // Update flag based on current state of users
       }
+    
+      // // Status button clicked
+      // socket.send(JSON.stringify({
+      //   type: 'user_status_update',
+      //   payload: {
+      //     userId: userId,
+      //     status: status
+      //   }
+      // }));
     } catch (error) {
       console.error(error);
     }
   }
-  
 
   const handleInvite = async (sender: string, recipient: string) => {
     if (sender !== recipient) {
@@ -682,7 +675,6 @@ const fetchGenres = async () => {
     const [selectedGenres, setSelectedGenres] = useState<{[key: string]: boolean}>({});
 
     const handleGenreClick = async (genreId: string, genre: string) => {
-      console.log(`SETTING GENRE IN METHOD`)
       setSelectedGenres(({}))
       setSelectedGenres((prevState) => ({
         ...prevState,
@@ -699,16 +691,14 @@ const fetchGenres = async () => {
         console.log(err)
         console.log(`Error updating the genre`)
       }
-      socket.onopen = () => {
-        console.log(`SETTING GENRE IN WS`)
-        const message = {
-          payload: {
-            message: 'set genre',
-            genre: genre,
-          },
-        };
-        socket.send(JSON.stringify(message));
-      }
+  
+      const message = {
+        payload: {
+          message: 'set genre',
+          genre: genre,
+        },
+      };
+      socket.send(JSON.stringify(message));
     };
     return (
       <div>
