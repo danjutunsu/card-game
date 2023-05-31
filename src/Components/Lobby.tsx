@@ -99,7 +99,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
 
   async function getUname(id: string) {
     try {
-      const response = await axios.get(`${url}/api/username`, {
+      const response = await axios.get(`${url}/username`, {
         params: {
           userId: id
         },
@@ -257,7 +257,7 @@ const Lobby = () => {
 
   async function getIp() {
     try {
-      const response = await axios.get(`${url}/api/ip`);
+      const response = await axios.get(`${url}/ip`);
       const data = response.data;
       // setIp(data)
       console.log(`IP: ${data}`)
@@ -272,7 +272,7 @@ const Lobby = () => {
     console.log("EXECUTING_")
     
     if (userId && userId2) {
-      const response = await axios.get(`${url}/api/games/status`, {
+      const response = await axios.get(`${url}/games/status`, {
         params: {
           player1: userId,
           player2: userId2
@@ -322,7 +322,7 @@ const Lobby = () => {
     console.log(`HERE`)
 
     try {
-      const response = await axios.get(`${url}/api/questions/genres`);
+      const response = await axios.get(`${url}/questions/genres`);
       setGenres(response.data);
       console.log('genres:')
       genres.forEach(element => {
@@ -338,7 +338,7 @@ const Lobby = () => {
     const fetchGenres = async () => {
       console.log(`OR HERE`)
       try {
-        const response = await axios.get(`${url}/api/questions/genres`);
+        const response = await axios.get(`${url}/questions/genres`);
         setGenres(response.data);
         console.log('genres:')
         genres.forEach(element => {
@@ -355,7 +355,7 @@ const Lobby = () => {
   const fetchPlayer1 = async (game_id: number) => {
     if (gameId) {
       try {
-        const response = await axios.get(`${url}/api/games/player1`, {
+        const response = await axios.get(`${url}/games/player1`, {
           params: {
             game_id: game_id
           }
@@ -373,7 +373,7 @@ const Lobby = () => {
 
   async function getGame(player1: string, player2: string) {
     try {
-      const response = await axios.get(`${url}/api/games/id`, {
+      const response = await axios.get(`${url}/games/id`, {
         params: {
           player1: player1,
           player2: player2
@@ -382,7 +382,7 @@ const Lobby = () => {
   
       if (!response.data.id) {
         // Game ID doesn't exist, insert a new row
-        await axios.post(`${url}/api/games`, {
+        await axios.post(`${url}/games`, {
           player1: player1,
           player2: player2
         });
@@ -438,7 +438,7 @@ const Lobby = () => {
   async function getGameID(player1: string, player2: string) {
     if (player1 && player2) {
       try {
-        const response = await axios.get(`${url}/api/games/id`, {
+        const response = await axios.get(`${url}/games/id`, {
           params: {
             player1: player1,
             player2: player2
@@ -447,7 +447,7 @@ const Lobby = () => {
     
         if (!response.data.id) {
           // Game ID doesn't exist, insert a new row
-          await axios.post(`${url}/api/games`, {
+          await axios.post(`${url}/games`, {
             player1: player1,
             player2: player2
           });
@@ -468,7 +468,7 @@ const Lobby = () => {
   async function getTurn(gameId: number) {
     if (gameId) {
       try {
-          const response = await axios.get(`${url}/api/games/turn`, {
+          const response = await axios.get(`${url}/games/turn`, {
           params: {
             gameId: gameId
           }
@@ -484,7 +484,7 @@ const Lobby = () => {
 
   async function getGenre(player1: string, player2: string) {
     try {
-        const response = await axios.get(`${url}/api/games/genre`, {
+        const response = await axios.get(`${url}/games/genre`, {
         params: {
           player1: player1,
           player2: player2
@@ -607,7 +607,7 @@ const Lobby = () => {
   const handleInviteUser = async (username: string) => {
     if (users.length < 2) {
       try {
-        const response = await axios.get(`${url}/api/users/invite`, {
+        const response = await axios.get(`${url}/users/invite`, {
           params: {
             username: username
           }
@@ -683,7 +683,7 @@ const Lobby = () => {
       }));
 
       try {
-        const response = await axios.put(`${url}/api/games/genre`, {
+        const response = await axios.put(`${url}/games/genre`, {
           player1: userId,
           player2: userId2,
           genre: genre
