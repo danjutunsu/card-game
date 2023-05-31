@@ -245,10 +245,10 @@ const Lobby = () => {
     const retrievedSocket = getWebSocket();
     console.log(retrievedSocket === socket); // true
 
-    return () => {
-      // Clean up the WebSocket connection if needed
-      // socket.close();
-    };
+    // return () => {
+    //   // Clean up the WebSocket connection if needed
+    //   // socket.close();
+    // };
   }, [userId]);
 
   dispatch({ type: 'SET_UUID', payload: lobbyId ?? '' });
