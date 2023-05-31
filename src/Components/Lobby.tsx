@@ -278,6 +278,8 @@ const getGameStatus = async () =>
   fetchUsers(lobbyId);
   console.log("EXECUTING_")
   
+
+
   if (userId && userId2) {
     const response = await axios.get(`${url}/api/games/status`, {
       params: {
@@ -528,6 +530,8 @@ const fetchGenres = async () => {
   }, [users])
 
   const handleReady = async (id: string) => {
+    console.log(`SOCKET: ${socket.url}`)
+
     try {
       const response = await axios.put(`${url}/api/lobby?userId=${id}`);
       const updatedUser = response.data; // Get updated user object with new status
