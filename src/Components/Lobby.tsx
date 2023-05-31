@@ -262,79 +262,79 @@ if (lobbyId) {
 }
 let socket = getWebSocket();
 
-  async function getIp() {
-    try {
-      const response = await axios.get(`${url}/api/ip`);
-      const data = response.data;
-      // setIp(data)
-      console.log(`IP: ${data}`)
-    } catch (error) {
-      console.error(error);
-    }
+async function getIp() {
+  try {
+    const response = await axios.get(`${url}/api/ip`);
+    const data = response.data;
+    // setIp(data)
+    console.log(`IP: ${data}`)
+  } catch (error) {
+    console.error(error);
   }
+}
 
-  const getGameStatus = async () => 
-  {
-    fetchUsers(lobbyId);
-    console.log("EXECUTING_")
-    
-    if (userId && userId2) {
-      const response = await axios.get(`${url}/api/games/status`, {
-        params: {
-          player1: userId,
-          player2: userId2
-        }
-      })
-      const jsonData = await response.data.game_status;
-      
-      setGameStatus(jsonData)
-      if (jsonData === "0") {
-        // console.log("ANSWERING")
+const getGameStatus = async () => 
+{
+  fetchUsers(lobbyId);
+  console.log("EXECUTING_")
+  
+  if (userId && userId2) {
+    const response = await axios.get(`${url}/api/games/status`, {
+      params: {
+        player1: userId,
+        player2: userId2
       }
-      return jsonData;
+    })
+    const jsonData = await response.data.game_status;
+    
+    setGameStatus(jsonData)
+    if (jsonData === "0") {
+      // console.log("ANSWERING")
     }
+    return jsonData;
   }
+}
 
-  // useEffect(() => {
-  //   getPlayer1(userId, userId2)
-  //   console.log(`UserID:${userId}`)
-  //   console.log(`UserID2:${userId2}`)
-  // }, [users])
+// useEffect(() => {
+//   getPlayer1(userId, userId2)
+//   console.log(`UserID:${userId}`)
+//   console.log(`UserID2:${userId2}`)
+// }, [users])
 
-  const fetchUsers = async (uuid: string | undefined) => {
-    try {
-      const response = await axios.get(`${url}/api/lobby`, {
-        params: {
-          uuid: uuid
-        }
-      });
-      setUsers(response.data.users);
-      const usersList = response.data.users
-      console.log("USERS:")
-      usersList.forEach((element: { user_id: string; }) => {
-        console.log(element)
-        if (element.user_id !== userId) {
-          console.log("SETTING NEW USER")
-          dispatch({ type: 'SET_USER_ID_2', payload: element.user_id});
-          localStorage.setItem('userId2', element.user_id);
-        }
-      })      
-      setAllUsersReady(response.data.allUsersReady); // Set flag based on response
-    } catch (error) {
-      console.error(error);
-    }
-  };
+const fetchUsers = async (uuid: string | undefined) => {
+  try {
+    const response = await axios.get(`${url}/api/lobby`, {
+      params: {
+        uuid: uuid
+      }
+    });
+    setUsers(response.data.users);
+    const usersList = response.data.users
+    console.log("USERS:")
+    usersList.forEach((element: { user_id: string; }) => {
+      console.log(element)
+      if (element.user_id !== userId) {
+        console.log("SETTING NEW USER")
+        dispatch({ type: 'SET_USER_ID_2', payload: element.user_id});
+        localStorage.setItem('userId2', element.user_id);
+      }
+    })      
+    setAllUsersReady(response.data.allUsersReady); // Set flag based on response
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-  const fetchGenres = async () => {
-    console.log(`HERE`)
+const fetchGenres = async () => {
+  console.log(`HERE`)
 
-    try {
-      const response = await axios.get(`${url}/api/questions/genres`);
-      setGenres(response.data);
-      console.log('genres:')
-      genres.forEach(element => {
-        console.log(element.genre)
-      })
+  try {
+    const response = await axios.get(`${url}/api/questions/genres`);
+    setGenres(response.data);
+    console.log('genres:')
+    genres.forEach(element => {
+      console.log(element.genre)
+    })
     } catch (error) {
       console.error(error);
     }
@@ -532,7 +532,6 @@ let socket = getWebSocket();
       const response = await axios.put(`${url}/api/lobby?userId=${id}`);
       const updatedUser = response.data; // Get updated user object with new status
       if (updatedUser.status === 'Ready') {
-        console.log(`SETTING TO IDLE`)
         try {
           socket.send(JSON.stringify({
             type: 'user_status_update',
@@ -541,6 +540,7 @@ let socket = getWebSocket();
               status: "Ready"
             }
           }));
+          console.log(`SETTING TO IDLE`)
 
           setStatus('Idle');
           await axios.put(`${url}/api/lobby`); // Update status of all users
@@ -554,8 +554,6 @@ let socket = getWebSocket();
           console.error(error);
         }
       } else {
-        console.log(`SETTING TO READY`)
-
         socket.send(JSON.stringify({
           type: 'user_status_update',
           payload: {
@@ -563,6 +561,8 @@ let socket = getWebSocket();
             status: "Idle"
           }
         }));
+        console.log(`SETTING TO READY`)
+
         users.forEach((element: any) => {
           console.log(`${element.username} status: ${element.status}`)
         });
