@@ -361,7 +361,7 @@ const Lobby = () => {
           }
         });
         console.log(`PLAYER1: ${response.data.player1_id}`);
-        setPlayer1(response.data[0].player1_id);
+        setPlayer1(response.data.player1_id);
       } catch (error) {
         console.error(error);
       }
