@@ -526,14 +526,15 @@ const Lobby = () => {
       const updatedUser = response.data; // Get updated user object with new status
       if (updatedUser.status === 'Ready') {
         try {
-          socket.send(JSON.stringify({
-            type: 'user_status_update',
-            payload: {
-              userId: userId,
-              status: "Ready"
-            }
-          }));
-
+          socket.onopen = () => {
+            socket.send(JSON.stringify({
+              type: 'user_status_update',
+              payload: {
+                userId: userId,
+                status: "Ready"
+              }
+            }));
+          }
           setStatus('Idle');
           await axios.put(`${url}/lobby`); // Update status of all users
           const response = await axios.get(`${url}/lobby`);
@@ -546,13 +547,15 @@ const Lobby = () => {
           console.error(error);
         }
       } else {
-        socket.send(JSON.stringify({
-          type: 'user_status_update',
-          payload: {
-            userId: userId,
-            status: "Idle"
-          }
-        }));
+        socket.onopen = () => {
+          socket.send(JSON.stringify({
+            type: 'user_status_update',
+            payload: {
+              userId: userId,
+              status: "Idle"
+            }
+          }));
+        }
         users.forEach((element: any) => {
           console.log(`${element.username} status: ${element.status}`)
         });
