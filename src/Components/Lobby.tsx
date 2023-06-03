@@ -197,6 +197,7 @@ const Lobby = () => {
     if (data.user_status_update) {
       const { userId, status} = data.user_status_update;
       handleUserStatusUpdate(data.user_status_update.userId, data.user_status_update.status);
+      fetchUsers(lobbyId);
     }
     else if (data.end_game) {
       navigate(`/stats`)
@@ -563,15 +564,6 @@ const Lobby = () => {
         const allReady = users.every(user => user.status === 'Ready');
         setAllUsersReady(allReady); // Update flag based on current state of users
       }
-    
-      // // Status button clicked
-      // socket.send(JSON.stringify({
-      //   type: 'user_status_update',
-      //   payload: {
-      //     userId: userId,
-      //     status: status
-      //   }
-      // }));
     } catch (error) {
       console.error(error);
     }
