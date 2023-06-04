@@ -192,7 +192,6 @@ const Lobby = () => {
 
     // Start sending 'ping' messages to the server at a regular interval
     setInterval(() => {
-      console.log(`sending ping to server`)
       socket.send('ping');
     }, 20000); // Send 'ping' every 20 seconds
   });
