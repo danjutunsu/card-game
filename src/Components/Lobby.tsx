@@ -155,7 +155,6 @@ const Lobby = () => {
   const [player1, setPlayer1] = useState('')
   const categories = ["Movies & Television", "Literature", "Food & Drink", "Music", "Pop Culture", "Relationships", "Science & Technology", "World Travel"];
   const [selectedCategory, setSelectedCategory] = useState('');
-  const WebSocket = require('ws')
   // const [ip, setIp] = useState('127.0.0.1')
 
   //create new socket
@@ -198,7 +197,7 @@ const Lobby = () => {
   }
 
   const ping = function() {
-    socket.ping(noop);
+    socket.send(`ping`)
   }
 
   setInterval(ping, 30000);
