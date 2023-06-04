@@ -155,6 +155,7 @@ const Lobby = () => {
   const [player1, setPlayer1] = useState('')
   const categories = ["Movies & Television", "Literature", "Food & Drink", "Music", "Pop Culture", "Relationships", "Science & Technology", "World Travel"];
   const [selectedCategory, setSelectedCategory] = useState('');
+  const WebSocket = require('ws')
   // const [ip, setIp] = useState('127.0.0.1')
 
   //create new socket
@@ -186,8 +187,24 @@ const Lobby = () => {
     });
   }
 
+  function noop() {}
+
+  socket.onmessage = function(event: { data: any; }){
+    console.log(event.data);
+  }
+
+  socket.onclose = function(){
+    console.log('server close');
+  }
+
+  const ping = function() {
+    socket.ping(noop);
+  }
+
+  setInterval(ping, 30000);
+
   // Event: Connection opened
-  socket.addEventListener('open', (event) => {
+  socket.addEventListener('open', (event: any) => {
     setStatus('Idle')
 
     // Start sending 'ping' messages to the server at a regular interval
@@ -197,7 +214,7 @@ const Lobby = () => {
   });
 
   // // Listen for messages
-  socket.addEventListener('message', function (event) {
+  socket.addEventListener('message', function (event: { data: string; }) {
     const data = JSON.parse(event.data)
     if (event.data === 'pong') {
       console.log('Received pong from server.'); // Server responded to our 'ping'
@@ -262,7 +279,7 @@ const Lobby = () => {
   });
 
   // Connection closed
-  socket.addEventListener('close', function (event) {
+  socket.addEventListener('close', function (event: any) {
     console.log('WebSocket connection closed');
   });
 
