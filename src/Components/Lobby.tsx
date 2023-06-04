@@ -189,17 +189,27 @@ const Lobby = () => {
   // Event: Connection opened
   socket.addEventListener('open', (event) => {
     setStatus('Idle')
+
+    // Start sending 'ping' messages to the server at a regular interval
+    setInterval(() => {
+      socket.send('ping');
+    }, 20000); // Send 'ping' every 20 seconds
   });
 
   // // Listen for messages
   socket.addEventListener('message', function (event) {
     const data = JSON.parse(event.data)
+    if (event.data === 'pong') {
+      console.log('Received pong from server.'); // Server responded to our 'ping'
+    } else {
+      console.log('Received message from server:', event.data);
+    } 
+
     if (data.user_status_update) {
       const { userId, status} = data.user_status_update;
       handleUserStatusUpdate(data.user_status_update.userId, data.user_status_update.status);
       fetchUsers(lobbyId);
-    }
-    else if (data.end_game) {
+    } else if (data.end_game) {
       navigate(`/stats`)
     } else if (data.genreToSet) {
       console.log(`SETTING GENRE TO ${data.genreToSet}`)
