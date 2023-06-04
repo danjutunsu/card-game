@@ -194,7 +194,7 @@ const Lobby = () => {
     setInterval(() => {
       console.log(`sending ping`)
       socket.send('ping');
-    }, 20000); // Send 'ping' every 20 seconds
+    }, 5000); // Send 'ping' every 5 seconds
   });
 
   // // Listen for messages
