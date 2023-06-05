@@ -17,16 +17,14 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userPoints, setUserPoints] = useState(Object);
   const [message, setMessage] = useState('1');
-  const storeId = useSelector((state: AppState) => state.userId);
-  const userId = parseInt(storeId)
+  const userId = useSelector((state: AppState) => state.userId);
 
 
   useEffect(() => {
-    console.log('uids ' + storeId)
     getUserPoints(userId)
   }, [userId])
 
-  const getUserPoints = async (uid: number) => {
+  const getUserPoints = async (uid: string) => {
     try {
         const response = await axios.get(`/points`, {
             params: 
