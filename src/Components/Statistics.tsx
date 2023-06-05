@@ -1,5 +1,5 @@
 import axios from "axios";
-import { url } from "../Config";
+import { bEnd } from "../Config";
 import "../styles.css";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
