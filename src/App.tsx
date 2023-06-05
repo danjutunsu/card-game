@@ -7,7 +7,7 @@ import './styles.css';
 import { BrowserRouter, Route, Routes, Link, useLocation, HashRouter } from 'react-router-dom';
 import Statistics from './Components/Statistics';
 import axios from 'axios';
-import { url } from './Config';
+import { bEnd } from './Config';
 import { AppState } from './store';
 import { useSelector } from 'react-redux';
 import Lobby from './Components/Lobby';
@@ -26,7 +26,7 @@ function App() {
 
   const getUserPoints = async (uid: string) => {
     try {
-        const response = await axios.get(`${url}/points`, {
+        const response = await axios.get(`${bEnd}/points`, {
             params: 
             {
                 userId: uid,

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { url } from "../Config";
+import { bEnd } from "../Config";
 import axios from "axios";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -70,7 +70,7 @@ const Card = () => {
           status: "Ready"
         }
       }));
-      const response = await axios.put(`${url}/lobby/ready`, null, {
+      const response = await axios.put(`${bEnd}/lobby/ready`, null, {
         params: {
           userId: userId
         }
@@ -102,7 +102,7 @@ const Card = () => {
 
   async function getIp() {
     try {
-      const response = await axios.get(`${url}/ip`);
+      const response = await axios.get(`${bEnd}/ip`);
       const data = response.data;
       console.log(`IP: ${data}`)
       setIp(data)
@@ -114,7 +114,7 @@ const Card = () => {
 
   async function getGenre(player1:string, player2:string) {
     try {
-      const response = await axios.get(`${url}/games/genre`, {
+      const response = await axios.get(`${bEnd}/games/genre`, {
         params: { player1: player1, player2: player2 }
       });
       const data = response.data;
@@ -131,7 +131,7 @@ const Card = () => {
   }, [genre])
 
   async function fetchData(genre: string) {
-    const response = await axios.get(`${url}/questions/`, {
+    const response = await axios.get(`${bEnd}/questions/`, {
       params: {
         genre: genre
       }
@@ -156,7 +156,7 @@ const Card = () => {
     
   async function fetchAnswers(game_id: number, user_id: string) {
     try { 
-      const response = await axios.get(`${url}/answers`, {
+      const response = await axios.get(`${bEnd}/answers`, {
         params: {
           game_id: game_id,
           user_id: user_id
@@ -209,7 +209,7 @@ const Card = () => {
     console.log(`POINTS: ${points}`)
     console.log(`TOTAL: ${total}`)
     try {
-      await axios.put(`${url}/points`, {
+      await axios.put(`${bEnd}/points`, {
             user_id: user_id,
             points: points,
             total: total
@@ -227,7 +227,7 @@ const Card = () => {
   {
     console.log("EXECUTING-_______________")
     console.log(player1, player2)
-    const response = await axios.get(`${url}/games/status`, {
+    const response = await axios.get(`${bEnd}/games/status`, {
       params: {
         player1: player1,
         player2: player2
@@ -264,7 +264,7 @@ const Card = () => {
     const GetStats = async () => 
     {
         let total = 0;
-        const response = await fetch(`${url}/stats`);
+        const response = await fetch(`${bEnd}/stats`);
         const jsonData = await response.json();
         jsonData.forEach((obj: { userGuess: string }) => 
         {
@@ -278,7 +278,7 @@ const Card = () => {
     const ResetRound = async (userId: number, userId2: number) => {
       console.log(`Altering `)
         try {
-          const response = await axios.put(`${url}/reset`, {
+          const response = await axios.put(`${bEnd}/reset`, {
             userId: userId,
             userId2: userId2
           });
@@ -300,12 +300,12 @@ const Card = () => {
         })
         getUserPoints(parseInt(userId))
         if (gameStatus === 0 || gameStatus === 2) {
-          await axios.put(`${url}/games/turn`, {
+          await axios.put(`${bEnd}/games/turn`, {
             player1: userId,
             player2: userId2
           })
         }
-        await axios.put(`${url}/games/status`, {
+        await axios.put(`${bEnd}/games/status`, {
             player1: userId,
             player2: userId2
           }
@@ -341,7 +341,7 @@ const Card = () => {
 
     const nextRound = async (currentUser: number) => {
         try {
-            const response = await axios.post(`${url}/round`, {
+            const response = await axios.post(`${bEnd}/round`, {
                 currentUser: currentUser
             })
         } catch (err) {
@@ -351,7 +351,7 @@ const Card = () => {
 
     const addGuess = async (userId: number, questionId: number, userGuess: number, gameId: number) => {
         try {
-          const response = await axios.post(`${url}/guesses`, {
+          const response = await axios.post(`${bEnd}/guesses`, {
             userId: userId,
             questionId: questionId,
             userGuess: userGuess,
@@ -365,7 +365,7 @@ const Card = () => {
 
     const addAnswer = async (userId: number, questionId: number, answer: number, answered: number, count: number, gameId: number) => {
         try {
-          const response = await axios.post(`${url}/answers`, {
+          const response = await axios.post(`${bEnd}/answers`, {
             userId: userId,
             questionId: questionId,
             answer: answer,
@@ -381,7 +381,7 @@ const Card = () => {
 
     const getUserPoints = async (uid: number) => {
         try {
-            const response = await axios.get(`${url}/points`, {
+            const response = await axios.get(`${bEnd}/points`, {
                 params: 
                 {
                     userId: uid,
@@ -396,7 +396,7 @@ const Card = () => {
 
     const getUser = async (uid: number) => {
         try {
-            const response = await axios.get(`${url}/user`, {
+            const response = await axios.get(`${bEnd}/user`, {
                 params: 
                 {
                     userId: uid,
@@ -410,7 +410,7 @@ const Card = () => {
 
     async function getUname(id: string) {
       try {
-        const response = await axios.get(`${url}/username`, {
+        const response = await axios.get(`${bEnd}/username`, {
           params: {
             userId: id
           },

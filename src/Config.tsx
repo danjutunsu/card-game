@@ -1,4 +1,4 @@
 // config.js
 
-export const url = process.env.BACKEND_URL;
+export const bEnd = process.env.BACKEND_URL;
 

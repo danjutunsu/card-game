@@ -36,7 +36,7 @@ interface CreateFormProps {
           console.log("HASHED: " + hashedPassword)
           console.log(password)
   
-          const response = await axios.post(`${url}/api/users`, {
+          const response = await axios.post(`${bEnd}/api/users`, {
             userName: uName,
             email: email,
             password: hashedPassword // send the hashed password to the backend
