@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import bcrypt from "bcryptjs"; 
 import axios from "axios";
-import { url } from "../Config";
+import { bEnd } from "../Config";
 import CreateForm from "./CreateForm";
 import '../styles.css';
 import { Link } from "react-router-dom";

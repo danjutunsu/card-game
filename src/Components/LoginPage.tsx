@@ -1,7 +1,7 @@
   import axios from "axios";
   import { useContext, useEffect, useState } from "react";
   import LoginForm from "./LoginForm";
-  import { url } from "../Config";
+  import { bEnd } from "../Config";
   import Card from "./Card";
   import '../styles.css';
   import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
