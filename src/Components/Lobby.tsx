@@ -1,10 +1,12 @@
 import axios from "axios";
 import { SetStateAction, useEffect, useState } from "react";
-import { bEnd } from "../Config";
+// import { bEnd } from "../Config";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../store";
 import { useNavigate, useParams } from "react-router-dom";
 import {v4 as uuidv4} from 'uuid';
+
+const bEnd = process.env.BACKEND_URL;
 
 interface Lobby {
   lobbyId: string
@@ -30,7 +32,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
   const randomId = uuidv4();
   const [username, setUserName] = useState('')
   const userId = useSelector((state: AppState) => state.userId);
-
+  
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
   };
