@@ -26,7 +26,7 @@ function App() {
 
   const getUserPoints = async (uid: string) => {
     try {
-        const response = await axios.get(`${url}/points`, {
+        const response = await axios.get(`https://triviafriendsserver.onrender.com/points`, {
             params: 
             {
                 userId: uid,
