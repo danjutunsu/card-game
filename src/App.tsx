@@ -18,7 +18,7 @@ function App() {
   const [userPoints, setUserPoints] = useState(Object);
   const [message, setMessage] = useState('1');
   const userId = useSelector((state: AppState) => state.userId);
-  const url = process.env.BACKEND_URL;
+  const url = process.env.BACKEND;
 
 
   useEffect(() => {
