@@ -36,7 +36,7 @@ type LoginFormProps = {
           console.log("HASHED: " + hashedPassword)
           console.log(password)
   
-          const response = await axios.post(`${url}/users`, {
+          const response = await axios.post(`/users`, {
             userId: uid,
             userName: uName,
             password: hashedPassword // send the hashed password to the backend

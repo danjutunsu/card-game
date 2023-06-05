@@ -42,7 +42,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
   const handleCopyLobby = (uuid: string | undefined) => {
     if (uuid) {
       const url = window.location.origin; // Get the current URL
-      const fullUUID = `${url}/lobby/${uuid}`; // Concatenate the URL and UUID
+      const fullUUID = `/lobby/${uuid}`; // Concatenate the URL and UUID
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(fullUUID)
           .then(() => {
@@ -70,7 +70,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
     try {
       const message = { payload: 'leave' };
       props.socket.send(JSON.stringify(message));
-      await axios.put(`${url}/lobby/leave`, {
+      await axios.put(`/lobby/leave`, {
           userId: userId,
           uuid: uuid
       });
@@ -84,7 +84,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
     try {
       const message = { payload: 'logout' };
       props.socket.send(JSON.stringify(message));
-      await axios.delete(`${url}/lobby?userId=${userId}`);
+      await axios.delete(`/lobby?userId=${userId}`);
       navigate('/')
     } catch (error) {
       console.error(error);
@@ -99,7 +99,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
 
   async function getUname(id: string) {
     try {
-      const response = await axios.get(`${url}/username`, {
+      const response = await axios.get(`/username`, {
         params: {
           userId: id
         },
@@ -175,7 +175,7 @@ const Lobby = () => {
   }
 
   if (lobbyId) {
-    axios.put(`${url}/lobby/${lobbyId}`, {
+    axios.put(`/lobby/${lobbyId}`, {
       userId: userId
     })
     .then(response => {
@@ -269,7 +269,7 @@ const Lobby = () => {
 
   async function getIp() {
     try {
-      const response = await axios.get(`${url}/ip`);
+      const response = await axios.get(`/ip`);
       const data = response.data;
       // setIp(data)
       console.log(`IP: ${data}`)
@@ -284,7 +284,7 @@ const Lobby = () => {
     console.log("EXECUTING_")
     
     if (userId && userId2) {
-      const response = await axios.get(`${url}/games/status`, {
+      const response = await axios.get(`/games/status`, {
         params: {
           player1: userId,
           player2: userId2
@@ -308,7 +308,7 @@ const Lobby = () => {
 
   const fetchUsers = async (uuid: string | undefined) => {
     try {
-      const response = await axios.get(`${url}/lobby`, {
+      const response = await axios.get(`/lobby`, {
         params: {
           uuid: uuid
         }
@@ -334,7 +334,7 @@ const Lobby = () => {
     console.log(`HERE`)
 
     try {
-      const response = await axios.get(`${url}/questions/genres`);
+      const response = await axios.get(`/questions/genres`);
       setGenres(response.data);
       console.log('genres:')
       genres.forEach(element => {
@@ -350,7 +350,7 @@ const Lobby = () => {
     const fetchGenres = async () => {
       console.log(`OR HERE`)
       try {
-        const response = await axios.get(`${url}/questions/genres`);
+        const response = await axios.get(`/questions/genres`);
         setGenres(response.data);
         console.log('genres:')
         genres.forEach(element => {
@@ -367,7 +367,7 @@ const Lobby = () => {
   const fetchPlayer1 = async (game_id: number) => {
     if (gameId) {
       try {
-        const response = await axios.get(`${url}/games/player1`, {
+        const response = await axios.get(`/games/player1`, {
           params: {
             game_id: game_id
           }
@@ -384,7 +384,7 @@ const Lobby = () => {
 
   async function getGame(player1: string, player2: string) {
     try {
-      const response = await axios.get(`${url}/games/id`, {
+      const response = await axios.get(`/games/id`, {
         params: {
           player1: player1,
           player2: player2
@@ -393,7 +393,7 @@ const Lobby = () => {
   
       if (!response.data.id) {
         // Game ID doesn't exist, insert a new row
-        await axios.post(`${url}/games`, {
+        await axios.post(`/games`, {
           player1: player1,
           player2: player2
         });
@@ -436,7 +436,7 @@ const Lobby = () => {
   async function inProgress(userId: string) {
     setStatus('In Progress');
     try {
-      const response = await axios.put(`${url}/lobby/inprogress`, null, {
+      const response = await axios.put(`/lobby/inprogress`, null, {
         params: {
           userId: userId
         }
@@ -449,7 +449,7 @@ const Lobby = () => {
   async function getGameID(player1: string, player2: string) {
     if (player1 && player2) {
       try {
-        const response = await axios.get(`${url}/games/id`, {
+        const response = await axios.get(`/games/id`, {
           params: {
             player1: player1,
             player2: player2
@@ -458,7 +458,7 @@ const Lobby = () => {
     
         if (!response.data.id) {
           // Game ID doesn't exist, insert a new row
-          await axios.post(`${url}/games`, {
+          await axios.post(`/games`, {
             player1: player1,
             player2: player2
           });
@@ -479,7 +479,7 @@ const Lobby = () => {
   async function getTurn(gameId: number) {
     if (gameId) {
       try {
-          const response = await axios.get(`${url}/games/turn`, {
+          const response = await axios.get(`/games/turn`, {
           params: {
             gameId: gameId
           }
@@ -495,7 +495,7 @@ const Lobby = () => {
 
   async function getGenre(player1: string, player2: string) {
     try {
-        const response = await axios.get(`${url}/games/genre`, {
+        const response = await axios.get(`/games/genre`, {
         params: {
           player1: player1,
           player2: player2
@@ -533,7 +533,7 @@ const Lobby = () => {
 
   const handleReady = async (id: string) => {
     try {
-      const response = await axios.put(`${url}/lobby?userId=${id}`);
+      const response = await axios.put(`/lobby?userId=${id}`);
       const updatedUser = response.data; // Get updated user object with new status
       if (updatedUser.status === 'Ready') {
         try {
@@ -547,8 +547,8 @@ const Lobby = () => {
             }));
           }
           setStatus('Idle');
-          await axios.put(`${url}/lobby`); // Update status of all users
-          const response = await axios.get(`${url}/lobby`);
+          await axios.put(`/lobby`); // Update status of all users
+          const response = await axios.get(`/lobby`);
           // setUsers(response.data.users);
           setAllUsersReady(response.data.allUsersReady); // Update flag based on response
           users.forEach((element: any) => {
@@ -612,7 +612,7 @@ const Lobby = () => {
   const handleInviteUser = async (username: string) => {
     if (users.length < 2) {
       try {
-        const response = await axios.get(`${url}/users/invite`, {
+        const response = await axios.get(`/users/invite`, {
           params: {
             username: username
           }
@@ -688,7 +688,7 @@ const Lobby = () => {
       }));
 
       try {
-        const response = await axios.put(`${url}/games/genre`, {
+        const response = await axios.put(`/games/genre`, {
           player1: userId,
           player2: userId2,
           genre: genre
