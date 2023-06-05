@@ -1,7 +1,7 @@
   import axios from "axios";
   import { useContext, useEffect, useState } from "react";
   import LoginForm from "./LoginForm";
-  import { bEnd } from "../Config";
+  import { url } from "../Config";
   import Card from "./Card";
   import '../styles.css';
   import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
@@ -30,7 +30,7 @@
     console.log(`RandomID: ${randomId}`)
 //
     try {
-      const response = await axios.post(`${bEnd}/login`, {
+      const response = await axios.post(`${url}/login`, {
         username: username,
         password: password,
       });
@@ -68,7 +68,7 @@
 
   const handleUpdateUUID = async (id: string, uuid: string | undefined) => {
     try {
-      const response = await axios.put(`${bEnd}/lobby/uuid`, {
+      const response = await axios.put(`${url}/lobby/uuid`, {
         id: id,
         uuid: uuid
       });

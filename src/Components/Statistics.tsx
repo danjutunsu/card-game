@@ -1,5 +1,5 @@
 import axios from "axios";
-import { bEnd } from "../Config";
+import { url } from "../Config";
 import "../styles.css";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -54,7 +54,7 @@ const MyComponent = (props: StatisticsProps) => {
 
   async function getUname(id: string) {
     try {
-      const response = await axios.get(`${bEnd}/api/username`, {
+      const response = await axios.get(`${url}/api/username`, {
         params: {
           userId: id
         }
@@ -94,7 +94,7 @@ const MyComponent = (props: StatisticsProps) => {
   }
   
   async function fetchData(genre: string) {
-    const response = await axios.get(`${bEnd}/api/questions/`, {
+    const response = await axios.get(`${url}/api/questions/`, {
       params: {
         genre: genre
       }
@@ -106,7 +106,7 @@ const MyComponent = (props: StatisticsProps) => {
 
   async function fetchAnswers(game_id: number, user_id: string) {
     try { 
-      const response = await axios.get(`${bEnd}/api/answers`, {
+      const response = await axios.get(`${url}/api/answers`, {
         params: {
           game_id: game_id,
           user_id: user_id
@@ -123,7 +123,7 @@ const MyComponent = (props: StatisticsProps) => {
   }
 
   async function fetchGuesses(gameId: number, userId: string) {
-    const response = await axios.get(`${bEnd}/api/guesses`, {
+    const response = await axios.get(`${url}/api/guesses`, {
       params: {
         gameId: gameId,
         userId: userId
@@ -177,7 +177,7 @@ const Statistics = () => {
 
   const getUserPoints = async (uid: number) => {
     try {
-        const response = await axios.get(`${bEnd}/api/points`, {
+        const response = await axios.get(`${url}/api/points`, {
             params: 
             {
                 userId: uid,
