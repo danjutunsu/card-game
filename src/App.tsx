@@ -7,7 +7,7 @@ import './styles.css';
 import { BrowserRouter, Route, Routes, Link, useLocation, HashRouter } from 'react-router-dom';
 import Statistics from './Components/Statistics';
 import axios from 'axios';
-import { bEnd } from './Config';
+import { url } from './Config';
 import { AppState } from './store';
 import { useSelector } from 'react-redux';
 import Lobby from './Components/Lobby';

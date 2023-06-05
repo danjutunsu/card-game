@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import bcrypt from "bcryptjs"; 
 import axios from "axios";
-import { bEnd } from "../Config";
+import { url } from "../Config";
 import CreateForm from "./CreateForm";
 import '../styles.css';
 import { Link } from "react-router-dom";
@@ -36,7 +36,7 @@ type LoginFormProps = {
           console.log("HASHED: " + hashedPassword)
           console.log(password)
   
-          const response = await axios.post(`${bEnd}/users`, {
+          const response = await axios.post(`${url}/users`, {
             userId: uid,
             userName: uName,
             password: hashedPassword // send the hashed password to the backend
