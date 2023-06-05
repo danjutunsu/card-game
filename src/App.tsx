@@ -18,6 +18,7 @@ function App() {
   const [userPoints, setUserPoints] = useState(Object);
   const [message, setMessage] = useState('1');
   const userId = useSelector((state: AppState) => state.userId);
+  const url = process.env.BACKEND_URL;
 
 
   useEffect(() => {
@@ -26,13 +27,13 @@ function App() {
 
   const getUserPoints = async (uid: string) => {
     try {
-        const response = await axios.get(`https://triviafriendsserver.onrender.com/points`, {
+        const response = await axios.get(`${url}/points`, {
             params: 
             {
                 userId: uid,
             },
         });
-
+        console.log(`points: ${response.data[0]}`)
         setUserPoints(response.data[0]);             
     } catch (error) {
         console.error(error);
