@@ -717,6 +717,7 @@ const Lobby = () => {
                 key={genre.id}
                 className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
                 onClick={() => {
+                  console.log(`SELECTED ${genre.genre}`)
                   handleGenreClick(genre.id.toString(), genre.genre);
                   setSelectedGenre(genre.genre);
                 }}
