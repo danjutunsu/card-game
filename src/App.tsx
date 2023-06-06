@@ -22,10 +22,10 @@ function App() {
 
 
   useEffect(() => {
-    getUserPoints(userId)
+    getUserPoints(parseInt(userId))
   }, [userId])
 
-  const getUserPoints = async (uid: string) => {
+  const getUserPoints = async (uid: number) => {
     try {
         const response = await axios.get(`${url}/points`, {
             params: 
