@@ -1,3 +1,11 @@
-// config.js
+let url: string | undefined;
 
-export const url = process.env.REACT_APP_BACKEND;
+if (process.env.NODE_ENV === "development") {
+  // Set local backend URL
+  url = "http://10.0.0.197";
+} else {
+  // Set production backend URL
+  url = process.env.REACT_APP_BACKEND;
+}
+
+export { url };
