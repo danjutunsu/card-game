@@ -151,10 +151,10 @@ const Lobby = () => {
   const params = useParams();
   const lobbyId = params.lobbyId;
   const [inviteeUsername, setInviteeUsername] = useState('Enter Username');
-  const [selectedGenre, setSelectedGenre] = useState('Movies & Television')
+  const [selectedGenre, setSelectedGenre] = useState('')
   const [player1, setPlayer1] = useState('')
   const categories = ["Movies & Television", "Literature", "Food & Drink", "Music", "Pop Culture", "Relationships", "Science & Technology", "World Travel"];
-  const [selectedCategory, setSelectedCategory] = useState('Movies & Television');
+  const [selectedCategory, setSelectedCategory] = useState('');
   // const [ip, setIp] = useState('127.0.0.1')
 
   //create new socket
@@ -362,7 +362,7 @@ const Lobby = () => {
     };
 
     fetchGenres();
-  }, [0]);
+  }, [selectedCategory]);
 
   const fetchPlayer1 = async (game_id: number) => {
     if (gameId) {
@@ -758,7 +758,7 @@ const Lobby = () => {
       <button className="ready-button" onClick={() => handleReady(userId)}>Ready?</button>
       <CategoryList />
       {waiting ? <div><h1 className="lobby-header lobby-stroke">Your turn is next</h1></div> : <></>}
-      {userId.toString() === player1.toString() ? (
+      {userId.toString() ==='1' ? (
         <GenreList />
       ) : (
         <></>
