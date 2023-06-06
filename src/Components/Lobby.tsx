@@ -154,7 +154,7 @@ const Lobby = () => {
   const [selectedGenre, setSelectedGenre] = useState('')
   const [player1, setPlayer1] = useState('')
   const categories = ["Movies & Television", "Literature", "Food & Drink", "Music", "Pop Culture", "Relationships", "Science & Technology", "World Travel"];
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('Movies');
   // const [ip, setIp] = useState('127.0.0.1')
 
   //create new socket
@@ -658,7 +658,6 @@ const Lobby = () => {
                     setSelectedCategory(category); 
                     console.log(`CATEGORY: ${category}`)
                     console.log(`SELECTEDCATEGORY: ${selectedCategory}`)
-                
                 }}
                 >
                   <button className="unselected">{category}</button>
