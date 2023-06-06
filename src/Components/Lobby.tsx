@@ -151,10 +151,10 @@ const Lobby = () => {
   const params = useParams();
   const lobbyId = params.lobbyId;
   const [inviteeUsername, setInviteeUsername] = useState('Enter Username');
-  const [selectedGenre, setSelectedGenre] = useState('')
+  const [selectedGenre, setSelectedGenre] = useState('Movies & Television')
   const [player1, setPlayer1] = useState('')
   const categories = ["Movies & Television", "Literature", "Food & Drink", "Music", "Pop Culture", "Relationships", "Science & Technology", "World Travel"];
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('Movies & Television');
   // const [ip, setIp] = useState('127.0.0.1')
 
   //create new socket
