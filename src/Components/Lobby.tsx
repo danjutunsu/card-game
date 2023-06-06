@@ -758,7 +758,7 @@ const Lobby = () => {
       <button className="ready-button" onClick={() => handleReady(userId)}>Ready?</button>
       <CategoryList />
       {waiting ? <div><h1 className="lobby-header lobby-stroke">Your turn is next</h1></div> : <></>}
-      {userId === player1 ? (
+      {userId.toString() === player1.toString() ? (
               <GenreList />
       ) : (
         <></>
