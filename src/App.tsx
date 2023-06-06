@@ -41,7 +41,7 @@ function App() {
   }   
 
   return (
-      <><BrowserRouter>
+      <><HashRouter>
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/card/" element={<Card />} />
@@ -51,7 +51,7 @@ function App() {
         <Route path="/create" element={<CreateForm />} />
         <Route path="/stats" element={<Statistics />} />
       </Routes>
-    </BrowserRouter></>
+    </HashRouter></>
   );
 }
 
