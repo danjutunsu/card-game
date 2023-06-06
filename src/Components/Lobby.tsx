@@ -362,7 +362,7 @@ const Lobby = () => {
     };
 
     fetchGenres();
-  }, [selectedCategory, selectedGenre]);
+  }, [0]);
 
   const fetchPlayer1 = async (game_id: number) => {
     if (gameId) {
