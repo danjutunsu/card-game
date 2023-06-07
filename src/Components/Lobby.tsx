@@ -526,7 +526,7 @@ const Lobby = () => {
     getGameStatus();
     console.log(`Game Status: ${gameStatus}`)
     fetchUsers(lobbyId)
-    }, [status]); 
+  }, [status]); 
 
   useEffect(() => {
     getTurn(gameId)
@@ -759,10 +759,10 @@ const Lobby = () => {
       <button className="ready-button" onClick={() => handleReady(userId)}>Ready?</button>
       <CategoryList />
       {waiting ? <div><h1 className="lobby-header lobby-stroke">Your turn is next</h1></div> : <></>}
-      {1 > 0 ? (
-        <><p>User: ${userId}</p><p>Player: {player1}</p><GenreList /></>
+      {userId.toString() === player1.toString() || users.length === 1 ? (
+      <GenreList />
       ) : (
-        <><p>User: ${userId}</p><p>Player: {player1}</p></>
+        <></>
       )}
       <button disabled={!allUsersReady || users.length < 2} className="start-button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
     </div>
