@@ -495,46 +495,42 @@ const Card = () => {
     }
     
     return (
+      <><div className="button-container">
+        <button className="return-button" onClick={() => navigate(`/lobby/${uuid}`)}>Return To Lobby</button>
+      </div>
       <div className="card-page">
-        {gameStatus === 0 || gameStatus === 2 ? (
-        <div>
-          <div className="button-container">
-            <button className="return-button" onClick={() => navigate(`/lobby/${uuid}`)}>Return To Lobby</button>
-          </div>
-        {data[randomQuestion] && (
-          <p className="card-question">{data[randomQuestion].question}</p>)}
-          {/* <h1 className="card-header">You are answering</h1> */}
-          {data[randomQuestion]?.options?.map((option, index) => (
-            <div key={index}>
-              <div className="button-container">
-                <button className="button" onClick={() => handleAnswerNextQuestion(index)}>
-                  {option}
-                </button>
+          {gameStatus === 0 || gameStatus === 2 ? (
+            <div className="card">
+              <div>
+                {data[randomQuestion] && (
+                  <p className="card-question">{data[randomQuestion].question}</p>)}
+                {data[randomQuestion]?.options?.map((option, index) => (
+                  <div key={index}>
+                    <div className="button-container">
+                      <button className="button" onClick={() => handleAnswerNextQuestion(index)}>
+                        {option}
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
-        ) :
-        <>        
-        <div className="button-container">
-            <button className="return-button" onClick={() => navigate(`/lobby/${uuid}`)}>Return To Lobby</button>
-          </div>
-        {/* <h1 className="card-header">How did<span className="lobby-username">{username2}</span> answer this question?</h1> */}
-          <div className="card">
-            {data[randomQuestion] && (
-              <><p className="card-question">{changePronouns(data[randomQuestion].question)}</p></>)}
-            {data[randomQuestion]?.options?.map((option, index) => (
-              <div key={index}>
-                <div className="button-container">
-                  <button className="button" onClick={() => handleNextQuestion(index)}>
-                    {option}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div></>
-        }
-      </div>
+          ) :
+            <>
+              <div className="card">
+                {data[randomQuestion] && (
+                  <><p className="card-question">{changePronouns(data[randomQuestion].question)}</p></>)}
+                {data[randomQuestion]?.options?.map((option, index) => (
+                  <div key={index}>
+                    <div className="button-container">
+                      <button className="button" onClick={() => handleNextQuestion(index)}>
+                        {option}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div></>}
+        </div></>
     );    
 }
 

@@ -154,6 +154,7 @@
     color: white;
     width: auto !important;
     padding: 10px;
+    margin-top: 20px;
     font-size: 18px;
     border: none;
     border-radius: 5px;
@@ -170,6 +171,16 @@
     border-radius: 5px;
     cursor: pointer;
   }
+}
+
+.genre-grid {
+  display: grid;
+  max-width: 90%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  grid-template-columns: repeat(3, 1fr); /* Adjust the number of columns as needed */
+  grid-gap: 5px !important; /* Adjust the gap between grid items as needed */
+  text-align: center;
 }
 
 .ready {
@@ -197,13 +208,14 @@
 .button-container {
   display: flex;
   justify-content: center;
-  margin-left: 5px;
-  margin-right: 5px;
+  margin-left: 10px;
+  margin-right: 10px;
   margin-bottom: 10px;
 }
 
 .button {
   background-color: #8A2BE2;
+  max-width: 90%;
   height: auto;
   text-decoration: none;
   color: white;
@@ -217,6 +229,7 @@
 
 .return-button {
   background-color: rgb(109, 104, 255);
+  margin-top: 10px;
   display: flex;
   align-items: center;
   height: auto;
@@ -225,7 +238,7 @@
   padding: 5px;
   font-size: 18px;
   border: none;
-  border-radius: 0px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
@@ -460,25 +473,25 @@ input {
   margin-top: 5px;
 }
 
+.card-page {
+  background-color: #ededed; /* set the background color to a light gray */
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
+  align-items: center;
+  height: 100vh;
+}
+
 .card {
-  /* max-width: 50%; */
+  max-width: 75%;
   height: auto;
-  background-color: rgb(255, 255, 255);
+  background-color: #E9D3EB;
   border: 1px solid black;
   border-radius: 10px;
   position: relative; 
   display: flex;
   flex-direction: column;
   padding-bottom: 10px;
-  /* justify-content: center; */
-  align-items: center;
-}
-
-.card-page {
-  /* width: 75%; */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
 }
 
@@ -495,7 +508,6 @@ input {
 }
 
 .card-question {
-  max-width: 95%;
   color: #BA55D3; /* complementary color */
   text-shadow: 2px 2px 2px #000; /* add a text shadow */
   stroke: black; /* add a stroke */
