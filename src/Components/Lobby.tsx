@@ -158,7 +158,16 @@ const Lobby = () => {
   // const [ip, setIp] = useState('127.0.0.1')
 
   //create new socket
-  const socket = new WebSocket(`ws://triviafriendsserver.onrender.com/?userId=${userId}`)
+  let socketUrl;
+
+  if (process.env.NODE_ENV === "development") {
+    // Set local WebSocket URL
+    socketUrl = `ws://10.0.0.197:3001/?userId=1`;
+  } else {
+    // Set production WebSocket URL
+    socketUrl = `wss://triviafriendsserver.onrender.com/?userId=${userId}`;
+  }
+  const socket = new WebSocket(socketUrl);
 
   // getIp();
 
@@ -191,10 +200,10 @@ const Lobby = () => {
     setStatus('Idle')
 
     // Start sending 'ping' messages to the server at a regular interval
-    setInterval(() => {
-      console.log(`sending ping`)
-      socket.send('ping');
-    }, 5000); // Send 'ping' every 5 seconds
+    // setInterval(() => {
+    //   console.log(`sending ping`)
+    //   socket.send('ping');
+    // }, 5000); // Send 'ping' every 5 seconds
   });
 
   // // Listen for messages
