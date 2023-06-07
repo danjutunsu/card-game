@@ -216,6 +216,7 @@ const Lobby = () => {
     } 
 
     if (data.user_status_update) {
+      console.log(`USER STATUS UPDATED`)
       const { userId, status} = data.user_status_update;
       handleUserStatusUpdate(data.user_status_update.userId, data.user_status_update.status);
       fetchUsers(lobbyId);
@@ -547,15 +548,13 @@ const Lobby = () => {
       const updatedUser = response.data; // Get updated user object with new status
       if (updatedUser.status === 'Ready') {
         try {
-          socket.onopen = () => {
-            socket.send(JSON.stringify({
-              type: 'user_status_update',
-              payload: {
-                userId: userId,
-                status: "Ready"
-              }
-            }));
-          }
+          socket.send(JSON.stringify({
+            type: 'user_status_update',
+            payload: {
+              userId: userId,
+              status: "Ready"
+            }
+          }));
           setStatus('Idle');
           await axios.put(`${url}/lobby`); // Update status of all users
           const response = await axios.get(`${url}/lobby`);
@@ -568,15 +567,13 @@ const Lobby = () => {
           console.error(error);
         }
       } else {
-        socket.onopen = () => {
-          socket.send(JSON.stringify({
-            type: 'user_status_update',
-            payload: {
-              userId: userId,
-              status: "Idle"
-            }
-          }));
-        }
+        socket.send(JSON.stringify({
+          type: 'user_status_update',
+          payload: {
+            userId: userId,
+            status: "Idle"
+          }
+        }));
         users.forEach((element: any) => {
           console.log(`${element.username} status: ${element.status}`)
         });
@@ -720,26 +717,24 @@ const Lobby = () => {
     return (
       <div>
         {Array.isArray(genres) &&
-          genres.map((genre) => (
+          genres.map((genre) =>
             genre.category.replaceAll('_', ' ') === selectedCategory.toString() ? (
               <div
-                key={genre.id}
+                key={genre.id} // Add the key prop with a unique identifier
                 className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
                 onClick={() => {
-                  console.log(`SELECTED ${genre.genre}`)
+                  console.log(`SELECTED ${genre.genre}`);
                   handleGenreClick(genre.id.toString(), genre.genre);
                   setSelectedGenre(genre.genre);
                 }}
               >
                 {genre.genre.replaceAll('_', ' ')}
               </div>
-            ) : 
-            <>
-            </>
-          ))}
+            ) : null
+          )}
       </div>
-    );    
-  }    
+    );
+  }
 
   function UserList(props: UserListProps) {
     return (
