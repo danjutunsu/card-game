@@ -374,6 +374,7 @@ const Lobby = () => {
         });
         console.log(`PLAYER1: ${response.data.player1_id}`);
         setPlayer1(response.data.player1_id);
+        console.log(`PLAYER 1 UPDATED`)
       } catch (error) {
         console.error(error);
       }
