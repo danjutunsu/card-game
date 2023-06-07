@@ -759,9 +759,9 @@ const Lobby = () => {
       <CategoryList />
       {waiting ? <div><h1 className="lobby-header lobby-stroke">Your turn is next</h1></div> : <></>}
       {1 > 0 ? (
-        <GenreList />
+        <><p>User: ${userId}</p><p>Player: ${player1}</p><GenreList /></>
       ) : (
-        <></>
+        <><p>User: ${userId}</p><p>Player: ${player1}</p></>
       )}
       <button disabled={!allUsersReady || users.length < 2} className="start-button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
     </div>
