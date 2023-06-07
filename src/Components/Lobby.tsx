@@ -162,7 +162,7 @@ const Lobby = () => {
 
   if (process.env.NODE_ENV === "development") {
     // Set local WebSocket URL
-    socketUrl = `ws://10.0.0.197:3001/?userId=1`;
+    socketUrl = `ws://10.0.0.197:3001/?userId=${userId}`;
   } else {
     // Set production WebSocket URL
     socketUrl = `wss://triviafriendsserver.onrender.com/?userId=${userId}`;
@@ -555,6 +555,13 @@ const Lobby = () => {
               status: "Ready"
             }
           }));
+          socket.send(JSON.stringify({
+          type: 'refresh',
+          payload: {
+            user1: userId,
+            user2: userId2
+          }
+          }));
           setStatus('Idle');
           await axios.put(`${url}/lobby`); // Update status of all users
           const response = await axios.get(`${url}/lobby`);
@@ -572,6 +579,13 @@ const Lobby = () => {
           payload: {
             userId: userId,
             status: "Idle"
+          }
+        }));
+        socket.send(JSON.stringify({
+          type: 'refresh',
+          payload: {
+            user1: userId,
+            user2: userId2
           }
         }));
         users.forEach((element: any) => {
