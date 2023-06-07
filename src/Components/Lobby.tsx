@@ -555,6 +555,7 @@ const Lobby = () => {
               status: "Ready"
             }
           }));
+          socket.onopen = () => {
           socket.send(JSON.stringify({
           type: 'refresh',
           payload: {
@@ -562,6 +563,7 @@ const Lobby = () => {
             user2: userId2
           }
           }));
+        }
           setStatus('Idle');
           await axios.put(`${url}/lobby`); // Update status of all users
           const response = await axios.get(`${url}/lobby`);
@@ -581,6 +583,7 @@ const Lobby = () => {
             status: "Idle"
           }
         }));
+        socket.onopen = () => {
         socket.send(JSON.stringify({
           type: 'refresh',
           payload: {
@@ -588,6 +591,7 @@ const Lobby = () => {
             user2: userId2
           }
         }));
+      }
         users.forEach((element: any) => {
           console.log(`${element.username} status: ${element.status}`)
         });
