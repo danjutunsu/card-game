@@ -362,7 +362,7 @@ const Lobby = () => {
     };
 
     fetchGenres();
-  }, [selectedCategory]);
+  }, [selectedCategory, player1]);
 
   const fetchPlayer1 = async (game_id: number) => {
     if (gameId) {
@@ -758,7 +758,7 @@ const Lobby = () => {
       <button className="ready-button" onClick={() => handleReady(userId)}>Ready?</button>
       <CategoryList />
       {waiting ? <div><h1 className="lobby-header lobby-stroke">Your turn is next</h1></div> : <></>}
-      {userId.toString() === '1' ? (
+      {1 > 0 ? (
         <GenreList />
       ) : (
         <></>
