@@ -507,7 +507,7 @@ const Card = () => {
                 {data[randomQuestion]?.options?.map((option, index) => (
                   <div key={index}>
                     <div className="button-container">
-                      <button className="button" onClick={() => handleAnswerNextQuestion(index)}>
+                      <button className="question-button" onClick={() => handleAnswerNextQuestion(index)}>
                         {option}
                       </button>
                     </div>
@@ -523,7 +523,7 @@ const Card = () => {
                 {data[randomQuestion]?.options?.map((option, index) => (
                   <div key={index}>
                     <div className="button-container">
-                      <button className="button" onClick={() => handleNextQuestion(index)}>
+                      <button className="question-button" onClick={() => handleNextQuestion(index)}>
                         {option}
                       </button>
                     </div>

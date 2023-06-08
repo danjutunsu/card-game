@@ -195,16 +195,16 @@ const Lobby = () => {
     });
   }
 
-  // Event: Connection opened
-  socket.addEventListener('open', (event) => {
-    setStatus('Idle')
+  // // Event: Connection opened
+  // socket.addEventListener('open', (event) => {
+  //   setStatus('Idle')
 
-    // Start sending 'ping' messages to the server at a regular interval
-    // setInterval(() => {
-    //   console.log(`sending ping`)
-    //   socket.send('ping');
-    // }, 5000); // Send 'ping' every 5 seconds
-  });
+  //   // Start sending 'ping' messages to the server at a regular interval
+  //   // setInterval(() => {
+  //   //   console.log(`sending ping`)
+  //   //   socket.send('ping');
+  //   // }, 5000); // Send 'ping' every 5 seconds
+  // });
 
   // // Listen for messages
   socket.addEventListener('message', function (event) {
@@ -457,6 +457,19 @@ const Lobby = () => {
     }
   }
 
+  async function idle(userId: string) {
+    setStatus('Idle');
+    try {
+      const response = await axios.put(`${url}/lobby/idle`, null, {
+        params: {
+          userId: userId
+        }
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async function getGameID(player1: string, player2: string) {
     if (player1 && player2) {
       try {
@@ -539,8 +552,41 @@ const Lobby = () => {
   }, [status]); 
 
   useEffect(() => {
+    users.forEach(element => {
+      if (element.user_id === userId && element.status === "In Progress") {
+          console.log(`TRUE`)
+          idle(userId)
+        } else {
+          console.log(`false: ${status}`)
+        }
+    })
+  }, [users])
+
+  useEffect(() => {
     getTurn(gameId)
   }, [users])
+
+  // useEffect(() => {
+  //   users.forEach(element => {
+  //     if (element.user_id === userId) {
+  //       if (element.status === "In Progress") {
+  //         setStatus("Idle")
+  //         console.log(`IN PROGRESS`)
+  //         socket.onopen = () => {
+  //         socket.send(JSON.stringify({
+  //           type: 'user_status_update',
+  //           payload: {
+  //             userId: userId,
+  //             status: "Idle"
+  //           }
+  //         }));
+  //         }
+  //       } else {
+  //         console.log(`NOT IN PROGRESS`)
+  //         console.log(status)
+  //       }
+  //     }
+  //   })})
 
   const handleReady = async (id: string) => {
     try {
