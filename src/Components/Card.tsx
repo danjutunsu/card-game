@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { url } from "../Config";
 import axios from "axios";
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppState } from "../store";
 
@@ -27,6 +27,12 @@ interface QuestionProps {
   guess: number
 }
 
+interface User {
+  user_id: string;
+  username: string;
+  status: string;
+}
+
 const Card = () => {
   const userId = useSelector((state: AppState) => state.userId);
   const userId2 = useSelector((state: AppState) => state.userId2);
@@ -49,8 +55,25 @@ const Card = () => {
   const dispatch = useDispatch();
   const gameId = useSelector((state: AppState) => state.gameId);
   const [ip, setIp] = useState()
+  const [users, setUsers] = useState<User[]>([]);
+  const [isMyTurn, setIsMyTurn] = useState(false);
+
 
   const socket = new WebSocket(`wss://triviafriendsserver.onrender.com/?userId=${userId}`)
+
+  useEffect(() => {
+    fetchUsers(uuid)
+    getTurn(gameId)
+  }, [0])
+
+  useEffect(() => {
+    const fetchTurn = async () => {
+      const turn = await getTurn(gameId);
+      setIsMyTurn(turn === userId);
+    };
+
+    fetchTurn();
+  }, [gameId, userId]);
 
   const handleEnd = async () => {
     try {
@@ -60,6 +83,27 @@ const Card = () => {
       console.error(error);
     }
   };
+
+  async function getTurn(gameId: number) {
+    if (gameId) {
+      try {
+          const response = await axios.get(`${url}/games/turn`, {
+          params: {
+            gameId: gameId
+          }
+        });
+        if (response.data.turn_id === userId) {
+          console.log(`THIS USER'S TURN`)
+        } else {
+          console.log(`USER: ${response.data.turn_id}'s turn`)
+        }
+        return response.data.turn_id
+      } catch (err) {
+        console.log(err);
+        console.log("Error getting turn ID");
+      }
+    }
+  }
 
   async function ready(userId: string) {
     try {
@@ -80,9 +124,26 @@ const Card = () => {
     }
   }  
 
-  window.addEventListener('popstate', (event) => {
-    ready(userId)
-  })
+  // window.addEventListener('popstate', (event) => {
+  //   ready(userId)
+  // })
+
+  const fetchUsers = async (uuid: string | undefined) => {
+    try {
+      const response = await axios.get(`${url}/lobby`, {
+        params: {
+          uuid: uuid
+        }
+      });
+      setUsers(response.data.users);
+      response.data.users.forEach((element: { username: any; }) => {
+        console.log(element.username)
+
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   // // Listen for messages
   socket.addEventListener('message', function (event) {
@@ -237,16 +298,16 @@ const Card = () => {
 
     setGameStatus(jsonData)
     if (jsonData === 0) {
+      socket.onopen = () => {
       console.log('resetting')
       try {
         const message = { payload: 'reset' };
         socket.send(JSON.stringify(message));
-
       } catch (error) {
         console.error(error);
       }
-        // console.log("ANSWERING")
       }
+    }
       return jsonData;
     }
 
@@ -493,17 +554,23 @@ const Card = () => {
       }
       setAnswered(answered+1)
     }
-    
+
+    if (!isMyTurn) {
+      return null; // Return null when it's not the user's turn
+    }
+
     return (
-      <><div className="button-container">
-        <button className="return-button" onClick={() => navigate(`/lobby/${uuid}`)}>Return To Lobby</button>
-      </div>
-      <div className="card-page">
+      <>
+        <div className="button-container">
+          <button className="return-button" onClick={() => navigate(`/lobby/${uuid}`)}>Return To Lobby</button>
+        </div>
+        <div className="card-page">
           {gameStatus === 0 || gameStatus === 2 ? (
             <div className="card">
               <div>
                 {data[randomQuestion] && (
-                  <p className="card-question">{data[randomQuestion].question}</p>)}
+                  <p className="card-question">{data[randomQuestion].question}</p>
+                )}
                 {data[randomQuestion]?.options?.map((option, index) => (
                   <div key={index}>
                     <div className="button-container">
@@ -515,23 +582,27 @@ const Card = () => {
                 ))}
               </div>
             </div>
-          ) :
-            <>
-              <div className="card">
-                {data[randomQuestion] && (
-                  <><p className="card-question">{changePronouns(data[randomQuestion].question)}</p></>)}
-                {data[randomQuestion]?.options?.map((option, index) => (
-                  <div key={index}>
-                    <div className="button-container">
-                      <button className="question-button" onClick={() => handleNextQuestion(index)}>
-                        {option}
-                      </button>
-                    </div>
+          ) : (
+            <div className="card">
+              {data[randomQuestion] && (
+                <>
+                  <p className="card-question">{changePronouns(data[randomQuestion].question)}</p>
+                </>
+              )}
+              {data[randomQuestion]?.options?.map((option, index) => (
+                <div key={index}>
+                  <div className="button-container">
+                    <button className="question-button" onClick={() => handleNextQuestion(index)}>
+                      {option}
+                    </button>
                   </div>
-                ))}
-              </div></>}
-        </div></>
-    );    
-}
-
-export default Card;
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </>
+    );
+  }
+  
+  export default Card;
