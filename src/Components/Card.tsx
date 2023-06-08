@@ -286,7 +286,7 @@ const Card = () => {
 
   const getGameStatus = async (player1: string, player2: string) => 
   {
-    console.log("EXECUTING-_______________")
+    // console.log("EXECUTING-_______________")
     console.log(player1, player2)
     const response = await axios.get(`${url}/games/status`, {
       params: {
@@ -299,7 +299,7 @@ const Card = () => {
     setGameStatus(jsonData)
     if (jsonData === 0) {
       socket.onopen = () => {
-      console.log('resetting')
+      // console.log('resetting')
       try {
         const message = { payload: 'reset' };
         socket.send(JSON.stringify(message));
@@ -384,7 +384,6 @@ const Card = () => {
     
       while (visited.includes(index)) {
         index = Math.floor(Math.random() * data.length);
-        console.log('while')
         if (visited.length === data.length) {
           // all questions have been visited
           getUserPoints(parseInt(userId))
