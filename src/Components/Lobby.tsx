@@ -30,12 +30,14 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
   const randomId = uuidv4();
   const [username, setUserName] = useState('')
   const userId = useSelector((state: AppState) => state.userId);
+  const [users, setUsers] = useState<User[]>([]);
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
   };
 
   useEffect(() => {
+    fetchUsers(lobbyId);
     getUname(userId)
   }, [0])
 
@@ -66,6 +68,26 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
     }
   };
 
+  const fetchUsers = async (uuid: string | undefined) => {
+    try {
+      const response = await axios.get(`${url}/lobby`, {
+        params: {
+          uuid: uuid
+        }
+      });
+      setUsers(response.data.users);
+      const usersList = response.data.users
+      usersList.forEach((element: { user_id: string; }) => {
+        console.log(element)
+        if (element.user_id !== userId) {
+          localStorage.setItem('userId2', element.user_id);
+        }
+      })      
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleLeaveGame = async (userId: string, uuid: string | undefined) => {
     try {
       const message = { payload: 'leave' };
@@ -74,6 +96,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
           userId: userId,
           uuid: uuid
       });
+      fetchUsers(lobbyId);
       navigate(`/lobby/${randomId}`)
     } catch (error) {
       console.error(error);
@@ -229,6 +252,7 @@ const Lobby = () => {
       localStorage.setItem('genre', genre);
     } else if (data.invite) {
       setInvited(true)
+      fetchUsers(uuid);
     } else if (data.logout) {
       // const { sender, recipient } = data.invite;
       fetchUsers(params.lobbyId);
@@ -310,12 +334,6 @@ const Lobby = () => {
     }
   }
 
-  // useEffect(() => {
-  //   getPlayer1(userId, userId2)
-  //   console.log(`UserID:${userId}`)
-  //   console.log(`UserID2:${userId2}`)
-  // }, [users])
-
   const fetchUsers = async (uuid: string | undefined) => {
     try {
       const response = await axios.get(`${url}/lobby`, {
@@ -341,8 +359,6 @@ const Lobby = () => {
   };
 
   const fetchGenres = async () => {
-    console.log(`HERE`)
-
     try {
       const response = await axios.get(`${url}/questions/genres`);
       setGenres(response.data);
@@ -358,7 +374,6 @@ const Lobby = () => {
   useEffect(() => {
     // Fetch genres based on selectedCategory
     const fetchGenres = async () => {
-      console.log(`OR HERE`)
       try {
         const response = await axios.get(`${url}/questions/genres`);
         setGenres(response.data);
@@ -566,27 +581,17 @@ const Lobby = () => {
     getTurn(gameId)
   }, [users])
 
-  // useEffect(() => {
-  //   users.forEach(element => {
-  //     if (element.user_id === userId) {
-  //       if (element.status === "In Progress") {
-  //         setStatus("Idle")
-  //         console.log(`IN PROGRESS`)
-  //         socket.onopen = () => {
-  //         socket.send(JSON.stringify({
-  //           type: 'user_status_update',
-  //           payload: {
-  //             userId: userId,
-  //             status: "Idle"
-  //           }
-  //         }));
-  //         }
-  //       } else {
-  //         console.log(`NOT IN PROGRESS`)
-  //         console.log(status)
-  //       }
-  //     }
-  //   })})
+  useEffect(() => {
+    socket.onopen = () => {
+      socket.send(JSON.stringify({
+      type: 'refresh',
+      payload: {
+        user1: userId,
+        user2: userId2
+      }
+      }));
+    }
+  }, [0])
 
   const handleReady = async (id: string) => {
     try {

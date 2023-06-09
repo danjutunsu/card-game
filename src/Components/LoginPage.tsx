@@ -26,6 +26,16 @@
   const [showLogin, setShowLogin] = useState(true);
   const randomId = uuidv4();
 
+  let hashMap: {[key: string]: string} = {};
+  hashMap["key 1"] = "value 1";
+  hashMap["key 2"] = "value 2";
+  hashMap["key 3"] = "value 3";
+
+  for (var key in hashMap) {
+    console.log(`Key: ${key}`)
+    console.log(`Value: ${hashMap[key]}`)
+  }
+
   const handleLogin = async (username: string, password: string) => {
     console.log(`RandomID: ${randomId}`)
 //

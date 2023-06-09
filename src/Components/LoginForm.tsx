@@ -14,7 +14,7 @@ type LoginFormProps = {
   
   const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('swag');
+    const [password, setPassword] = useState('');
     const [showAccountCreation, setShowAccountCreation] = useState(false);
   
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
