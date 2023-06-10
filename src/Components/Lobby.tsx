@@ -400,7 +400,9 @@ const Lobby = () => {
       }
     };
 
-    getUname(player1)
+    if (player1) {
+      getUname(player1)
+    }
 
     fetchGenres();
   }, [selectedCategory, player1]);
@@ -795,14 +797,16 @@ const Lobby = () => {
         console.log(`Error updating the genre`)
       }
       console.log(`SETTING GENRE IN WS`)
-      socket.send(JSON.stringify({
-        type: 'set_genre',
-        payload: {
-          type: "set_genre",
-          genre: genre
-        }
-      }));
-    };
+      socket.onopen = () => {
+        socket.send(JSON.stringify({
+          type: 'set_genre',
+          payload: {
+            type: "set_genre",
+            genre: genre
+          }
+        }));
+      };
+    }
     return (
       <div>
         {Array.isArray(genres) &&
