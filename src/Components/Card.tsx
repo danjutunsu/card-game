@@ -179,6 +179,7 @@ const Card = () => {
         params: { player1: player1, player2: player2 }
       });
       const data = response.data;
+      console.log(`setting genre to: ${data}`)
       setGenre(data);
       fetchData(data)
     } catch (error) {
