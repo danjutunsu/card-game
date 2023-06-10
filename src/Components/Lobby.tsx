@@ -177,7 +177,7 @@ const Lobby = () => {
   const [selectedGenre, setSelectedGenre] = useState('')
   const [player1, setPlayer1] = useState('')
   const [player1Uname, setPlayer1Uname] = useState('')
-  const categories = ["Movies & Television", "Literature", "Food & Drink", "Music", "Pop Culture", "Relationships", "Science & Technology", "World Travel"];
+  const categories = ["Movies & Television", "Literature", "Food & Drink", "Music", "Pop Culture", "Relationships", "Science & Technology", "World Travel", "Video Games"];
   const [selectedCategory, setSelectedCategory] = useState('');
   // const [ip, setIp] = useState('127.0.0.1')
 
@@ -258,7 +258,7 @@ const Lobby = () => {
       setSelectedGenre(genre.replaceAll('_', ' '))
       console.log(`WORKING HERE`)
       console.log(`SETTING GENRE TO ${data.genreToSet.genre.replaceAll('_', ' ')}`)
-      setGenre(data.genreToSet.genre)
+      setGenre(data.genreToSet.genre.replaceAll('_', ' '))
       dispatch({ type: 'SET_GENRE', payload: data.genreToSet.genre });
       localStorage.setItem('genre', genre);
       setGenreDB(userId, userId2, data.genreToSet.genre)
@@ -561,7 +561,7 @@ const Lobby = () => {
           player2: player2
         }
       });
-      setGenre(response.data.replaceAll('_', ' '));
+      setGenre(response.data?.replaceAll('_', ' '));
       console.log(`CURRENT GAME GENRE: ${response.data}`)
       let genre = response.data.replaceAll('_', ' ');
       setSelectedGenre(genre.replaceAll('_', ' '))
@@ -786,55 +786,78 @@ const Lobby = () => {
         [genreId]: !prevState[genreId],
       }));
 
-      try {
-        const response = await axios.put(`${url}/games/genre`, {
-          player1: userId,
-          player2: userId2,
-          genre: genre
-        });
-      } catch (err) {
-        console.log(err)
-        console.log(`Error updating the genre`)
-      }
-      console.log(`SETTING GENRE IN WS`)
-      socket.onopen = () => {
-        socket.send(JSON.stringify({
-          type: 'set_genre',
-          payload: {
-            type: "set_genre",
+      if (users.length > 1) {
+        try {
+          const response = await axios.put(`${url}/games/genre`, {
+            player1: userId,
+            player2: userId2,
             genre: genre
-          }
+          });
+        } catch (err) {
+          console.log(err)
+          console.log(`Error updating the genre`)
+        }
+        console.log(`SETTING GENRE IN WS`)
+        // socket.onopen = () => {
+          socket.send(JSON.stringify({
+            type: 'set_genre',
+            payload: {
+              type: "set_genre",
+              genre: genre
+            }
         }));
-      };
-    }
-    return (
-      <div>
-        {Array.isArray(genres) &&
-          genres.map((genre) =>
-            genre.category.replaceAll('_', ' ') === selectedCategory.toString() ? (
-              <div
-                key={genre.id} // Add the key prop with a unique identifier
-                className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
-                onClick={() => {
-                  console.log(`SELECTED ${genre.genre}`);
-                  handleGenreClick(genre.id.toString(), genre.genre);
-                  setSelectedGenre(genre.genre.replaceAll('_', ' '));
-                  socket.onopen = () => {
-                    console.log(`SETTING GENRE IN WS`)
-                    const message = {
-                      payload: {
-                        type: 'set_genre',
-                        genre: genre,
-                      },
-                    };
-                    socket.send(JSON.stringify(message));
-                  }
-                }}
-              >
-                {genre.genre.replaceAll('_', ' ')}
-              </div>
-            ) : null
-          )}
+      } else {
+      //   try {
+      //     const response = await axios.put(`${url}/games/genre`, {
+      //       player1: userId,
+      //       player2: userId2,
+      //       genre: genre
+      //     });
+      //   } catch (err) {
+      //     console.log(err)
+      //     console.log(`Error updating the genre`)
+      //   }
+      //   console.log(`SETTING GENRE IN WS`)
+      //   // socket.onopen = () => {
+      //     socket.send(JSON.stringify({
+      //       type: 'set_genre',
+      //       payload: {
+      //         type: "set_genre",
+      //         genre: genre
+      //       }
+      //   }));
+      // }
+      }  
+  }
+  // }
+  return (
+    <div>
+      {Array.isArray(genres) &&
+        genres.map((genre) =>
+          genre.category.replaceAll('_', ' ') === selectedCategory.toString() ? (
+            <div
+              key={genre.id} // Add the key prop with a unique identifier
+              className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
+              onClick={() => {
+                console.log(`SELECTED ${genre.genre}`);
+                handleGenreClick(genre.id.toString(), genre.genre);
+                setSelectedGenre(genre.genre.replaceAll('_', ' '));
+                socket.onopen = () => {
+                  console.log(`SETTING GENRE IN WS`)
+                  const message = {
+                    payload: {
+                      type: 'set_genre',
+                      genre: genre,
+                    },
+                  };
+                  socket.send(JSON.stringify(message));
+                }
+              }}
+            >
+              {genre.genre.replaceAll('_', ' ')}
+            </div>
+          ) : null
+        )}
       </div>
     );
   }
