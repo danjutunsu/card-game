@@ -254,9 +254,10 @@ const Lobby = () => {
     } else if (data.end_game) {
       navigate(`/stats`)
     } else if (data.genreToSet) {
-      setSelectedGenre(data.genreToSet.genre.replaceAll('_', ' '))
+      let genre = data.genreToSet.genre
+      setSelectedGenre(genre.replaceAll('_', ' '))
       console.log(`WORKING HERE`)
-      console.log(`SETTING GENRE TO ${data.genreToSet.genre}`)
+      console.log(`SETTING GENRE TO ${data.genreToSet.genre.replaceAll('_', ' ')}`)
       setGenre(data.genreToSet.genre)
       dispatch({ type: 'SET_GENRE', payload: data.genreToSet.genre });
       localStorage.setItem('genre', genre);
@@ -303,7 +304,7 @@ const Lobby = () => {
     } else if (data.refresh) {
       // const { sender, recipient } = data.invite;
       console.log(`REFRESH`)
-      fetchUsers(params.lobbyId);
+      fetchUsers(uuid);
     }
   });
 
@@ -558,9 +559,9 @@ const Lobby = () => {
           player2: player2
         }
       });
-      setGenre(response.data);
+      setGenre(response.data.replaceAll('_', ' '));
       console.log(`CURRENT GAME GENRE: ${response.data}`)
-      let genre = response.data;
+      let genre = response.data.replaceAll('_', ' ');
       setSelectedGenre(genre.replaceAll('_', ' '))
     } catch (err) {
       console.log(err);
@@ -813,7 +814,7 @@ const Lobby = () => {
                 onClick={() => {
                   console.log(`SELECTED ${genre.genre}`);
                   handleGenreClick(genre.id.toString(), genre.genre);
-                  setSelectedGenre(genre.genre);
+                  setSelectedGenre(genre.genre.replaceAll('_', ' '));
                   socket.onopen = () => {
                     console.log(`SETTING GENRE IN WS`)
                     const message = {
