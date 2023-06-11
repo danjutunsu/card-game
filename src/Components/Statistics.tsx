@@ -54,7 +54,7 @@ const MyComponent = (props: StatisticsProps) => {
 
   async function getUname(id: string) {
     try {
-      const response = await axios.get(`${url}/api/username`, {
+      const response = await axios.get(`${url}/username`, {
         params: {
           userId: id
         }
@@ -94,7 +94,7 @@ const MyComponent = (props: StatisticsProps) => {
   }
   
   async function fetchData(genre: string) {
-    const response = await axios.get(`${url}/api/questions/`, {
+    const response = await axios.get(`${url}/questions/`, {
       params: {
         genre: genre
       }
@@ -106,7 +106,7 @@ const MyComponent = (props: StatisticsProps) => {
 
   async function fetchAnswers(game_id: number, user_id: string) {
     try { 
-      const response = await axios.get(`${url}/api/answers`, {
+      const response = await axios.get(`${url}/answers`, {
         params: {
           game_id: game_id,
           user_id: user_id
@@ -123,7 +123,7 @@ const MyComponent = (props: StatisticsProps) => {
   }
 
   async function fetchGuesses(gameId: number, userId: string) {
-    const response = await axios.get(`${url}/api/guesses`, {
+    const response = await axios.get(`${url}/guesses`, {
       params: {
         gameId: gameId,
         userId: userId
@@ -177,7 +177,7 @@ const Statistics = () => {
 
   const getUserPoints = async (uid: number) => {
     try {
-        const response = await axios.get(`${url}/api/points`, {
+        const response = await axios.get(`${url}/points`, {
             params: 
             {
                 userId: uid,

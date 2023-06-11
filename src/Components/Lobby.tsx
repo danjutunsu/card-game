@@ -186,18 +186,6 @@ const Lobby = () => {
     console.log(`Current State of Genre: ${genre}`)
   }, [genre])
 
-  //create new socket
-  let socketUrl;
-
-  if (process.env.NODE_ENV === "development") {
-    // Set local WebSocket URL
-    socketUrl = `ws://10.0.0.197:3001/?userId=${userId}`;
-  } else {
-    // Set production WebSocket URL
-    socketUrl = `wss://triviafriendsserver.onrender.com/?userId=${userId}`;
-  }
-  const socket = new WebSocket(socketUrl);
-
   // getIp();
 
   // useEffect(() => {
@@ -220,13 +208,10 @@ const Lobby = () => {
       console.error(error);
     }
   }
-
   if (lobbyId) {
     dispatch({ type: 'SET_UUID', payload: lobbyId });
     localStorage.setItem('uuid', lobbyId);
-  }
-
-  if (lobbyId) {
+  
     axios.put(`${url}/lobby/${lobbyId}`, {
       userId: userId
     })
@@ -237,7 +222,23 @@ const Lobby = () => {
       console.error(error);
     });
   }
-
+  
+  // Create a new socket
+  let socketUrl;
+  
+  if (process.env.NODE_ENV === "development") {
+    // Set local WebSocket URL
+    
+    // const currentUrl = window.location.href;
+    // const uuidd = currentUrl.match(/\/lobby\/([^/]+)/)[1];
+    socketUrl = `ws://10.0.0.197:3001/?userId=${userId}&uuid=${uuid}`; // Use & to separate query parameters
+  } else {
+    // Set production WebSocket URL
+    socketUrl = `wss://triviafriendsserver.onrender.com/?userId=${userId}`;
+  }
+  
+  const socket = new WebSocket(socketUrl);
+  
   // // Listen for messages
   socket.addEventListener('message', function (event) {
     const data = JSON.parse(event.data)
@@ -562,10 +563,10 @@ const Lobby = () => {
           player2: player2
         }
       });
-      setGenre(response.data?.replaceAll('_', ' '));
+      setGenre(response.data);
       console.log(`CURRENT GAME GENRE: ${response.data}`)
-      let genre = response.data.replaceAll('_', ' ');
-      setSelectedGenre(genre.replaceAll('_', ' '))
+      let genre = response.data;
+      setSelectedGenre(genre)
     } catch (err) {
       console.log(err);
       console.log("Error getting turn ID");
@@ -592,6 +593,9 @@ const Lobby = () => {
   }, [status]); 
 
   useEffect(() => {
+    if (users.length > 1) {
+      getGameID(userId, userId2);
+    }
     users.forEach(element => {
       if (element.user_id === userId && element.status === "In Progress") {
           console.log(`TRUE`)
@@ -790,8 +794,6 @@ const Lobby = () => {
         ...prevState,
         [genreId]: !prevState[genreId],
       }));
-
-      if (users.length > 1) {
         try {
           const response = await axios.put(`${url}/games/genre`, {
             player1: userId,
@@ -808,31 +810,10 @@ const Lobby = () => {
             type: 'set_genre',
             payload: {
               type: "set_genre",
+              uuid: uuid,
               genre: genre
             }
         }));
-      } else {
-      //   try {
-      //     const response = await axios.put(`${url}/games/genre`, {
-      //       player1: userId,
-      //       player2: userId2,
-      //       genre: genre
-      //     });
-      //   } catch (err) {
-      //     console.log(err)
-      //     console.log(`Error updating the genre`)
-      //   }
-      //   console.log(`SETTING GENRE IN WS`)
-      //   // socket.onopen = () => {
-      //     socket.send(JSON.stringify({
-      //       type: 'set_genre',
-      //       payload: {
-      //         type: "set_genre",
-      //         genre: genre
-      //       }
-      //   }));
-      // }
-      }  
   }
   // }
   return (
