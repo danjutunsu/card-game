@@ -49,8 +49,11 @@
         setUserId(response.data.userId)
         // continue with your code
         localStorage.setItem("token", response.data.token);
+        console.log(`Token: ${response.data.token}`)
         setLoginFailed(false);
         setLoggedIn(true);
+        const token = localStorage.getItem('token');
+        console.log(`TOKEN IN STORAGE: ${token}`)
         setTimeout(() => {
           setLoggedIn(false);
           setLoggedInCard(true);

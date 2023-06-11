@@ -179,7 +179,8 @@ const Lobby = () => {
   const [player1Uname, setPlayer1Uname] = useState('')
   const categories = ["Movies & Television", "Literature", "Food & Drink", "Music", "Pop Culture", "Relationships", "Science & Technology", "World Travel", "Video Games"];
   const [selectedCategory, setSelectedCategory] = useState('');
-  // const [ip, setIp] = useState('127.0.0.1')
+  const token = localStorage.getItem('token');
+
 
   useEffect(() => {
     console.log(`Current State of Genre: ${genre}`)
@@ -616,61 +617,64 @@ const Lobby = () => {
       }));
     }
   }, [0])
-
   const handleReady = async (id: string) => {
+    console.log(`TOKEN: ${token}`)
     try {
-      const response = await axios.put(`${url}/lobby?userId=${id}`);
+      const response = await axios.put(
+        `${url}/lobby?userId=${id}`, {},
+        {
+          headers: {
+            Authorization: `${token}`,
+          },
+        }
+      );
       const updatedUser = response.data; // Get updated user object with new status
       if (updatedUser.status === 'Ready') {
+        // User is now ready
         try {
           socket.send(JSON.stringify({
             type: 'user_status_update',
             payload: {
               userId: userId,
-              status: "Ready"
-            }
+              status: 'Ready',
+            },
           }));
           socket.onopen = () => {
-          socket.send(JSON.stringify({
-          type: 'refresh',
-          payload: {
-            user1: userId,
-            user2: userId2
-          }
-          }));
-        }
+            socket.send(JSON.stringify({
+              type: 'refresh',
+              payload: {
+                user1: userId,
+                user2: userId2,
+              },
+            }));
+          };
+  
           setStatus('Idle');
-          await axios.put(`${url}/lobby`); // Update status of all users
+  
           const response = await axios.get(`${url}/lobby`);
-          // setUsers(response.data.users);
-          setAllUsersReady(response.data.allUsersReady); // Update flag based on response
-          users.forEach((element: any) => {
-            console.log(`${element.username} status: ${element.status}`)
-          });
+          // Process the response data as needed
         } catch (error) {
           console.error(error);
         }
       } else {
+        // User is now idle
         socket.send(JSON.stringify({
           type: 'user_status_update',
           payload: {
             userId: userId,
-            status: "Idle"
-          }
+            status: 'Idle',
+          },
         }));
         socket.onopen = () => {
-        socket.send(JSON.stringify({
-          type: 'refresh',
-          payload: {
-            user1: userId,
-            user2: userId2
-          }
-        }));
-      }
-        users.forEach((element: any) => {
-          console.log(`${element.username} status: ${element.status}`)
-        });
-
+          socket.send(JSON.stringify({
+            type: 'refresh',
+            payload: {
+              user1: userId,
+              user2: userId2,
+            },
+          }));
+        };
+  
         setStatus('Ready');
         const allReady = users.every(user => user.status === 'Ready');
         setAllUsersReady(allReady); // Update flag based on current state of users
@@ -678,7 +682,8 @@ const Lobby = () => {
     } catch (error) {
       console.error(error);
     }
-  }
+  };
+  
 
   const handleInvite = async (sender: string, recipient: string) => {
     if (sender !== recipient) {
@@ -887,7 +892,7 @@ const Lobby = () => {
       <h3 className="lobby-header lobby-stroke">Users In Lobby:</h3>
       <UserList users={users} handleReady={handleReady} handleStatusUpdate={handleUserStatusUpdate}/>
       <button className="ready-button" onClick={() => handleReady(userId)}>Ready?</button>
-      <div><h1 className="lobby-header lobby-stroke">{player1Uname } has set the genre to <span className="lobby-genre">{genre}</span></h1></div>
+      <div><h1 className="lobby-header lobby-stroke">Genre is set to <span className="lobby-genre">{genre}</span></h1></div>
       {waiting ? <div><h1 className="lobby-header lobby-stroke">Your turn is next</h1></div> : <></>}
       {userId.toString() === player1.toString() || users.length === 1 ? (
       <><CategoryList /><GenreList /></>
