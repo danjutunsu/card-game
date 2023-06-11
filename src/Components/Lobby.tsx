@@ -409,10 +409,10 @@ const Lobby = () => {
     fetchGenres();
   }, [selectedCategory, player1]);
 
-  useEffect(() => {
-    console.log(`getting genre for user: ${userId} and user: ${userId2}`)
-    getGenre(userId, userId2);
-  }, [selectedGenre])
+  // useEffect(() => {
+  //   console.log(`getting genre for user: ${userId} and user: ${userId2}`)
+  //   // getGenre(userId, userId2);
+  // }, [selectedGenre])
 
   const fetchPlayer1 = async (game_id: number) => {
     if (gameId) {
@@ -566,7 +566,7 @@ const Lobby = () => {
       setGenre(response.data);
       console.log(`CURRENT GAME GENRE: ${response.data}`)
       let genre = response.data;
-      setSelectedGenre(genre)
+      setSelectedGenre(genre.replaceAll('_', ' '))
     } catch (err) {
       console.log(err);
       console.log("Error getting turn ID");
@@ -828,7 +828,7 @@ const Lobby = () => {
               onClick={() => {
                 console.log(`SELECTED ${genre.genre}`);
                 handleGenreClick(genre.id.toString(), genre.genre);
-                // setSelectedGenre(genre.genre.replaceAll('_', ' '));
+                setSelectedGenre(genre.genre.replaceAll('_', ' '));
                 socket.onopen = () => {
                   console.log(`SETTING GENRE IN WS`)
                   const message = {
