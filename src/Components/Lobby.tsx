@@ -828,7 +828,7 @@ const Lobby = () => {
               onClick={() => {
                 console.log(`SELECTED ${genre.genre}`);
                 handleGenreClick(genre.id.toString(), genre.genre);
-                setSelectedGenre(genre.genre.replaceAll('_', ' '));
+                // setSelectedGenre(genre.genre.replaceAll('_', ' '));
                 socket.onopen = () => {
                   console.log(`SETTING GENRE IN WS`)
                   const message = {
