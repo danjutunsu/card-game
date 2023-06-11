@@ -623,6 +623,7 @@ const Lobby = () => {
   }, [0])
   const handleReady = async (id: string) => {
     console.log(`TOKEN: ${token}`)
+    console.log(process.env.JWT_SECRET)
     try {
       const response = await axios.put(
         `${url}/lobby?userId=${id}`, {},
