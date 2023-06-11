@@ -234,7 +234,7 @@ const Lobby = () => {
     socketUrl = `ws://10.0.0.197:3001/?userId=${userId}&uuid=${uuid}`; // Use & to separate query parameters
   } else {
     // Set production WebSocket URL
-    socketUrl = `wss://triviafriendsserver.onrender.com/?userId=${userId}`;
+    socketUrl = `wss://triviafriendsserver.onrender.com/?userId=${userId}&uuid=${uuid}`;
   }
   
   const socket = new WebSocket(socketUrl);
