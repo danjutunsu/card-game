@@ -628,7 +628,7 @@ const Lobby = () => {
         `${url}/lobby?userId=${id}`, {},
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `${token}`,
           },
         }
       );
