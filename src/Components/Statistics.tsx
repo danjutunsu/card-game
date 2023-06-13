@@ -52,6 +52,10 @@ const MyComponent = (props: StatisticsProps) => {
     fetchData(genre);
   }, [0])
 
+  useEffect(() => {
+    console.log(answers)
+  }, [answers])
+
   async function getUname(id: string) {
     try {
       const response = await axios.get(`${url}/username`, {
@@ -76,14 +80,14 @@ const MyComponent = (props: StatisticsProps) => {
       <ul>
         {data.map((entry) => (
           <li key={entry.id} className="stats-text" style={{ listStyle: "none" }}>
-            <div className="stats-question">{entry.question}</div>
+            <div className="stats-question">{entry.id} {entry.question}</div>
             {guesses[entry.id] && (
               <>
                 <div className="stats-guess">
-                  You Guessed: {entry.options[guesses[entry.id].guess]}
+                  {entry.id} You Guessed: {entry.options[guesses[entry.id].guess]}
                 </div>
                 <div className="stats-answer">
-                  They Answered: {entry.options[answers[entry.id].answer]}
+                  {entry.id} They Answered: {entry.options[answers[entry.id].answer]}
                 </div>
               </>
             )}
@@ -94,7 +98,7 @@ const MyComponent = (props: StatisticsProps) => {
   }
   
   async function fetchData(genre: string) {
-    const response = await axios.get(`${url}/questions/`, {
+    const response = await axios.get(`${url}/questions`, {
       params: {
         genre: genre
       }
@@ -112,7 +116,7 @@ const MyComponent = (props: StatisticsProps) => {
           user_id: user_id
         },
       });
-      console.log('ANSWERS:', response.data); // Log all rows to the console
+      console.log(`ANSWERS for gameId: ${gameId} USERID: ${user_id}`, response.data); // Log all rows to the console
       setAnswers(response.data);
       return response.data;
     } catch (error) {
@@ -131,12 +135,13 @@ const MyComponent = (props: StatisticsProps) => {
     });
     const jsonData = response.data;
     setGuesses(jsonData);
+    console.log(`GUESSES: ${jsonData.rows}`)
   }
 
   useEffect(() => {
     getUname(props.user);
     fetchAnswers(gameId, userId2)
-    fetchGuesses(gameId, userId2)
+    fetchGuesses(gameId, userId)
   }, [data]);
 
   return (
@@ -173,6 +178,10 @@ const Statistics = () => {
 
   useEffect(() => {
     getUserPoints(parseInt(userId))
+  })
+
+  useEffect(() => {
+    console.log(`USER POINTS: ${userPoints.points}`)
   })
 
   const getUserPoints = async (uid: number) => {

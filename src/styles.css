@@ -83,28 +83,17 @@
     padding: 8px;
   }
   .login-header {
-    color: #ffe14f; /* complementary color */
-    text-shadow: 2px 2px 2px #000; /* add a text shadow */
-    stroke: black; /* add a stroke */
-    padding: 10px;
+    color: #ffe14f; /* complementary color */stroke: black; /* add a stroke */
     text-align: center;
-    border-radius: 5px 5px 0 0;
-    font-size: 36px;
-    font-weight: normal !important;
-    -webkit-text-stroke: 1px black;
-    text-stroke: 1px black;
+    font-family: 'Roboto', sans-serif;
+    font-size: 28px;
   }
   .stats-header {
-    color: #ffe14f; /* complementary color */
-    text-shadow: 2px 2px 2px #000; /* add a text shadow */
+    color: #BA55D3;
     stroke: black; /* add a stroke */
-    padding: 5px;
     text-align: center;
-    /* border-radius: 5px 5px 0 0; */
-    font-size: 36px;
-    font-weight: normal !important;
-    -webkit-text-stroke: 1px black;
-    text-stroke: 1px black;
+    font-family: 'Roboto', sans-serif;
+    font-size: 28px;
   }
   
   .lobby-username {
@@ -137,14 +126,6 @@
     font-weight: normal !important;
     -webkit-text-stroke: 1px black;
     text-stroke: 1px black;
-  }
-  
-  .lobby-row {
-    color: #ff704d; 
-    text-align: center;
-    border-radius: 5px 5px 0 0;
-    font-size: 22px;
-    font-weight: normal !important;
   }
 
   .button {
@@ -229,6 +210,7 @@
 .question-button {
   background-color: #8A2BE2;
   max-width: 90%;
+  width: auto;
   height: auto;
   text-decoration: none;
   color: white;
@@ -369,15 +351,10 @@ button[disabled] {
 
 .menu-header {
   color: #8A2BE2; /* complementary color */
-  text-shadow: 2px 2px 2px #000; /* add a text shadow */
-  stroke: black; /* add a stroke */
-  text-align: center;
-  /* border-radius: 5px 5px 0 0; */
-  font-size: 36px;
-  font-weight: bold;
-  -webkit-text-stroke: 1px black;
-  text-stroke: 1px black;
-  display: inline-block; 
+    stroke: black; /* add a stroke */
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    font-size: 28px;
 }
 
 .menu-username {
@@ -541,6 +518,7 @@ input {
   padding: 10px;
   text-align: center;
   border-radius: 5px 5px 0 0;
+  font-family: 'Roboto', sans-serif;
   font-size: 36px;
   font-weight: bold;
   -webkit-text-stroke: 1px black;
@@ -625,12 +603,20 @@ body {
   text-stroke: 1px black; */
 }
 
+.lobby-header {
+  color: #BA55D3; /* complementary color */
+  stroke: black; /* add a stroke */
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 28px;
+}
+
 .lobby-row {
   color: #BA55D3; /* complementary color */
+  stroke: black; /* add a stroke */
   text-align: center;
-  border-radius: 5px 5px 0 0;
+  font-family: 'Roboto', sans-serif;
   font-size: 28px;
-  font-weight: bold;
 }
 
 .lobby-genre {
@@ -667,17 +653,6 @@ body {
 .lobby-stroke {
   -webkit-text-stroke: 1px black;
   text-stroke: 1px black;
-}
-
-.lobby-header {
-  color: #BA55D3; /* complementary color */
-  stroke: black; /* add a stroke */
-  text-align: center;
-  /* border-radius: 5px 5px 0 0; */
-  font-size: 28px;
-  /* font-weight: bold; */
-  /* -webkit-text-stroke: 1px black; */
-  /* text-stroke: 1px black; */
 }
 
 .start-button {

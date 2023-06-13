@@ -256,14 +256,21 @@ const Lobby = () => {
     } else if (data.end_game) {
       navigate(`/stats`)
     } else if (data.genreToSet) {
+      console.log(`WORKING HERE`)
       let genre = data.genreToSet.genre
       setSelectedGenre(genre.replaceAll('_', ' '))
-      console.log(`WORKING HERE`)
       console.log(`SETTING GENRE TO ${data.genreToSet.genre.replaceAll('_', ' ')}`)
       setGenre(data.genreToSet.genre.replaceAll('_', ' '))
       dispatch({ type: 'SET_GENRE', payload: data.genreToSet.genre });
       localStorage.setItem('genre', genre);
       setGenreDB(userId, userId2, data.genreToSet.genre)
+      socket.send(JSON.stringify({
+        type: 'refresh',
+        payload: {
+          user1: userId,
+          user2: userId2
+        }
+      }));
     } else if (data.invite) {
       setInvited(true)
       fetchUsers(uuid);

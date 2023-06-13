@@ -31,7 +31,7 @@ function App() {
                 userId: uid,
             },
         });
-        console.log(`points: ${response.data[0]}`)
+        console.log(`points: ${response.data}`)
         setUserPoints(response.data[0]);             
     } catch (error) {
         console.error(error);

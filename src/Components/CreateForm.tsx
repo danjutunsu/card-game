@@ -41,7 +41,20 @@ interface CreateFormProps {
             email: email,
             password: hashedPassword // send the hashed password to the backend
           });
-          setSubmitMessage('Account Created')
+          setSubmitMessage('User Created')
+          console.log(`USERID AFTER CREATION: ${response.data.id}`)
+
+          // CREATING NEW USER ROW IN POINTS
+          try {
+            const res = await axios.post(`${url}/points`, {
+              userId: response.data.id
+            });
+            setSubmitMessage('User Created IN POINTS')
+          } catch (error) {
+            setSubmitMessage('Error Creating User IN POINTS')
+            console.error(error);
+            alert(`Please ensure that the userId is correct.`)
+            }
         } catch (error) {
           setSubmitMessage('Error Creating User')
           console.error(error);
