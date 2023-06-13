@@ -77,10 +77,9 @@ const Card = () => {
 
   const handleEnd = async () => {
     try {
-      // const message = { payload: 'end' };
-      socket.send(JSON.stringify({
-        type: 'end'
-      }));    } catch (error) {
+      const message = { payload: 'end' };
+      socket.send(JSON.stringify(message));
+    } catch (error) {
       console.error(error);
     }
   };
@@ -279,6 +278,7 @@ const Card = () => {
           }
         )
       console.log("POINTS SHOULD BE INSERTED");
+      navigate(`/lobby/${uuid}`)
     } catch (error) {
       console.error(error);
       // Handle error
