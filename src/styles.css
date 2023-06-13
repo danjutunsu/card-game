@@ -95,7 +95,12 @@
     font-family: 'Roboto', sans-serif;
     font-size: 28px;
   }
-  
+
+  .stats-stroke {
+    -webkit-text-stroke: 1px black;
+    text-stroke: 1px black;
+  }
+
   .lobby-username {
     display: inline-block;
     color: #6d68ff; /* complementary color */
@@ -106,14 +111,6 @@
     font-weight: normal !important;
     -webkit-text-stroke: 1px black;
     text-stroke: 1px black;
-  }
-  
-  .stats-row {
-    color: #44302b; 
-    text-align: center;
-    border-radius: 5px 5px 0 0;
-    font-size: 22px;
-    font-weight: normal !important;
   }
   
   .status-text {
@@ -540,11 +537,12 @@ body {
 
 .stats-row {
   color: #FF69B4; 
+  max-width: 80%;
+  height: auto;
+  stroke: black; /* add a stroke */
   text-align: center;
-  border-radius: 5px 5px 0 0;
-  font-size: 22px;
-  font-weight: bold;
-  -webkit-text-stroke: 1px #000;
+  font-family: 'Roboto', sans-serif;
+  font-size: 30px;
 }
 
 .stats-text { 
@@ -578,9 +576,22 @@ body {
   outline: 1px solid black;
 }
 
-.stats-answer {
+.stats-answer-correct {
   height: auto;
   background-color: #FF69B4;
+  text-decoration: none;
+  color: white;
+  padding: 10px;
+  font-size: 18px;
+  border: none;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  outline: 1px solid black;
+}
+
+.stats-answer-incorrect {
+  height: auto;
+  background-color: #ff0000;
   text-decoration: none;
   color: white;
   padding: 10px;

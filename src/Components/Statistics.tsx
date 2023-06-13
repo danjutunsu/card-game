@@ -70,7 +70,6 @@ const MyComponent = (props: StatisticsProps) => {
       console.error(error);
     }
   }
-
   function QuestionData() {
     if (!Array.isArray(data) || guesses.length === 0) {
       return <p>Loading...</p>; // or any other loading indicator
@@ -78,24 +77,29 @@ const MyComponent = (props: StatisticsProps) => {
   
     return (
       <ul>
-        {data.map((entry) => (
-          <li key={entry.id} className="stats-text" style={{ listStyle: "none" }}>
-            <div className="stats-question">{entry.id} {entry.question}</div>
-            {guesses[entry.id] && (
-              <>
-                <div className="stats-guess">
-                  {entry.id} You Guessed: {entry.options[guesses[entry.id].guess]}
-                </div>
-                <div className="stats-answer">
-                  {entry.id} They Answered: {entry.options[answers[entry.id].answer]}
-                </div>
-              </>
-            )}
-          </li>
-        ))}
+        {data.map((entry) => {
+          const foundAnswer = answers.find((answer) => answer.question_id === entry.id);
+          return (
+            <li key={entry.id} className="stats-text" style={{ listStyle: "none" }}>
+              <div className="stats-question">{entry.id} {entry.question}</div>
+              {guesses[entry.id - 1] && foundAnswer && (
+                <>
+                  <div className={entry.options[foundAnswer.answer] === entry.options[guesses[entry.id - 1].guess] ? "stats-answer-correct" : "stats-answer-incorrect"}>
+                    You Guessed: {entry.options[guesses[entry.id - 1].guess]}
+                  </div>
+                  <div className={entry.options[foundAnswer.answer] === entry.options[guesses[entry.id - 1].guess] ? "stats-answer-correct" : "stats-answer-incorrect"}>
+                    They Answered: {entry.options[foundAnswer.answer]}
+                  </div>
+                </>
+              )}
+            </li>
+          );
+        })}
       </ul>
     );
   }
+  
+  
   
   async function fetchData(genre: string) {
     const response = await axios.get(`${url}/questions`, {
@@ -160,7 +164,7 @@ const MyComponent = (props: StatisticsProps) => {
       ) : (
         <p className="stats-row">No Guesses this round</p>
       )}
-      <p className="stats-header">========== Historical Stats ==========</p>
+      <p className="stats-header">Historical Stats</p>
       <p className="stats-row">Total Correct: {props.totalCorrect}</p>
       <p className="stats-row">Total Wrong: {props.totalIncorrect}</p>
       <p className="stats-row">Total Historical: {props.totalHistorical}</p>

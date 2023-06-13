@@ -77,9 +77,10 @@ const Card = () => {
 
   const handleEnd = async () => {
     try {
-      const message = { payload: 'end' };
-      socket.send(JSON.stringify(message));
-    } catch (error) {
+      // const message = { payload: 'end' };
+      socket.send(JSON.stringify({
+        type: 'end'
+      }));    } catch (error) {
       console.error(error);
     }
   };
