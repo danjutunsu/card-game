@@ -193,7 +193,7 @@ const Card = () => {
   }, [genre])
 
   async function fetchData(genre: string) {
-    const response = await axios.get(`${url}/questions/`, {
+    const response = await axios.get(`${url}/questions`, {
       params: {
         genre: genre
       }

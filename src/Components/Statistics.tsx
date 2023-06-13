@@ -180,10 +180,6 @@ const Statistics = () => {
     getUserPoints(parseInt(userId))
   })
 
-  useEffect(() => {
-    console.log(`USER POINTS: ${userPoints.points}`)
-  })
-
   const getUserPoints = async (uid: number) => {
     try {
         const response = await axios.get(`${url}/points`, {
