@@ -900,7 +900,9 @@ const Lobby = () => {
       <h3 className="lobby-header lobby-stroke">Users In Lobby:</h3>
       <UserList users={users} handleReady={handleReady} handleStatusUpdate={handleUserStatusUpdate}/>
       <button className="ready-button" onClick={() => handleReady(userId)}>Ready?</button>
+      {genre !== '' ? (      
       <div><h1 className="lobby-header lobby-stroke">Genre is set to <span className="lobby-genre">{genre}</span></h1></div>
+      ) : <></>}
       {waiting ? <div><h1 className="lobby-header lobby-stroke">Your turn is next</h1></div> : <></>}
       {userId.toString() === player1.toString() || users.length === 1 ? (
       <><CategoryList /><GenreList /></>
