@@ -491,6 +491,13 @@ const Lobby = () => {
                 status: "In Progress"
               }
             }));
+            socket.send(JSON.stringify({
+            type: 'refresh',
+            payload: {
+              user1: userId,
+              user2: userId2
+            }
+            }));
             navigate('/card')
         } else {
             // navigate('/waiting')
@@ -691,15 +698,13 @@ const Lobby = () => {
             status: 'Idle',
           },
         }));
-        socket.onopen = () => {
-          socket.send(JSON.stringify({
-            type: 'refresh',
-            payload: {
-              user1: userId,
-              user2: userId2,
-            },
-          }));
-        };
+        socket.send(JSON.stringify({
+          type: 'refresh',
+          payload: {
+            user1: userId,
+            user2: userId2,
+          },
+        }));
   
         setStatus('Ready');
         const allReady = users.every(user => user.status === 'Ready');
