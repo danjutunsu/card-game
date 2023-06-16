@@ -186,6 +186,7 @@ const Lobby = () => {
     console.log(`Current State of Genre: ${genre}`)
   }, [genre])
 
+
   // getIp();
 
   // useEffect(() => {
@@ -238,7 +239,19 @@ const Lobby = () => {
   }
   
   const socket = new WebSocket(socketUrl);
-  
+
+  useEffect(() => {
+    socket.onopen = () => { 
+      socket.send(JSON.stringify({
+        type: 'refresh',
+        payload: {
+          user1: userId,
+          user2: userId2
+        }
+      }));
+    }
+  }, [])
+
   // // Listen for messages
   socket.addEventListener('message', function (event) {
     const data = JSON.parse(event.data)
@@ -627,7 +640,8 @@ const Lobby = () => {
       }
       }));
     }
-  }, [0])
+  }, [lobbyId])
+
   const handleReady = async (id: string) => {
     console.log(`TOKEN: ${token}`)
     console.log(process.env.JWT_SECRET)
