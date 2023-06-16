@@ -51,12 +51,13 @@ const Card = () => {
   const location = useLocation();
   const [genre, setGenre] = useState('')
   const [gameStatus, setGameStatus] = useState()
+  const [playerTurn, setPlayerTurn] = useState(0)
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const gameId = useSelector((state: AppState) => state.gameId);
   const [ip, setIp] = useState()
   const [users, setUsers] = useState<User[]>([]);
-  const [isMyTurn, setIsMyTurn] = useState(false);
+  // const [isMyTurn, setIsMyTurn] = useState(false);
 
 
   const socket = new WebSocket(`wss://triviafriendsserver.onrender.com/?userId=${userId}`)
@@ -69,7 +70,7 @@ const Card = () => {
   useEffect(() => {
     const fetchTurn = async () => {
       const turn = await getTurn(gameId);
-      setIsMyTurn(turn === userId);
+      // setIsMyTurn(turn === userId);
     };
 
     fetchTurn();
@@ -193,6 +194,7 @@ const Card = () => {
   }, [genre])
 
   async function fetchData(genre: string) {
+    console.log(`GENRE : ${genre}`)
     const response = await axios.get(`${url}/questions`, {
       params: {
         genre: genre
@@ -206,7 +208,9 @@ const Card = () => {
     getGenre(userId, userId2)
 
     if (userId && userId2) {
+      console.log(`BOTH PLAYERS`)
       getGameStatus(userId, userId2);
+      getPlayerTurn(parseInt(userId), gameId)
     }
       async function fetchUsername() {
         const u2 = await getUname(userId2);
@@ -214,7 +218,7 @@ const Card = () => {
         setUsername2(u2);
       }
     fetchUsername();
-  }, []);
+  }, [0]);
     
   async function fetchAnswers(game_id: number, user_id: string) {
     try { 
@@ -288,7 +292,7 @@ const Card = () => {
 
   const getGameStatus = async (player1: string, player2: string) => 
   {
-    // console.log("EXECUTING-_______________")
+    console.log("EXECUTING-_______________")
     console.log(player1, player2)
     const response = await axios.get(`${url}/games/status`, {
       params: {
@@ -310,6 +314,34 @@ const Card = () => {
       }
       }
     }
+      return jsonData;
+    }
+
+    const getPlayerTurn = async (player: number, game_id: number) => 
+  {
+    // console.log("EXECUTING-_______________")
+    console.log(player)
+    const response = await axios.get(`${url}/games/player_turn`, {
+      params: {
+        player: player,
+        game_id: game_id
+      }
+    })
+    const jsonData = response.data;
+
+    setPlayerTurn(jsonData.playerTurn)
+    console.log(`SETTING PLAYER TURN TO: ${jsonData.playerTurn}`)
+    // if (jsonData === 0) {
+    //   socket.onopen = () => {
+    //   // console.log('resetting')
+    //   try {
+    //     const message = { payload: 'reset' };
+    //     socket.send(JSON.stringify(message));
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+    //   }
+    // }
       return jsonData;
     }
 
@@ -355,29 +387,34 @@ const Card = () => {
     async function getRandomQuestion() {
       if (visited.length === data.length) {
         // all questions have been visited
-        console.log("Finished Guessing")
+        console.log("Finished Questions")
         console.log(gameId)
         fetchAnswers(gameId, userId2)
         guesses.forEach(element => {
           console.log(element)
         })
         getUserPoints(parseInt(userId))
-        if (gameStatus === 0 || gameStatus === 2) {
-          await axios.put(`${url}/games/turn`, {
-            player1: userId,
-            player2: userId2
-          })
-        }
+        console.log(`PLAYER: ${userId} GAMEID: ${gameId}`)
+        getGenre(userId, userId2);
+
+        await axios.put(`${url}/games/player_turn`, {
+          player: userId,
+          game_id: gameId
+        })
+        
         await axios.put(`${url}/games/status`, {
             player1: userId,
             player2: userId2
           }
         )
         console.log(`game status before navigating: ${gameStatus}`)
-        if (gameStatus === 3) {
-          handleEnd()
-        } else {
+
+        getPlayerTurn(parseInt(userId), gameId);
+        if (playerTurn === 1) {
           navigate(`/lobby/${uuid}`)
+
+          // handleEnd()
+        } else {
         }
         return null; // return the current question
       }
@@ -556,9 +593,9 @@ const Card = () => {
       setAnswered(answered+1)
     }
 
-    if (!isMyTurn) {
-      return null; // Return null when it's not the user's turn
-    }
+    // if (!isMyTurn) {
+    //   return null; // Return null when it's not the user's turn
+    // }
 
     return (
       <>
@@ -566,8 +603,9 @@ const Card = () => {
           <button className="return-button" onClick={() => navigate(`/lobby/${uuid}`)}>Return To Lobby</button>
         </div>
         <div className="card-page">
-          {gameStatus === 0 || gameStatus === 2 ? (
+          {playerTurn === 0 ? (
             <div className="card">
+              <div>0 {playerTurn}</div>
               <div>
                 {data[randomQuestion] && (
                   <p className="card-question">{data[randomQuestion].question}</p>
@@ -585,6 +623,7 @@ const Card = () => {
             </div>
           ) : (
             <div className="card">
+            <div>1 {playerTurn}</div>
               {data[randomQuestion] && (
                 <>
                   <p className="card-question">{changePronouns(data[randomQuestion].question)}</p>

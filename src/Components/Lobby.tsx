@@ -180,21 +180,72 @@ const Lobby = () => {
   const categories = ["Movies & Television", "Literature", "Food & Drink", "Music", "Pop Culture", "Relationships", "Science & Technology", "World Travel", "Video Games"];
   const [selectedCategory, setSelectedCategory] = useState('');
   const token = localStorage.getItem('token');
-
+  const [playerTurn, setPlayerTurn] = useState(0)
+  const [player2Turn, setPlayer2Turn] = useState(0)
 
   useEffect(() => {
-    console.log(`Current State of Genre: ${genre}`)
-  }, [genre])
+    if (playerTurn === 2 && player2Turn === 2) {
+      console.log(`SENDING TO STATS`)
+      handleEnd();
+    }
+  }, [playerTurn, player2Turn])
 
+  const getPlayerTurn = async (player: number, game_id: number) => 
+  {
+    // console.log("EXECUTING-_______________")
+    console.log(player)
+    const response = await axios.get(`${url}/games/player_turn`, {
+      params: {
+        player: player,
+        game_id: game_id
+      }
+    })
+    const jsonData = response.data;
 
-  // getIp();
+    setPlayerTurn(jsonData.playerTurn)
+    console.log(`SETTING PLAYER TURN TO: ${jsonData.playerTurn}`)
+    // if (jsonData === 0) {
+    //   socket.onopen = () => {
+    //   // console.log('resetting')
+    //   try {
+    //     const message = { payload: 'reset' };
+    //     socket.send(JSON.stringify(message));
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+    //   }
+    // }
+      return jsonData;
+    }
 
-  // useEffect(() => {
-  //   //create new socket
-  //   const ipv4Address = ip.replace(/^::ffff:/, '');
-  // const socket = new WebSocket(`ws://${ipv4Address}:3002?userId=${userId}`)
+  const getPlayer2Turn = async (player: number, game_id: number) => 
+  {
+  // console.log("EXECUTING-_______________")
+  console.log(player)
+  const response = await axios.get(`${url}/games/player_turn`, {
+    params: {
+      player: player,
+      game_id: game_id
+    }
+  })
+  const jsonData = response.data;
 
-  // }, [ip])
+  setPlayer2Turn(jsonData.playerTurn)
+  console.log(`SETTING PLAYER TURN TO: ${jsonData.playerTurn}`)
+  // if (jsonData === 0) {
+  //   socket.onopen = () => {
+  //   // console.log('resetting')
+  //   try {
+  //     const message = { payload: 'reset' };
+  //     socket.send(JSON.stringify(message));
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  //   }
+  // }
+    return jsonData;
+  }
+
 
   async function getUname(id: string) {
     try {
@@ -222,6 +273,21 @@ const Lobby = () => {
     .catch(error => {
       console.error(error);
     });
+  }
+
+  async function getU2(id: string) {
+    try {
+      const response = await axios.get(`${url}/username`, {
+        params: {
+          userId: id
+        },
+      });
+      
+      setUserName(response.data.rows[0].username)
+    } catch (error) {
+      console.error(error);
+    }
+
   }
   
   // Create a new socket
@@ -478,9 +544,7 @@ const Lobby = () => {
       // Get the turn ID for current round
       await getTurn(gameId);
       console.log(`USERID: ${userId} TURN: ${turn} GENRE: ${genre}`)
-      if (allUsersReady && turn.toString() === userId.toString()) {
-        // TODO - Make this handleUserStatus method work to change 
-        // Status to In Progress
+      if (allUsersReady && playerTurn !== 2) {
             // handleUserStatusUpdate(userId.toString(), "In Progress")
             // Status button clicked
             inProgress(userId)
@@ -590,7 +654,7 @@ const Lobby = () => {
           player2: player2
         }
       });
-      setGenre(response.data);
+      setGenre(response.data.replaceAll('_', ' '));
       console.log(`CURRENT GAME GENRE: ${response.data}`)
       let genre = response.data;
       setSelectedGenre(genre.replaceAll('_', ' '))
@@ -607,6 +671,8 @@ const Lobby = () => {
   useEffect(() => {
     getGameID(userId, userId2)
     getGameStatus();
+    getPlayerTurn(parseInt(userId), gameId)
+    getPlayer2Turn(parseInt(userId2), gameId)
   }, [allUsersReady])
 
   useEffect(() => {
@@ -623,6 +689,7 @@ const Lobby = () => {
     if (users.length > 1) {
       getGameID(userId, userId2);
     }
+    getU2(userId2)
     users.forEach(element => {
       if (element.user_id === userId && element.status === "In Progress") {
           console.log(`TRUE`)
@@ -638,6 +705,7 @@ const Lobby = () => {
   }, [users])
 
   useEffect(() => {
+    getGenre(userId, userId2)
     socket.onopen = () => {
       socket.send(JSON.stringify({
       type: 'refresh',
@@ -771,6 +839,17 @@ const Lobby = () => {
     }
   };
 
+  const handleEnd = async () => {
+    try {
+      const message = { payload: 'end' };
+      socket.onopen = () => {
+        socket.send(JSON.stringify(message));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleUserStatusUpdate = (user_id: string, status: string) => {
     setUsers((prevUsers) =>
       prevUsers.map((user) =>
@@ -778,6 +857,19 @@ const Lobby = () => {
       )
     );
   };
+
+  useEffect(() => {
+    console.log(`REFRESHED CATEGORY`)
+    socket.onopen = () => { 
+      socket.send(JSON.stringify({
+        type: 'refresh',
+        payload: {
+          user1: userId,
+          user2: userId2
+        }
+      }));
+    }
+  }, [selectedCategory])
 
   function CategoryList() {  
     return (
@@ -903,7 +995,7 @@ const Lobby = () => {
       {genre !== '' ? (      
       <div><h1 className="lobby-header lobby-stroke">Genre is set to <span className="lobby-genre">{genre}</span></h1></div>
       ) : <></>}
-      {waiting ? <div><h1 className="lobby-header lobby-stroke">Your turn is next</h1></div> : <></>}
+      {playerTurn === 2 && player2Turn !== 2 ? <div><h1 className="lobby-waiting lobby-stroke">Waiting on {username} to finish</h1></div> : <></>}
       {userId.toString() === player1.toString() || users.length === 1 ? (
       <><CategoryList /><GenreList /></>
       ) : (

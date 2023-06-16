@@ -613,6 +613,14 @@ body {
   text-stroke: 1px black; */
 }
 
+.lobby-waiting {
+  color: #ff0000; /* complementary color */
+  stroke: black; /* add a stroke */
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 28px;
+}
+
 .lobby-header {
   color: #BA55D3; /* complementary color */
   stroke: black; /* add a stroke */
