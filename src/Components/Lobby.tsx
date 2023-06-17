@@ -980,17 +980,27 @@ const Lobby = () => {
   }
 
   function UserList(props: UserListProps) {
+    const { users } = props;
+  
+    // Sort the users by username
+    const sortedUsers = users.sort((a, b) => a.username.localeCompare(b.username));
+  
     return (
       <ul>
-        {Array.isArray(users) && users.map((user) => (
-          <li key={user.user_id} className="lobby-row" style={{listStyle: 'none'}}>
-            {toPascalCase(user.username)} 
-            <div className={`${user.status === 'Ready' ? 'ready' : 'idle'}`}>{user.status}</div>
-          </li>
-        ))}
+        {Array.isArray(sortedUsers) &&
+          sortedUsers.map((user) => (
+            <li key={user.user_id} className="lobby-row" style={{ listStyle: 'none' }}>
+              <span className="username">{toPascalCase(user.username)}</span>
+              <div className={`status ${user.status.toLowerCase()}`}>
+                {user.status}
+              </div>
+            </li>
+          ))}
       </ul>
     );
   }
+  
+  
 
   return (
     <div className="lobby-container">

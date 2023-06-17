@@ -307,10 +307,8 @@ button[disabled] {
   display: flex;
   justify-content: flex-start;
   position: relative;
-  margin: 10px;
   text-decoration: none;
   color: white;
-  padding: 10px;
   font-size: 18px;
   border: none;
   border-radius: 5px;
@@ -324,7 +322,6 @@ button[disabled] {
   justify-content: center;
   text-decoration: none;
   color: white;
-  padding: 10px;
   font-size: 18px;
   border: none;
   border-radius: 5px;
@@ -521,6 +518,7 @@ input {
   -webkit-text-stroke: 1px black;
   text-stroke: 1px black;
 }
+
 .container {
   display: flex;
   justify-content: center;
