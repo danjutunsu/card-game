@@ -747,6 +747,7 @@ const Lobby = () => {
       if (updatedUser.status === 'Ready' || updatedUser.status === 'In Progress') {
         // User is now ready
         try {
+          socket.onopen = () => {
             socket.send(JSON.stringify({
               type: 'user_status_update',
               payload: {
@@ -754,6 +755,7 @@ const Lobby = () => {
                 status: 'Ready',
               },
             }));
+          }
               socket.send(JSON.stringify({
                 type: 'refresh',
                 payload: {
@@ -761,7 +763,7 @@ const Lobby = () => {
                   user2: userId2,
                 },
               }));
-  
+            
           setStatus('Idle');
   
           const response = await axios.get(`${url}/lobby`);
@@ -770,21 +772,23 @@ const Lobby = () => {
           console.error(error);
         }
       } else {
-        // User is now idle
-        socket.send(JSON.stringify({
-          type: 'user_status_update',
-          payload: {
-            userId: userId,
-            status: 'Idle',
-          },
-        }));
-        socket.send(JSON.stringify({
-          type: 'refresh',
-          payload: {
-            user1: userId,
-            user2: userId2,
-          },
-        }));
+        socket.onopen = () => {
+          // User is now idle
+          socket.send(JSON.stringify({
+            type: 'user_status_update',
+            payload: {
+              userId: userId,
+              status: 'Idle',
+            },
+          }));
+        }
+          socket.send(JSON.stringify({
+            type: 'refresh',
+            payload: {
+              user1: userId,
+              user2: userId2,
+            },
+          }));
         fetchUsers(uuid);
   
         setStatus('Ready');
