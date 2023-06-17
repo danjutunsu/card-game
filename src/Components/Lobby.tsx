@@ -836,14 +836,16 @@ const Lobby = () => {
         console.log(`USERNAME RESPONSE: ${response.data}`)
         
         // Invite sent
-        socket.send(JSON.stringify({
-          type: 'invitee',
-          payload: {
-            userId: response.data,
-            lobbyId: lobbyId,
-            sender: userId
-          }
-        }));
+        socket.onopen = () => {
+          socket.send(JSON.stringify({
+            type: 'invitee',
+            payload: {
+              userId: response.data,
+              lobbyId: lobbyId,
+              sender: userId
+            }
+          }));
+        }
         // navigate('/')
       } catch (error) {
         console.error(error);
@@ -936,7 +938,7 @@ const Lobby = () => {
           console.log(`Error updating the genre`)
         }
         console.log(`SETTING GENRE IN WS`)
-        socket.onopen = () => {
+        // socket.onopen = () => {
           socket.send(JSON.stringify({
             type: 'set_genre',
             payload: {
@@ -946,7 +948,7 @@ const Lobby = () => {
             }
         }));
   }
-  }
+  // }
   return (
     <div>
       {Array.isArray(genres) &&
