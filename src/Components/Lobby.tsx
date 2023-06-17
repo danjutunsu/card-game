@@ -745,22 +745,24 @@ const Lobby = () => {
       if (updatedUser.status === 'Ready' || updatedUser.status === 'In Progress') {
         // User is now ready
         try {
-          socket.send(JSON.stringify({
-            type: 'user_status_update',
-            payload: {
-              userId: userId,
-              status: 'Ready',
-            },
-          }));
           socket.onopen = () => {
             socket.send(JSON.stringify({
-              type: 'refresh',
+              type: 'user_status_update',
               payload: {
-                user1: userId,
-                user2: userId2,
+                userId: userId,
+                status: 'Ready',
               },
             }));
-          };
+            socket.onopen = () => {
+              socket.send(JSON.stringify({
+                type: 'refresh',
+                payload: {
+                  user1: userId,
+                  user2: userId2,
+                },
+              }));
+            };
+          }
   
           setStatus('Idle');
   
