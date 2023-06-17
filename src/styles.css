@@ -304,7 +304,8 @@ button[disabled] {
 }
 
 .menu {
-  display: inline-block;
+  display: flex;
+  justify-content: flex-start;
   position: relative;
   margin: 10px;
   text-decoration: none;
@@ -368,7 +369,7 @@ button[disabled] {
 
 .menu-li-button {
   display: block;
-  margin: 0 auto;
+  margin: 0 10px 10px 0; /* Adjust the spacing as needed */
   margin-bottom: 10px;
   background-color: #8A2BE2;
   text-decoration: none;
@@ -520,6 +521,39 @@ input {
   -webkit-text-stroke: 1px black;
   text-stroke: 1px black;
 }
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px; /* Adjust the height as needed */
+}
+
+.user-icon {
+  margin-top: 5px;
+  width: 40px; /* Adjust the size as needed */
+  height: 40px;
+}
+
+.user-name {
+  display: inline-block;
+  color: #8A2BE2; /* complementary color */
+  text-shadow: 2px 2px 2px #000; /* add a text shadow */
+  stroke: black; /* add a stroke */
+  padding: 10px 10px;
+  font-size: 36px;
+  font-weight: bold;
+  -webkit-text-stroke: 1px black;
+  text-stroke: 1px black;
+  vertical-align: middle; /* align the user name vertically */
+}
+
+.menu-icon {
+  margin-left: 10px;
+  margin-top: 10px;
+  width: 30px; /* Adjust the size as needed */
+  height: 30px;
+}
+
 
 .login-header {
   color: #ffe14f; /* complementary color */

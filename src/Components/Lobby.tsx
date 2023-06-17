@@ -136,13 +136,15 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
 
   return (
     <div className="menu-container">
-      <button className="menu-button" onClick={toggleMenu}>Menu</button>
+      {/* <span> */}
+      <div className="container" onClick={toggleMenu}>
+        <img className="user-icon" src ="icons8-user-60.png"></img>
+        <span className="user-name" >{toPascalCase(username)}</span>
+        <img className="menu-icon" src="icons8-menu-250.png" ></img>
+      </div>
+      {/* </span> */}
       {menuVisible && (
-        <><div className="user-info">
-          <span>
-            <p className="menu-username">{toPascalCase(username)}</p>
-          </span>
-        </div>
+        <>
         <div className="menu">
           <button id="copy" className="menu-li-button" onClick={() => handleCopyLobby(props.lobbyId)}>Copy Lobby</button>
           <button id="leave" className="menu-li-button" onClick={() => handleLeaveGame(props.userId, lobbyId)}>Leave Game</button>
@@ -745,16 +747,13 @@ const Lobby = () => {
       if (updatedUser.status === 'Ready' || updatedUser.status === 'In Progress') {
         // User is now ready
         try {
-          socket.onopen = () => {
             socket.send(JSON.stringify({
               type: 'user_status_update',
               payload: {
                 userId: userId,
                 status: 'Ready',
               },
-            })); 
-          }
-            socket.onopen = () => {
+            }));
               socket.send(JSON.stringify({
                 type: 'refresh',
                 payload: {
@@ -762,7 +761,6 @@ const Lobby = () => {
                   user2: userId2,
                 },
               }));
-            };
   
           setStatus('Idle');
   
@@ -773,7 +771,6 @@ const Lobby = () => {
         }
       } else {
         // User is now idle
-        socket.onopen = () => {
         socket.send(JSON.stringify({
           type: 'user_status_update',
           payload: {
@@ -781,8 +778,6 @@ const Lobby = () => {
             status: 'Idle',
           },
         }));
-      }
-      socket.onopen = () => {
         socket.send(JSON.stringify({
           type: 'refresh',
           payload: {
@@ -790,7 +785,6 @@ const Lobby = () => {
             user2: userId2,
           },
         }));
-      }
         fetchUsers(uuid);
   
         setStatus('Ready');
