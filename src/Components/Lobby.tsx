@@ -773,6 +773,7 @@ const Lobby = () => {
         }
       } else {
         // User is now idle
+        socket.onopen = () => {
         socket.send(JSON.stringify({
           type: 'user_status_update',
           payload: {
@@ -780,6 +781,8 @@ const Lobby = () => {
             status: 'Idle',
           },
         }));
+      }
+      socket.onopen = () => {
         socket.send(JSON.stringify({
           type: 'refresh',
           payload: {
@@ -787,6 +790,7 @@ const Lobby = () => {
             user2: userId2,
           },
         }));
+      }
         fetchUsers(uuid);
   
         setStatus('Ready');
