@@ -752,7 +752,8 @@ const Lobby = () => {
                 userId: userId,
                 status: 'Ready',
               },
-            }));
+            })); 
+          }
             socket.onopen = () => {
               socket.send(JSON.stringify({
                 type: 'refresh',
@@ -762,7 +763,6 @@ const Lobby = () => {
                 },
               }));
             };
-          }
   
           setStatus('Idle');
   
