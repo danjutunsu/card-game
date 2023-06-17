@@ -936,7 +936,7 @@ const Lobby = () => {
           console.log(`Error updating the genre`)
         }
         console.log(`SETTING GENRE IN WS`)
-        // socket.onopen = () => {
+        socket.onopen = () => {
           socket.send(JSON.stringify({
             type: 'set_genre',
             payload: {
@@ -946,7 +946,7 @@ const Lobby = () => {
             }
         }));
   }
-  // }
+  }
   return (
     <div>
       {Array.isArray(genres) &&
