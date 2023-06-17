@@ -182,13 +182,27 @@ const Lobby = () => {
   const token = localStorage.getItem('token');
   const [playerTurn, setPlayerTurn] = useState(0)
   const [player2Turn, setPlayer2Turn] = useState(0)
+  const [allUsersReady, setAllUsersReady] = useState(false);
 
   useEffect(() => {
     if (playerTurn === 2 && player2Turn === 2) {
       console.log(`SENDING TO STATS`)
+      clear(parseInt(userId), gameId);
+      clear(parseInt(userId2), gameId);
       handleEnd();
     }
   }, [playerTurn, player2Turn])
+
+  async function clear(player: number, game_id: number) {
+    try {      
+      await axios.put(`${url}/games/player_turn`, {
+        player: player,
+        game_id: game_id
+      })
+    } catch (error) {
+      console.error(error);
+    }
+  }  
 
   const getPlayerTurn = async (player: number, game_id: number) => 
   {
@@ -517,8 +531,6 @@ const Lobby = () => {
     }
   };
 
-  const [allUsersReady, setAllUsersReady] = useState(false);
-
   async function getGame(player1: string, player2: string) {
     try {
       const response = await axios.get(`${url}/games/id`, {
@@ -730,7 +742,7 @@ const Lobby = () => {
         }
       );
       const updatedUser = response.data; // Get updated user object with new status
-      if (updatedUser.status === 'Ready') {
+      if (updatedUser.status === 'Ready' || updatedUser.status === 'In Progress') {
         // User is now ready
         try {
           socket.send(JSON.stringify({
@@ -773,16 +785,16 @@ const Lobby = () => {
             user2: userId2,
           },
         }));
+        fetchUsers(uuid);
   
         setStatus('Ready');
-        const allReady = users.every(user => user.status === 'Ready');
-        setAllUsersReady(allReady); // Update flag based on current state of users
+        // const allReady = users.every(user => user.status === 'Ready' || user.status === 'In Progress');
+        // setAllUsersReady(allReady); // Update flag based on current state of users
       }
     } catch (error) {
       console.error(error);
     }
   };
-  
 
   const handleInvite = async (sender: string, recipient: string) => {
     if (sender !== recipient) {

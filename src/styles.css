@@ -507,6 +507,20 @@ input {
   text-stroke: 1px black;
 }
 
+.card-username {
+  color: #ff0000; /* complementary color */
+  text-shadow: 2px 2px 2px #000; /* add a text shadow */
+  stroke: black; /* add a stroke */
+  margin-bottom: 10px;
+  margin-top: 10px;
+  text-align: center;
+  border-radius: 5px 5px 0 0;
+  font-size: 34px;
+  font-weight: bold;
+  -webkit-text-stroke: 1px black;
+  text-stroke: 1px black;
+}
+
 .login-header {
   color: #ffe14f; /* complementary color */
   text-shadow: 2px 2px 2px #000; /* add a text shadow */

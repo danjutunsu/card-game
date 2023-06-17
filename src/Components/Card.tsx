@@ -57,8 +57,6 @@ const Card = () => {
   const gameId = useSelector((state: AppState) => state.gameId);
   const [ip, setIp] = useState()
   const [users, setUsers] = useState<User[]>([]);
-  // const [isMyTurn, setIsMyTurn] = useState(false);
-
 
   const socket = new WebSocket(`wss://triviafriendsserver.onrender.com/?userId=${userId}`)
 
@@ -70,7 +68,6 @@ const Card = () => {
   useEffect(() => {
     const fetchTurn = async () => {
       const turn = await getTurn(gameId);
-      // setIsMyTurn(turn === userId);
     };
 
     fetchTurn();
@@ -106,28 +103,24 @@ const Card = () => {
     }
   }
 
-  async function ready(userId: string) {
-    try {
-      socket.send(JSON.stringify({
-        type: 'user_status_update',
-        payload: {
-          userId: userId,
-          status: "Ready"
-        }
-      }));
-      const response = await axios.put(`${url}/lobby/ready`, null, {
-        params: {
-          userId: userId
-        }
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  }  
-
-  // window.addEventListener('popstate', (event) => {
-  //   ready(userId)
-  // })
+  // async function ready(userId: string) {
+  //   try {
+  //     socket.send(JSON.stringify({
+  //       type: 'user_status_update',
+  //       payload: {
+  //         userId: userId,
+  //         status: "Ready"
+  //       }
+  //     }));
+  //     const response = await axios.put(`${url}/lobby/ready`, null, {
+  //       params: {
+  //         userId: userId
+  //       }
+  //     });
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }  
 
   const fetchUsers = async (uuid: string | undefined) => {
     try {
@@ -161,18 +154,6 @@ const Card = () => {
   useEffect(() => {
     getGenre(userId, userId2);
   }, [userPoints]);
-
-  async function getIp() {
-    try {
-      const response = await axios.get(`${url}/ip`);
-      const data = response.data;
-      console.log(`IP: ${data}`)
-      setIp(data)
-
-    } catch (error) {
-      console.error(error);
-    }
-  }
 
   async function getGenre(player1:string, player2:string) {
     try {
@@ -239,7 +220,7 @@ const Card = () => {
   }
 
   useEffect(() => {
-    if (answers.length > 0 && (gameStatus === 1 || gameStatus === 3)) {
+    if (answers.length > 0) {
       let correct = 0;
       let total = 0;
 
@@ -260,16 +241,16 @@ const Card = () => {
       console.log("# CORRECT: " + correct)
       console.log(`$gameid: ${gameId}`)
       
+      console.log(`ANSWERS:`)
       answers.forEach(element => {
-        console.log(`ANSWERS:`)
-        console.log(element)
+        console.log(element.answer)
       })
       console.log(`# correct points: ${correct}`)
-      addPoints(userId, correct, total)
+      addPoints(parseInt(userId), correct, total)
     }
   }, [answers])
 
-  const addPoints = async (user_id: string, points: number, total: number) => {
+  const addPoints = async (user_id: number, points: number, total: number) => {
     console.log("UPDATING POINTS");
     console.log(`USER: ${user_id}`)
     console.log(`POINTS: ${points}`)
@@ -282,7 +263,7 @@ const Card = () => {
           }
         )
       console.log("POINTS SHOULD BE INSERTED");
-      navigate(`/lobby/${uuid}`)
+      // navigate(`/lobby/${uuid}`)
     } catch (error) {
       console.error(error);
       // Handle error
@@ -548,18 +529,21 @@ const Card = () => {
         ours: "theirs",
         you: "they",
         your: "their",
-        yours: "theirs"
-        // Add more pronouns as needed
+        yours: "theirs",
       };
     
       const words = question.split(" ");
-      const transformedWords = words.map((word) => {
+      const transformedWords = words.map((word, index) => {
         const lowerCasedWord = word.toLowerCase();
         if (pronouns.hasOwnProperty(lowerCasedWord)) {
           const pronoun = pronouns[lowerCasedWord];
-          return word.charAt(0) === word.charAt(0).toUpperCase()
-            ? pronoun.charAt(0).toUpperCase() + pronoun.slice(1)
-            : pronoun;
+          if (index < words.length - 3 && words[index - 1].toLowerCase() === "to" && words[index].toLowerCase() === "you") {
+            return "them";
+          } else {
+            return word.charAt(0) === word.charAt(0).toUpperCase()
+              ? pronoun.charAt(0).toUpperCase() + pronoun.slice(1)
+              : pronoun;
+          }
         }
         return word;
       });
@@ -593,10 +577,6 @@ const Card = () => {
       setAnswered(answered+1)
     }
 
-    // if (!isMyTurn) {
-    //   return null; // Return null when it's not the user's turn
-    // }
-
     return (
       <>
         <div className="button-container">
@@ -605,7 +585,6 @@ const Card = () => {
         <div className="card-page">
           {playerTurn === 0 ? (
             <div className="card">
-              <div>0 {playerTurn}</div>
               <div>
                 {data[randomQuestion] && (
                   <p className="card-question">{data[randomQuestion].question}</p>
@@ -622,23 +601,22 @@ const Card = () => {
               </div>
             </div>
           ) : (
-            <div className="card">
-            <div>1 {playerTurn}</div>
-              {data[randomQuestion] && (
-                <>
-                  <p className="card-question">{changePronouns(data[randomQuestion].question)}</p>
-                </>
-              )}
-              {data[randomQuestion]?.options?.map((option, index) => (
-                <div key={index}>
-                  <div className="button-container">
-                    <button className="question-button" onClick={() => handleNextQuestion(index)}>
-                      {option}
-                    </button>
+            <><h1 className="card-username">How did {username2} answer?</h1><div className="card">
+                {data[randomQuestion] && (
+                  <>
+                    <p className="card-question">{changePronouns(data[randomQuestion].question)}</p>
+                  </>
+                )}
+                {data[randomQuestion]?.options?.map((option, index) => (
+                  <div key={index}>
+                    <div className="button-container">
+                      <button className="question-button" onClick={() => handleNextQuestion(index)}>
+                        {option}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div></>
           )}
         </div>
       </>
