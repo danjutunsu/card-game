@@ -758,6 +758,7 @@ const Lobby = () => {
               },
             }));
           }
+          socket.onopen = () => {
               socket.send(JSON.stringify({
                 type: 'refresh',
                 payload: {
@@ -767,6 +768,7 @@ const Lobby = () => {
               }));
             
           setStatus('Idle');
+          }
   
           const response = await axios.get(`${url}/lobby`);
           // Process the response data as needed
@@ -784,6 +786,7 @@ const Lobby = () => {
             },
           }));
         }
+        socket.onopen = () => {
           socket.send(JSON.stringify({
             type: 'refresh',
             payload: {
@@ -791,9 +794,10 @@ const Lobby = () => {
               user2: userId2,
             },
           }));
-        fetchUsers(uuid);
+          fetchUsers(uuid);
   
-        setStatus('Ready');
+          setStatus('Ready');  
+        }
         // const allReady = users.every(user => user.status === 'Ready' || user.status === 'In Progress');
         // setAllUsersReady(allReady); // Update flag based on current state of users
       }
