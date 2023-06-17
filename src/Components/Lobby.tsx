@@ -106,7 +106,9 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
   const handleLogout = async (userId: string) => {
     try {
       const message = { payload: 'logout' };
-      props.socket.send(JSON.stringify(message));
+      props.socket.onopen = () => {
+        props.socket.send(JSON.stringify(message));
+      }
       await axios.delete(`${url}/lobby?userId=${userId}`);
       navigate('/')
     } catch (error) {
