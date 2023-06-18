@@ -334,7 +334,7 @@ const Lobby = () => {
         }
       }));
     }
-  }, [])
+  }, [0])
 
   // // Listen for messages
   socket.addEventListener('message', function (event) {
@@ -748,6 +748,7 @@ const Lobby = () => {
       const updatedUser = response.data; // Get updated user object with new status
       if (updatedUser.status === 'Ready' || updatedUser.status === 'In Progress') {
         // User is now ready
+        console.log(`user ready or in progress`)
         try {
           socket.onopen = () => {
             socket.send(JSON.stringify({
@@ -758,7 +759,7 @@ const Lobby = () => {
               },
             }));
           }
-          socket.onopen = () => {
+          // socket.onopen = () => {
               socket.send(JSON.stringify({
                 type: 'refresh',
                 payload: {
@@ -768,7 +769,7 @@ const Lobby = () => {
               }));
             
           setStatus('Idle');
-          }
+          // }
   
           const response = await axios.get(`${url}/lobby`);
           // Process the response data as needed
@@ -776,6 +777,7 @@ const Lobby = () => {
           console.error(error);
         }
       } else {
+        console.log(`user`)
         socket.onopen = () => {
           // User is now idle
           socket.send(JSON.stringify({
@@ -786,7 +788,7 @@ const Lobby = () => {
             },
           }));
         }
-        socket.onopen = () => {
+        // socket.onopen = () => {
           socket.send(JSON.stringify({
             type: 'refresh',
             payload: {
@@ -797,7 +799,7 @@ const Lobby = () => {
           fetchUsers(uuid);
   
           setStatus('Ready');  
-        }
+        // }
         // const allReady = users.every(user => user.status === 'Ready' || user.status === 'In Progress');
         // setAllUsersReady(allReady); // Update flag based on current state of users
       }
