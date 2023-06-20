@@ -139,29 +139,56 @@ const MyComponent = (props: StatisticsProps) => {
         console.log(element.answer)
       })
       console.log(`# correct points: ${correct}`)
-      addPoints(parseInt(userId), correct, total)
+      addPoints(parseInt(userId), correct, total, gameId)
     }
   }, [answers])
 
-  const addPoints = async (user_id: number, points: number, total: number) => {
+  const addPoints = async (user_id: number, points: number, total: number, game_id: number) => {
     console.log("UPDATING POINTS");
-    console.log(`USER: ${user_id}`)
-    console.log(`POINTS: ${points}`)
-    console.log(`TOTAL: ${total}`)
+    console.log(`USER: ${user_id}`);
+    console.log(`POINTS: ${points}`);
+    console.log(`TOTAL: ${total}`);
+    console.log(`GAMEID: ${game_id}`)
+  
     try {
-      await axios.put(`${url}/points`, {
+      const response = await axios.get(`${url}/points/game`, {
+        params: {
+          user_id: user_id,
+          game_id: game_id
+        }
+      });
+      
+      if (response.status === 200) {
+        console.log(`FOUND GAME`)
+        try {
+          await axios.put(`${url}/points/game`, {
             user_id: user_id,
+            game_id: game_id,
             points: points,
             total: total
-          }
-        )
-      console.log("POINTS SHOULD BE INSERTED");
-      // navigate(`/lobby/${uuid}`)
-    } catch (error) {
-      console.error(error);
-      // Handle error
+          });
+          console.log("POINTS SHOULD BE INSERTED");
+        } catch (error) {
+          console.error(error);
+          // Handle error
+        }
+      } else {
+        console.log("GET request failed. Skipping the PUT request.");
+      }
+    } catch {
+      console.log("Game ID and userId don't exist. Inserting new points row");
+      try {
+        const res = await axios.post(`${url}/points/game`, {
+          user_id: user_id,
+          game_id: game_id
+        });
+        console.log("User Created IN POINTS");
+      } catch (err) {
+        console.log("Couldn't create a new row in points");
+      }
     }
   };
+  
 
   async function fetchAnswers(game_id: number, user_id: string) {
     try { 
@@ -200,6 +227,8 @@ const MyComponent = (props: StatisticsProps) => {
     fetchAnswers(gameId, userId2)
     fetchGuesses(gameId, userId)
   }, [data]);
+
+//TODO - stop it from adding points on refresh to historical
 
   return (
     <div className="stats-page">
