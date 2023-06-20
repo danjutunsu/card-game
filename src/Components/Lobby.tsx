@@ -181,7 +181,7 @@ const Lobby = () => {
   const [selectedGenre, setSelectedGenre] = useState('')
   const [player1, setPlayer1] = useState('')
   const [player1Uname, setPlayer1Uname] = useState('')
-  const categories = ["Movies & Television", "Literature", "Food & Drink", "Music", "Pop Culture", "Relationships", "Science & Technology", "World Travel", "Video Games"];
+  const categories = ["Nature", "Movies & Television", "Literature", "Food & Drink", "Music", "Pop Culture", "Relationships", "Science & Technology", "World Travel", "Video Games"];
   const [selectedCategory, setSelectedCategory] = useState('');
   const token = localStorage.getItem('token');
   const [playerTurn, setPlayerTurn] = useState(0)
@@ -342,7 +342,7 @@ const Lobby = () => {
     if (event.data === 'pong') {
       console.log('Received pong from server.'); // Server responded to our 'ping'
     } else {
-      console.log('Received message from server:', event.data);
+      // console.log('Received message from server:', event.data);
     } 
 
     if (data.user_status_update) {
@@ -848,7 +848,7 @@ const Lobby = () => {
         console.log(`USERNAME RESPONSE: ${response.data}`)
         
         // Invite sent
-        socket.onopen = () => {
+        // socket.onopen = () => {
           socket.send(JSON.stringify({
             type: 'invitee',
             payload: {
@@ -857,7 +857,7 @@ const Lobby = () => {
               sender: userId
             }
           }));
-        }
+        // }
         // navigate('/')
       } catch (error) {
         console.error(error);
@@ -871,6 +871,11 @@ const Lobby = () => {
       socket.onopen = () => {
         socket.send(JSON.stringify(message));
       }
+      await axios.put(`${url}/games/status/reset`, {
+        player1: userId,
+        player2: userId2
+      }
+    )
     } catch (error) {
       console.error(error);
     }
@@ -933,6 +938,7 @@ const Lobby = () => {
     const [selectedGenres, setSelectedGenres] = useState<{[key: string]: boolean}>({});
 
     const handleGenreClick = async (genreId: string, genre: string) => {
+      // if (gameStatus === 0) {
       console.log(`SETTING GENRE IN METHOD`)
       setSelectedGenres(({}))
       setSelectedGenres((prevState) => ({
@@ -959,7 +965,8 @@ const Lobby = () => {
               genre: genre
             }
         }));
-  }
+      }
+  // }
   // }
   return (
     <div>
@@ -970,6 +977,7 @@ const Lobby = () => {
               key={genre.id} // Add the key prop with a unique identifier
               className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
               onClick={() => {
+                // if (gameStatus === 0) {
                 console.log(`SELECTED ${genre.genre}`);
                 handleGenreClick(genre.id.toString(), genre.genre);
                 setSelectedGenre(genre.genre.replaceAll('_', ' '));
@@ -983,6 +991,7 @@ const Lobby = () => {
                   };
                   socket.send(JSON.stringify(message));
                 }
+              // }
               }}
             >
               {genre.genre.replaceAll('_', ' ')}

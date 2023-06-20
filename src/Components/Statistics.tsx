@@ -50,6 +50,8 @@ const MyComponent = (props: StatisticsProps) => {
 
   useEffect(() => {
     fetchData(genre);
+    fetchAnswers(gameId, userId2)
+
   }, [0])
 
   useEffect(() => {
@@ -99,8 +101,6 @@ const MyComponent = (props: StatisticsProps) => {
     );
   }
   
-  
-  
   async function fetchData(genre: string) {
     const response = await axios.get(`${url}/questions`, {
       params: {
@@ -111,6 +111,57 @@ const MyComponent = (props: StatisticsProps) => {
     console.log(jsonData)
     setData(jsonData);
   }
+
+  useEffect(() => {
+    if (answers.length > 0) {
+      let correct = 0;
+      let total = 0;
+
+      guesses.forEach(element => {
+        total++;
+        const guess = element.guess
+        const guessQuestion = element.question_id
+        const answer = answers.find((a) => a.user_id.toString() === userId2.toString() && a.question_id === element.question_id)
+        console.log(`${data[guessQuestion]?.question}`)
+        console.log(`You guessed ${element?.guess}`)
+        console.log(`They answered ${answer?.answer}`)
+        if (guess === answer?.answer) {
+          correct++
+        }
+        console.log(`user ${element.user_id} guess for question ${element.question_id}: ${element.guess}`)
+        console.log(`User ${answer?.user_id} answer for question ${answer?.question_id}: ${answer?.answer}`)
+      });
+      console.log("# CORRECT: " + correct)
+      console.log(`$gameid: ${gameId}`)
+      
+      console.log(`ANSWERS:`)
+      answers.forEach(element => {
+        console.log(element.answer)
+      })
+      console.log(`# correct points: ${correct}`)
+      addPoints(parseInt(userId), correct, total)
+    }
+  }, [answers])
+
+  const addPoints = async (user_id: number, points: number, total: number) => {
+    console.log("UPDATING POINTS");
+    console.log(`USER: ${user_id}`)
+    console.log(`POINTS: ${points}`)
+    console.log(`TOTAL: ${total}`)
+    try {
+      await axios.put(`${url}/points`, {
+            user_id: user_id,
+            points: points,
+            total: total
+          }
+        )
+      console.log("POINTS SHOULD BE INSERTED");
+      // navigate(`/lobby/${uuid}`)
+    } catch (error) {
+      console.error(error);
+      // Handle error
+    }
+  };
 
   async function fetchAnswers(game_id: number, user_id: string) {
     try { 
@@ -139,7 +190,9 @@ const MyComponent = (props: StatisticsProps) => {
     });
     const jsonData = response.data;
     setGuesses(jsonData);
-    console.log(`GUESSES: ${jsonData.rows}`)
+    console.log(`GUESSES:`)
+
+    console.log(jsonData)
   }
 
   useEffect(() => {
