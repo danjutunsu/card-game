@@ -485,10 +485,10 @@ const Lobby = () => {
     try {
       const response = await axios.get(`${url}/questions/genres`);
       setGenres(response.data);
-      // console.log('genres:')
-      // genres.forEach(element => {
-      //   console.log(element.genre)
-      // })
+      console.log('genres:')
+      genres.forEach(element => {
+        console.log(element.genre)
+      })
     } catch (error) {
       console.error(error);
     }
@@ -749,17 +749,17 @@ const Lobby = () => {
     
     setStatus('Idle');
     // console.log(process.env.JWT_SECRET)
-    // try {
-    //   const response = await axios.put(
-    //     `${url}/lobby?userId=${id}`, {},
-    //     {
-    //       headers: {
-    //         Authorization: `${token}`,
-    //       },
-    //     }
-    //   );
-    //   const updatedUser = response.data; // Get updated user object with new status
-      if (status === 'Ready' || status === 'In Progress') {
+    try {
+      const response = await axios.put(
+        `${url}/lobby?userId=${id}`, {},
+        {
+          headers: {
+            Authorization: `${token}`,
+          },
+        }
+      );
+      const updatedUser = response.data; // Get updated user object with new status
+      if (updatedUser.status === 'Ready' || updatedUser.status === 'In Progress') {
         // User is now ready
         console.log(`user ready or in progress`)
         try {
@@ -783,14 +783,14 @@ const Lobby = () => {
             
           // }
   
-          const response = await axios.get(`${url}/lobby`);
+          // const response = await axios.get(`${url}/lobby`);
           // Process the response data as needed
         } catch (error) {
           console.error(error);
         }
       } else {
         setStatus('Ready'); 
-
+        
         // console.log(`user`)
         socket.onopen = () => {
           // User is now idle
@@ -811,14 +811,14 @@ const Lobby = () => {
             },
           }));
           fetchUsers(uuid);
+   
         // }
         // const allReady = users.every(user => user.status === 'Ready' || user.status === 'In Progress');
         // setAllUsersReady(allReady); // Update flag based on current state of users
       }
-    // } 
-    // catch (error) {
-    //   console.error(error);
-    // }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleInvite = async (sender: string, recipient: string) => {
