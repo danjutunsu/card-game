@@ -745,7 +745,7 @@ const Lobby = () => {
   }, [lobbyId])
 
   const handleReady = async (id: string) => {
-    console.log(`TOKEN: ${token}`)
+    // console.log(`TOKEN: ${token}`)
     
     // console.log(process.env.JWT_SECRET)
     try {
