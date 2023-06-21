@@ -8,6 +8,7 @@ export type AppState = {
   genre: string;
   uuid: string;
   gameId: number;
+  gameInProgress: boolean;
 };
 
 const getInitialState = () => {
@@ -20,7 +21,8 @@ const getInitialState = () => {
     userId2: localStorage.getItem('userId2') || '', // Retrieve userId2 from localStorage
     genre: localStorage.getItem('genre') || '', // Retrieve genre from localStorage
     uuid: localStorage.getItem('uuid') || '', // Retrieve uuid from localStorage
-    gameId: localStorage.getItem('gameId') || '' // Retrieve gameId from localStorage
+    gameId: localStorage.getItem('gameId') || '', // Retrieve gameId from localStorage
+    gameInProgress: localStorage.getItem('gameInProgress') || '' // Retrieve gameInProgress from localStorage
   };
 };
 
@@ -55,13 +57,20 @@ const rootReducer = (state: AppState = getInitialState(), action: any) => {
       };
       localStorage.setItem('appState', JSON.stringify(newUserUUID)); // Update localStorage
       return newUserUUID;
-    case 'SET_GAMEID':
-      const newUserGameId = {
-        ...state,
-        gameId: action.payload,
-      };
-      localStorage.setItem('appState', JSON.stringify(newUserGameId)); // Update localStorage
-      return newUserGameId;
+      case 'SET_GAMEID':
+        const newUserGameId = {
+          ...state,
+          gameId: action.payload,
+        };
+        localStorage.setItem('appState', JSON.stringify(newUserGameId)); // Update localStorage
+        return newUserGameId;
+      case 'SET_GAMEINPROGRESS':
+        const newUserGameInProgress = {
+          ...state,
+          gameInProgress: action.payload,
+        };
+        localStorage.setItem('appState', JSON.stringify(newUserGameInProgress)); // Update localStorage
+        return newUserGameInProgress;
     default:
       return state;
   }

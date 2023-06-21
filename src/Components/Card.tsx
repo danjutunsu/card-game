@@ -57,8 +57,12 @@ const Card = () => {
   const gameId = useSelector((state: AppState) => state.gameId);
   const [ip, setIp] = useState()
   const [users, setUsers] = useState<User[]>([]);
+  const gameInProgress = useSelector((state: AppState) => state.gameInProgress);
 
   const socket = new WebSocket(`wss://triviafriendsserver.onrender.com/?userId=${userId}`)
+  useEffect(() => {
+    console.log(`GameStatus: ${gameInProgress}`);
+  }, [gameInProgress]);
 
   useEffect(() => {
     fetchUsers(uuid)
@@ -505,46 +509,47 @@ const Card = () => {
 
     return (
       <>
-        <div className="button-container">
-          <button className="return-button" onClick={() => navigate(`/lobby/${uuid}`)}>Return To Lobby</button>
-        </div>
-        <div className="card-page">
-          {playerTurn === 0 ? (
-            <div className="card">
-              <div>
-                {data[randomQuestion] && (
-                  <p className="card-question">{data[randomQuestion].question}</p>
-                )}
-                {data[randomQuestion]?.options?.map((option, index) => (
-                  <div key={index}>
-                    <div className="button-container">
-                      <button className="question-button" onClick={() => handleAnswerNextQuestion(index)}>
-                        {option}
-                      </button>
-                    </div>
+      {gameInProgress && (
+        <><div className="button-container">
+            <button className="return-button" onClick={() => navigate(`/lobby/${uuid}`)}>Return To Lobby</button>
+          </div><div className="card-page">
+              {playerTurn === 0 ? (
+                <div className="card">
+                  <div>
+                    {data[randomQuestion] && (
+                      <p className="card-question">{data[randomQuestion].question}</p>
+                    )}
+                    {data[randomQuestion]?.options?.map((option, index) => (
+                      <div key={index}>
+                        <div className="button-container">
+                          <button className="question-button" onClick={() => handleAnswerNextQuestion(index)}>
+                            {option}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <><h1 className="card-username">How did {username2} answer?</h1><div className="card">
-                {data[randomQuestion] && (
-                  <>
-                    <p className="card-question">{changePronouns(data[randomQuestion].question)}</p>
-                  </>
-                )}
-                {data[randomQuestion]?.options?.map((option, index) => (
-                  <div key={index}>
-                    <div className="button-container">
-                      <button className="question-button" onClick={() => handleNextQuestion(index)}>
-                        {option}
-                      </button>
+                </div>
+              ) : (
+                <><h1 className="card-username">How did {username2} answer?</h1><div className="card">
+                  {data[randomQuestion] && (
+                    <>
+                      <p className="card-question">{changePronouns(data[randomQuestion].question)}</p>
+                    </>
+                  )}
+                  {data[randomQuestion]?.options?.map((option, index) => (
+                    <div key={index}>
+                      <div className="button-container">
+                        <button className="question-button" onClick={() => handleNextQuestion(index)}>
+                          {option}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div></>
-          )}
-        </div>
+                  ))}
+                </div></>
+              )}
+            </div></>
+      )}
       </>
     );
   }

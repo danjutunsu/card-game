@@ -149,31 +149,30 @@ const MyComponent = (props: StatisticsProps) => {
     console.log(`POINTS: ${points}`);
     console.log(`TOTAL: ${total}`);
     console.log(`GAMEID: ${game_id}`)
-  
+
     try {
-      const response = await axios.get(`${url}/points/game`, {
+      await axios.get(`${url}/points/game`, {
         params: {
           user_id: user_id,
           game_id: game_id
         }
       });
-      
-      if (response.status === 200) {
-        console.log(`FOUND GAME`)
-        try {
-          await axios.put(`${url}/points/game`, {
-            user_id: user_id,
-            game_id: game_id,
-            points: points,
-            total: total
-          });
-          console.log("POINTS SHOULD BE INSERTED");
-        } catch (error) {
-          console.error(error);
-          // Handle error
-        }
-      } else {
-        console.log("GET request failed. Skipping the PUT request.");
+
+      try {
+        await axios.put(`${url}/points/game`, {
+          user_id: user_id,
+          game_id: game_id,
+          points: points,
+          total: total
+        });
+
+        console.log("POINTS SHOULD BE INSERTED");
+
+        // Set the flag indicating the request is executed
+        localStorage.setItem("isRequestExecuted", "true");
+      } catch (error) {
+        console.error(error);
+        // Handle error
       }
     } catch {
       console.log("Game ID and userId don't exist. Inserting new points row");
@@ -227,8 +226,6 @@ const MyComponent = (props: StatisticsProps) => {
     fetchAnswers(gameId, userId2)
     fetchGuesses(gameId, userId)
   }, [data]);
-
-//TODO - stop it from adding points on refresh to historical
 
   return (
     <div className="stats-page">

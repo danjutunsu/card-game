@@ -187,6 +187,7 @@ const Lobby = () => {
   const [playerTurn, setPlayerTurn] = useState(0)
   const [player2Turn, setPlayer2Turn] = useState(0)
   const [allUsersReady, setAllUsersReady] = useState(false);
+  const gameInProgress = useSelector((state: AppState) => state.gameInProgress);
 
   useEffect(() => {
     if (playerTurn === 2 && player2Turn === 2) {
@@ -351,6 +352,8 @@ const Lobby = () => {
       handleUserStatusUpdate(data.user_status_update.userId, data.user_status_update.status);
       fetchUsers(lobbyId);
     } else if (data.end_game) {
+      dispatch({ type: 'SET_GAMEINPROGRESS', payload: false });
+      // localStorage.setItem('gameInProgress', 'false');
       navigate(`/stats`)
     } else if (data.genreToSet) {
       console.log(`WORKING HERE`)
@@ -578,6 +581,9 @@ const Lobby = () => {
               user2: userId2
             }
             }));
+            dispatch({ type: 'SET_GAMEINPROGRESS', payload: true });
+            localStorage.setItem('gameInProgress', 'true');
+            console.log(`GameStatus: ${gameInProgress}`)
             navigate('/card')
         } else {
             // navigate('/waiting')
@@ -588,6 +594,11 @@ const Lobby = () => {
       console.log("Error getting Game ID");
     }
   }
+
+  useEffect(() => {
+    console.log(`GameStatus: ${gameInProgress}`);
+  }, [gameInProgress]);
+
 
   async function inProgress(userId: string) {
     setStatus('In Progress');

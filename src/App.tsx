@@ -18,6 +18,7 @@ function App() {
   const [userPoints, setUserPoints] = useState(Object);
   const [message, setMessage] = useState('1');
   const userId = useSelector((state: AppState) => state.userId);
+  const gameInProgress = useSelector((state: AppState) => state.gameInProgress);
 
   useEffect(() => {
     getUserPoints(parseInt(userId))
@@ -42,7 +43,11 @@ function App() {
       <><HashRouter>
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        <Route path="/card/" element={<Card />} />
+        {!gameInProgress ? (
+          <Route path="/card/" element={<Statistics />} />
+        ) : (
+          <Route path="/card/" element={<Card />} />
+        )}
         <Route path="/lobby/:lobbyId" element={<Lobby />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/waiting" element={<WaitingRoom />} />
