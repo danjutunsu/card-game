@@ -747,7 +747,6 @@ const Lobby = () => {
   const handleReady = async (id: string) => {
     console.log(`TOKEN: ${token}`)
     
-    setStatus('Idle');
     // console.log(process.env.JWT_SECRET)
     try {
       const response = await axios.put(
@@ -761,6 +760,8 @@ const Lobby = () => {
       const updatedUser = response.data; // Get updated user object with new status
       if (updatedUser.status === 'Ready' || updatedUser.status === 'In Progress') {
         // User is now ready
+        setStatus('Idle');
+
         console.log(`user ready or in progress`)
         try {
           socket.onopen = () => {
