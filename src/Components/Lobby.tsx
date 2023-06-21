@@ -412,7 +412,7 @@ const Lobby = () => {
       fetchUsers(params.lobbyId);
     } else if (data.refresh) {
       // const { sender, recipient } = data.invite;
-      console.log(`REFRESH`)
+      // console.log(`REFRESH`)
       fetchUsers(uuid);
     }
   });
@@ -438,7 +438,7 @@ const Lobby = () => {
   const getGameStatus = async () => 
   {
     fetchUsers(params.lobbyId);
-    console.log("EXECUTING_")
+    // console.log("EXECUTING_")
     
     if (userId && userId2) {
       const response = await axios.get(`${url}/games/status`, {
@@ -706,9 +706,9 @@ const Lobby = () => {
     fetchGenres();
     fetchPlayer1(gameId);
     getTurn(gameId)
-    console.log(`GETTING TURN WITH GAMEID: ${gameId}`)
+    // console.log(`GETTING TURN WITH GAMEID: ${gameId}`)
     getGameStatus();
-    console.log(`Game Status: ${gameStatus}`)
+    // console.log(`Game Status: ${gameStatus}`)
     fetchUsers(lobbyId)
   }, [status]); 
 
@@ -746,7 +746,9 @@ const Lobby = () => {
 
   const handleReady = async (id: string) => {
     console.log(`TOKEN: ${token}`)
-    console.log(process.env.JWT_SECRET)
+    
+    setStatus('Idle');
+    // console.log(process.env.JWT_SECRET)
     try {
       const response = await axios.put(
         `${url}/lobby?userId=${id}`, {},
@@ -779,7 +781,6 @@ const Lobby = () => {
                 },
               }));
             
-          setStatus('Idle');
           // }
   
           const response = await axios.get(`${url}/lobby`);
@@ -788,7 +789,9 @@ const Lobby = () => {
           console.error(error);
         }
       } else {
-        console.log(`user`)
+        setStatus('Ready'); 
+        
+        // console.log(`user`)
         socket.onopen = () => {
           // User is now idle
           socket.send(JSON.stringify({
@@ -808,8 +811,7 @@ const Lobby = () => {
             },
           }));
           fetchUsers(uuid);
-  
-          setStatus('Ready');  
+   
         // }
         // const allReady = users.every(user => user.status === 'Ready' || user.status === 'In Progress');
         // setAllUsersReady(allReady); // Update flag based on current state of users
