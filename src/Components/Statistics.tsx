@@ -126,6 +126,7 @@ const MyComponent = (props: StatisticsProps) => {
         console.log(`You guessed ${element?.guess}`)
         console.log(`They answered ${answer?.answer}`)
         if (guess === answer?.answer) {
+          
           correct++
         }
         console.log(`user ${element.user_id} guess for question ${element.question_id}: ${element.guess}`)

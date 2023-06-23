@@ -4,13 +4,8 @@
   import { url } from "../Config";
   import Card from "./Card";
   import '../styles.css';
-  import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
   import { useNavigate } from 'react-router-dom';
-  import CreateForm from "./CreateForm";
-  import UserContext, { UserContextType } from "./UserContext";
   import { connect, useDispatch } from 'react-redux';
-  import { store } from "../store";
-  import { io } from 'socket.io-client';
   import {v4 as uuidv4} from 'uuid';
   import { GoogleLogin, googleLogout, useGoogleLogin } from "@react-oauth/google";
   import bcrypt from "bcryptjs"; 
@@ -49,25 +44,25 @@ const MyComponent: React.FC = () => {
       });
   };
 
-  useEffect(() => {
-    console.log(`USER`)
-    if (user && user.accessToken) {
-      axios
-        .get("https://www.googleapis.com/oauth2/v1/userinfo", {
-          headers: {
-            Authorization: `Bearer ${user.accessToken}`,
-            Accept: "application/json",
-          },
-        })
-        .then((res) => {
-          setProfile(res.data);
-        })
-        .catch((err) => console.log(err));
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   console.log(`USER`)
+  //   if (user && user.accessToken) {
+  //     axios
+  //       .get("https://www.googleapis.com/oauth2/v1/userinfo", {
+  //         headers: {
+  //           Authorization: `Bearer ${user.accessToken}`,
+  //           Accept: "application/json",
+  //         },
+  //       })
+  //       .then((res) => {
+  //         setProfile(res.data);
+  //       })
+  //       .catch((err) => console.log(err));
+  //   }
+  // }, [user]);
 
   const addUser = async (uName: string, email: string) => {
-    console.log(`CREATING USER`)
+    // console.log(`CREATING USER`)
     try {
       const hashedPassword = bcrypt.hashSync(email, 10); // hash the password
       console.log("HASHED: " + hashedPassword)
@@ -79,7 +74,7 @@ const MyComponent: React.FC = () => {
         password: hashedPassword // send the hashed password to the backend
       });
       setSubmitMessage('User Created')
-      console.log(`USERID AFTER CREATION: ${response.data.id}`)
+      // console.log(`USERID AFTER CREATION: ${response.data.id}`)
 
       // CREATING NEW USER ROW IN POINTS
       try {
@@ -95,15 +90,28 @@ const MyComponent: React.FC = () => {
     } catch (error) {
       setSubmitMessage('Error Creating User')
       console.error(error);
-      console.log(`An Error occured while saving the user`)
-      alert(`Please ensure that the email address is unique, or log in if your email is already registered.`)
+      // console.log(`An Error occured while saving the user`)
+      // alert(`Please ensure that the email address is unique, or log in if your email is already registered.`)
       }
   }
 
   const handleGoogleLogin = async (email: string) => {
     console.log(`RandomID: ${randomId}`)
-    console.log(`EMAIL: ${email}`)
-//
+    
+    try {
+      const response = await axios.get(`${url}/users/email`, {
+        params: {
+          email: email
+        }
+      });
+      addUser(email, email)
+      console.log(`ADDING USER`)
+
+      console.log(response.status)
+    } catch (error) {
+      console.log(`EMAIL ALREADY EXISTS....LOGGING IN ${error}`)
+    }
+
     try {
       const response = await axios.post(`${url}/login/google`, {
         email: email
@@ -139,7 +147,6 @@ const MyComponent: React.FC = () => {
       } else {
         // if the login fails, display an error message
         // alert(response.data.error || response.data.message);
-        addUser(email, email)
       }
     } catch (error) {
       setLoginFailed(true);
@@ -218,8 +225,7 @@ const handleClick = () => {
   };
 
   return (
-    <><div>
-      <h2>React Google Login</h2>  <br />
+    <><div className="google-login">
       <GoogleLogin onSuccess={responseMessage} onError={() => console.log(errorMessage)} />
     </div><div className="login-page">
         <h1 className="login-header">Login</h1>
