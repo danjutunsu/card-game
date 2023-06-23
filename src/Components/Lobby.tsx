@@ -467,6 +467,7 @@ const Lobby = () => {
       setUsers(response.data.users);
       const usersList = response.data.users
       console.log("USERS:")
+      console.log(response.data.users)
       usersList.forEach((element: { user_id: string; }) => {
         console.log(element)
         if (element.user_id !== userId) {
