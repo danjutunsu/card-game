@@ -497,25 +497,14 @@ const Lobby = () => {
 
   useEffect(() => {
     // Fetch genres based on selectedCategory
-    const fetchGenres = async () => {
-      try {
-        const response = await axios.get(`${url}/questions/genres`);
-        setGenres(response.data);
-        console.log('genres:')
-        genres.forEach(element => {
-          console.log(element.genre)
-        })
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    fetchGenres();
 
     if (player1) {
       getUname(player1)
     }
 
     fetchGenres();
-  }, [selectedCategory, player1]);
+  }, [selectedCategory, selectedGenre, player1]);
 
   // useEffect(() => {
   //   console.log(`getting genre for user: ${userId} and user: ${userId2}`)
@@ -1053,7 +1042,7 @@ const Lobby = () => {
       <UserList users={users} handleReady={handleReady} handleStatusUpdate={handleUserStatusUpdate}/>
       <button className="ready-button" onClick={() => handleReady(userId)}>Ready?</button>
       {genre !== '' ? (      
-      <div><h1 className="lobby-header lobby-stroke">Genre is set to <span className="lobby-genre">{genre}</span></h1></div>
+      <div><h1 className="lobby-header lobby-stroke">Genre is set to <span className="lobby-genre">{selectedGenre}</span></h1></div>
       ) : <></>}
       {playerTurn === 2 && player2Turn !== 2 ? <div><h1 className="lobby-waiting lobby-stroke">Waiting on {username} to finish</h1></div> : <></>}
       {userId.toString() === player1.toString() || users.length === 1 ? (
