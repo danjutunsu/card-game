@@ -96,8 +96,9 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
           userId: userId,
           uuid: uuid
       });
-      fetchUsers(lobbyId);
       navigate(`/lobby/${randomId}`)
+      
+      fetchUsers(params.lobbyId);
     } catch (error) {
       console.error(error);
     }
@@ -110,6 +111,8 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
         props.socket.send(JSON.stringify(message));
       }
       await axios.delete(`${url}/lobby?userId=${userId}`);
+      fetchUsers(params.lobbyId);
+
       navigate('/')
     } catch (error) {
       console.error(error);
@@ -181,7 +184,7 @@ const Lobby = () => {
   const [selectedGenre, setSelectedGenre] = useState('')
   const [player1, setPlayer1] = useState('')
   const [player1Uname, setPlayer1Uname] = useState('')
-  const categories = ["Nature", "Movies & Television", "Literature", "Food & Drink", "Music", "Pop Culture", "Relationships", "Science & Technology", "World Travel", "Video Games"];
+  const categories = ["Nature", "Life", "Movies & Television", "Literature", "Food & Drink", "Music", "Pop Culture", "Relationships", "Science & Technology", "World Travel", "Video Games"];
   const [selectedCategory, setSelectedCategory] = useState('');
   const token = localStorage.getItem('token');
   const [playerTurn, setPlayerTurn] = useState(0)
@@ -350,6 +353,7 @@ const Lobby = () => {
       console.log(`USER STATUS UPDATED`)
       const { userId, status} = data.user_status_update;
       handleUserStatusUpdate(data.user_status_update.userId, data.user_status_update.status);
+      console.log(`FETCHING user_status_update`)
       fetchUsers(lobbyId);
     } else if (data.end_game) {
       dispatch({ type: 'SET_GAMEINPROGRESS', payload: false });
@@ -373,12 +377,18 @@ const Lobby = () => {
       }));
     } else if (data.invite) {
       setInvited(true)
+      console.log(`FETCHING data.invite`)
+
       fetchUsers(uuid);
     } else if (data.logout) {
       // const { sender, recipient } = data.invite;
+      console.log(`FETCHING uuid`)
+
       fetchUsers(params.lobbyId);
     } else if (data.leave) {
       // const { sender, recipient } = data.invite;
+      console.log(`FETCHING lobbyid`)
+
       fetchUsers(params.lobbyId);
     } else if (data.invitee) {
       // const { sender, recipient } = data.invite;
@@ -395,6 +405,8 @@ const Lobby = () => {
             user2: data.invitee.sender
           }
         }));
+        console.log(`FETCHING invitee`)
+
         fetchUsers(uuid)
       } else {
         // Status button clicked
@@ -409,10 +421,14 @@ const Lobby = () => {
     } else if (data.user_rejected) {
       // const { sender, recipient } = data.invite;
       alert(`USER ${data.user_rejected.reject} rejected the invitation`)
+      console.log(`FETCHING user_rejected`)
+
       fetchUsers(params.lobbyId);
     } else if (data.refresh) {
       // const { sender, recipient } = data.invite;
       // console.log(`REFRESH`)
+      console.log(`FETCHING refresh`)
+
       fetchUsers(uuid);
     }
   });
