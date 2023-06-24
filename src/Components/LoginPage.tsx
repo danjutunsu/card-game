@@ -25,7 +25,7 @@ const MyComponent: React.FC = () => {
   const dispatch = useDispatch();
 
   const verifyToken = (token: any) => {
-    console.log(`token::${token}`)
+    // console.log(`token::${token}`)
 
     axios
       .post(`${url}/verify`, {
@@ -33,8 +33,8 @@ const MyComponent: React.FC = () => {
       })
       .then((response) => {
         // Handle the response data from the server
-        console.log('User information:', response.data);
-        console.log(`EMAIL: ${response.data.email}`)
+        // console.log('User information:', response.data);
+        // console.log(`EMAIL: ${response.data.email}`)
 
         handleGoogleLogin(response.data.email)
       })
@@ -65,8 +65,8 @@ const MyComponent: React.FC = () => {
     // console.log(`CREATING USER`)
     try {
       const hashedPassword = bcrypt.hashSync(email, 10); // hash the password
-      console.log("HASHED: " + hashedPassword)
-      console.log(email)
+      // console.log("HASHED: " + hashedPassword)
+      // console.log(email)
 
       const response = await axios.post(`${url}/users`, {
         userName: uName,
@@ -96,7 +96,7 @@ const MyComponent: React.FC = () => {
   }
 
   const handleGoogleLogin = async (email: string) => {
-    console.log(`RandomID: ${randomId}`)
+    // console.log(`RandomID: ${randomId}`)
     
     try {
       const response = await axios.get(`${url}/users/email`, {
@@ -105,11 +105,11 @@ const MyComponent: React.FC = () => {
         }
       });
       addUser(email, email)
-      console.log(`ADDING USER`)
+      // console.log(`ADDING USER`)
 
       console.log(response.status)
     } catch (error) {
-      console.log(`EMAIL ALREADY EXISTS....LOGGING IN ${error}`)
+      // console.log(`EMAIL ALREADY EXISTS....LOGGING IN ${error}`)
     }
 
     try {
@@ -117,17 +117,17 @@ const MyComponent: React.FC = () => {
         email: email
       });
 
-      console.log(`USERNAME:::::${response.data.username}`)
+      // console.log(`USERNAME:::::${response.data.username}`)
       
       if (response.status === 200) {
         setUserId(response.data.userId)
         // continue with your code
         localStorage.setItem("token", response.data.token);
-        console.log(`Token: ${response.data.token}`)
+        // console.log(`Token: ${response.data.token}`)
         setLoginFailed(false);
         setLoggedIn(true);
         const token = localStorage.getItem('token');
-        console.log(`TOKEN IN STORAGE: ${token}`)
+        // console.log(`TOKEN IN STORAGE: ${token}`)
         setTimeout(() => {
           setLoggedIn(false);
           setLoggedInCard(true);
@@ -137,7 +137,7 @@ const MyComponent: React.FC = () => {
           setUser(loggedInUser)
 
         // Dispatch an action to set the user ID in the Redux store
-        console.log(`SETTING USER ID TO: ${loggedInUser}`)
+        // console.log(`SETTING USER ID TO: ${loggedInUser}`)
         dispatch({ type: 'SET_USER_ID', payload: loggedInUser });
           // navigate('/card', { state: { id: userId } });
             handleUpdateUUID(response.data.userId, randomId)
@@ -157,7 +157,7 @@ const MyComponent: React.FC = () => {
   };
 
   const handleLogin = async (username: string, password: string) => {
-    console.log(`RandomID: ${randomId}`)
+    // console.log(`RandomID: ${randomId}`)
 //
     try {
       const response = await axios.post(`${url}/login`, {
@@ -169,11 +169,11 @@ const MyComponent: React.FC = () => {
         setUserId(response.data.userId)
         // continue with your code
         localStorage.setItem("token", response.data.token);
-        console.log(`Token: ${response.data.token}`)
+        // console.log(`Token: ${response.data.token}`)
         setLoginFailed(false);
         setLoggedIn(true);
         const token = localStorage.getItem('token');
-        console.log(`TOKEN IN STORAGE: ${token}`)
+        // console.log(`TOKEN IN STORAGE: ${token}`)
         setTimeout(() => {
           setLoggedIn(false);
           setLoggedInCard(true);
@@ -186,7 +186,7 @@ const MyComponent: React.FC = () => {
         dispatch({ type: 'SET_USER_ID', payload: loggedInUser });
           // navigate('/card', { state: { id: userId } });
             handleUpdateUUID(response.data.userId, randomId)
-            console.log(`UserId: ${loggedInUser} RandomID: ${randomId}`)
+            // console.log(`UserId: ${loggedInUser} RandomID: ${randomId}`)
             navigate(`/lobby/${randomId}`)
         }, 1000);
       } else {
@@ -211,7 +211,7 @@ const MyComponent: React.FC = () => {
     }
   }
   const responseMessage = (response: any) => {
-    console.log(`RESPONSE`)
+    // console.log(`RESPONSE`)
     console.log(response);
     verifyToken(response.credential)
   };
