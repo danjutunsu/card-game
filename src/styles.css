@@ -257,11 +257,11 @@
 }
 
 .unselected {
-  margin: 5px;
+  margin: 3px;
+  text-align: center;
   background-color: #8A2BE2;
   height: auto;
   width: auto;
-  text-decoration: none;
   color: white;
   padding: 10px;
   font-size: 18px;
@@ -560,7 +560,7 @@ input {
 
 
 .login-header {
-  color: #ffe14f; /* complementary color */
+  color: #BA55D3; /* complementary color */
   text-shadow: 2px 2px 2px #000; /* add a text shadow */
   stroke: black; /* add a stroke */
   padding: 10px;

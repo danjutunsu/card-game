@@ -47,6 +47,20 @@ const MyComponent = (props: StatisticsProps) => {
   const [answers, setAnswers] = useState<AnswerProps[]>([]);
   const [guesses, setGuesses] = useState<GuessProps[]>([]);
   const gameId = useSelector((state: AppState) => state.gameId);
+  
+  const body = document.querySelector('body');
+
+  function changeBodyBackgroundImage(imagePath: string) {
+    // document.body.style.backgroundImage = `url(${imagePath})`;
+    // document.body.style.backgroundSize = `cover`
+  }
+  
+  // Call the function with the desired image path
+  // const imagePath = "../winner.jpg";
+
+  useEffect(() => {
+    // changeBodyBackgroundImage(imagePath);
+  }, [0])
 
   useEffect(() => {
     fetchData(genre);

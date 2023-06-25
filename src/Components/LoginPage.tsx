@@ -141,7 +141,7 @@ const MyComponent: React.FC = () => {
         dispatch({ type: 'SET_USER_ID', payload: loggedInUser });
           // navigate('/card', { state: { id: userId } });
             handleUpdateUUID(response.data.userId, randomId)
-            console.log(`UserId: ${loggedInUser} RandomID: ${randomId}`)
+            // console.log(`UserId: ${loggedInUser} RandomID: ${randomId}`)
             navigate(`/lobby/${randomId}`)
         }, 1000);
       } else {
@@ -212,7 +212,7 @@ const MyComponent: React.FC = () => {
   }
   const responseMessage = (response: any) => {
     // console.log(`RESPONSE`)
-    console.log(response);
+    // console.log(response);
     verifyToken(response.credential)
   };
   

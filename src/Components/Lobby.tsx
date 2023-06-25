@@ -191,9 +191,10 @@ const Lobby = () => {
   const [player2Turn, setPlayer2Turn] = useState(0)
   const [allUsersReady, setAllUsersReady] = useState(false);
   const gameInProgress = useSelector((state: AppState) => state.gameInProgress);
-
+  
   useEffect(() => {
     if (playerTurn === 2 && player2Turn === 2) {
+
       console.log(`SENDING TO STATS`)
       clear(parseInt(userId), gameId);
       clear(parseInt(userId2), gameId);
@@ -502,10 +503,10 @@ const Lobby = () => {
     try {
       const response = await axios.get(`${url}/questions/genres`);
       setGenres(response.data);
-      console.log('genres:')
-      genres.forEach(element => {
-        console.log(element.genre)
-      })
+      // console.log('genres:')
+      // genres.forEach(element => {
+      //   console.log(element.genre)
+      // })
     } catch (error) {
       console.error(error);
     }
@@ -535,9 +536,9 @@ const Lobby = () => {
             game_id: game_id
           }
         });
-        console.log(`PLAYER1: ${response.data.player1_id}`);
+        // console.log(`PLAYER1: ${response.data.player1_id}`);
         setPlayer1(response.data.player1_id);
-        console.log(`PLAYER 1 UPDATED`)
+        // console.log(`PLAYER 1 UPDATED`)
       } catch (error) {
         console.error(error);
       }
@@ -560,15 +561,15 @@ const Lobby = () => {
           player2: player2
         });
       }
-      console.log(`Player1: ${player1} Player2: ${player2}`);
-      console.log('data: ' + response.data.id);
+      // console.log(`Player1: ${player1} Player2: ${player2}`);
+      // console.log('data: ' + response.data.id);
       
       dispatch({ type: 'SET_GAMEID', payload: gameId });
       localStorage.setItem('gameId', gameId.toString());
 
       // Get the turn ID for current round
       await getTurn(gameId);
-      console.log(`USERID: ${userId} TURN: ${turn} GENRE: ${genre}`)
+      // console.log(`USERID: ${userId} TURN: ${turn} GENRE: ${genre}`)
       if (allUsersReady && playerTurn !== 2) {
             // handleUserStatusUpdate(userId.toString(), "In Progress")
             // Status button clicked
@@ -589,7 +590,7 @@ const Lobby = () => {
             }));
             dispatch({ type: 'SET_GAMEINPROGRESS', payload: true });
             localStorage.setItem('gameInProgress', 'true');
-            console.log(`GameStatus: ${gameInProgress}`)
+            // console.log(`GameStatus: ${gameInProgress}`)
             navigate('/card')
         } else {
             // navigate('/waiting')
@@ -602,7 +603,7 @@ const Lobby = () => {
   }
 
   useEffect(() => {
-    console.log(`GameStatus: ${gameInProgress}`);
+    // console.log(`GameStatus: ${gameInProgress}`);
   }, [gameInProgress]);
 
 
@@ -650,8 +651,8 @@ const Lobby = () => {
           });
         }
     
-        console.log(`Player1: ${player1} Player2: ${player2}`);
-        console.log('data: ' + response.data.id);
+        // console.log(`Player1: ${player1} Player2: ${player2}`);
+        // console.log('data: ' + response.data.id);
         
         dispatch({ type: 'SET_GAMEID', payload: response.data.id });
         localStorage.setItem('gameId', response.data.id);
@@ -688,7 +689,7 @@ const Lobby = () => {
         }
       });
       setGenre(response.data.replaceAll('_', ' '));
-      console.log(`CURRENT GAME GENRE: ${response.data}`)
+      // console.log(`CURRENT GAME GENRE: ${response.data}`)
       let genre = response.data;
       setSelectedGenre(genre.replaceAll('_', ' '))
     } catch (err) {
@@ -725,10 +726,10 @@ const Lobby = () => {
     getU2(userId2)
     users.forEach(element => {
       if (element.user_id === userId && element.status === "In Progress") {
-          console.log(`TRUE`)
+          // console.log(`TRUE`)
           idle(userId)
         } else {
-          console.log(`false: ${status}`)
+          // console.log(`false: ${status}`)
         }
     })
   }, [users])
@@ -768,7 +769,7 @@ const Lobby = () => {
         // User is now ready
         setStatus('Idle');
 
-        console.log(`user ready or in progress`)
+        // console.log(`user ready or in progress`)
         try {
           socket.onopen = () => {
             socket.send(JSON.stringify({
@@ -947,7 +948,7 @@ const Lobby = () => {
         ) : (
           <div className="lobby-column">
             <h2 className="lobby-header lobby-stroke">{selectedCategory}:</h2>
-            <button className="unselected" onClick={() => {setSelectedCategory('')}}>⮌ BACK</button>
+            <button className="unselected" onClick={() => {setSelectedCategory('')}}>⬅ BACK</button>
           </div>
         )}
       </>

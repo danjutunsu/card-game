@@ -449,10 +449,6 @@ const Card = () => {
 
     const changePronouns = (question: string): string => {
       const pronouns: { [key: string]: string } = {
-        I: "he",
-        me: "him",
-        my: "his",
-        mine: "his",
         we: "they",
         us: "them",
         our: "their",
