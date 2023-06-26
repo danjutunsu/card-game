@@ -184,14 +184,8 @@
   margin-top: 1%;
 }
 
-.stats-page {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
 .button-container {
+  color:#C6E2D5;
   display: flex;
   justify-content: center;
   margin-left: 10px;
@@ -227,7 +221,7 @@
 }
 
 .return-button {
-  background-color: #6d68ff;
+  background-color: #4642c3;
   margin-top: 10px;
   display: flex;
   align-items: center;
@@ -468,7 +462,7 @@ input {
 .card {
   max-width: 75%;
   height: auto;
-  background-color: #e9d3eb;
+  background-color: #C6E2D5;
   border: 1px solid black;
   border-radius: 10px;
   position: relative; 
@@ -577,6 +571,13 @@ body {
   background-color: #ededed; /* set the background color to a light gray */
 }
 
+.stats-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .stats-header {
   color: #BA55D3;
   text-align: center;
@@ -587,7 +588,7 @@ body {
 }
 
 .stats-row {
-  color: #FF69B4; 
+  color: #006666; 
   max-width: 80%;
   height: auto;
   stroke: black; /* add a stroke */
@@ -629,11 +630,12 @@ body {
 
 .stats-answer-correct {
   height: auto;
-  background-color: #FF69B4;
+  background-color: #A3DEAE;
   text-decoration: none;
-  color: white;
+  color: #124721;
   padding: 10px;
   font-size: 18px;
+  font-weight: 500;
   border: none;
   margin-bottom: 10px;
   border-radius: 5px;
@@ -642,7 +644,7 @@ body {
 
 .stats-answer-incorrect {
   height: auto;
-  background-color: #ff0000;
+  background-color: #9B1C47;
   text-decoration: none;
   color: white;
   padding: 10px;

@@ -58,11 +58,19 @@ const Card = () => {
   const [ip, setIp] = useState()
   const [users, setUsers] = useState<User[]>([]);
   const gameInProgress = useSelector((state: AppState) => state.gameInProgress);
+  const [questionCount, setQuestionCount] = useState(1)
+  const [playerSwitch, setPlayerSwitch] = useState(false);
 
   const socket = new WebSocket(`wss://triviafriendsserver.onrender.com/?userId=${userId}`)
   useEffect(() => {
     console.log(`GameStatus: ${gameInProgress}`);
   }, [gameInProgress]);
+
+  useEffect(() => {
+    if (questionCount === 11) {
+      setQuestionCount(1)
+    }
+  }, [questionCount])
 
   useEffect(() => {
     fetchUsers(uuid)
@@ -340,6 +348,7 @@ const Card = () => {
           return index; // return the last index
         }
       }
+      setQuestionCount(questionCount + 1)
     
       setRandomQuestion(index);
       setVisited([...visited, index]);
@@ -445,6 +454,8 @@ const Card = () => {
       addAnswer(parseInt(userId), questionId, userAnswer, answered, data.length, gameId);
       setAnswered(answered+1)
       getRandomQuestion();
+      setQuestionCount(questionCount + 1)
+
     }
 
     const changePronouns = (question: string): string => {
@@ -486,6 +497,7 @@ const Card = () => {
       addNewGuess(parseInt(userId), questionId, index)
       console.log('Question ' + questionId)
       // addGuess(parseInt(userId2), questionId, userGuess);
+      setAnswered(answered+1)
 
       if (index === 0)
       {
@@ -508,7 +520,7 @@ const Card = () => {
       {gameInProgress && (
         <><div className="button-container">
             <button className="return-button" onClick={() => navigate(`/lobby/${uuid}`)}>Return To Lobby</button>
-          </div><div className="card-page">
+          </div><div className="card-page"><h1>{questionCount}/{data.length}</h1>
               {playerTurn === 0 ? (
                 <div className="card">
                   <div>

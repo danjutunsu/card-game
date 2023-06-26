@@ -50,6 +50,11 @@ const MyComponent = (props: StatisticsProps) => {
   
   const body = document.querySelector('body');
 
+  useEffect(() => {
+    console.log(`# CORRECT PROPS ${props.correctlyAnswered}`)
+
+  }, [props.correctlyAnswered])
+
   function changeBodyBackgroundImage(imagePath: string) {
     // document.body.style.backgroundImage = `url(${imagePath})`;
     // document.body.style.backgroundSize = `cover`
@@ -155,6 +160,7 @@ const MyComponent = (props: StatisticsProps) => {
       })
       console.log(`# correct points: ${correct}`)
       addPoints(parseInt(userId), correct, total, gameId)
+      console.log(`added points to db`)
     }
   }, [answers])
 
@@ -172,23 +178,26 @@ const MyComponent = (props: StatisticsProps) => {
           game_id: game_id
         }
       });
+      console.log(`WORKING 1`)
 
-      try {
-        await axios.put(`${url}/points/game`, {
-          user_id: user_id,
-          game_id: game_id,
-          points: points,
-          total: total
-        });
+    try {
+      await axios.put(`${url}/points/game`, {
+        user_id: user_id,
+        game_id: game_id,
+        points: points,
+        total: total
+      });
 
-        console.log("POINTS SHOULD BE INSERTED");
+      console.log("POINTS SHOULD BE INSERTED");
 
-        // Set the flag indicating the request is executed
-        localStorage.setItem("isRequestExecuted", "true");
-      } catch (error) {
-        console.error(error);
-        // Handle error
-      }
+      // Set the flag indicating the request is executed
+      localStorage.setItem("isRequestExecuted", "true");
+      console.log(`WORKING 2 ${points}`)
+
+    } catch (error) {
+      console.error(error);
+      // Handle error
+    }
     } catch {
       console.log("Game ID and userId don't exist. Inserting new points row");
       try {
@@ -201,8 +210,7 @@ const MyComponent = (props: StatisticsProps) => {
         console.log("Couldn't create a new row in points");
       }
     }
-  };
-  
+  };  
 
   async function fetchAnswers(game_id: number, user_id: string) {
     try { 
@@ -273,17 +281,19 @@ const Statistics = () => {
   const userId = useSelector((state: AppState) => state.userId);
   const [userPoints, setUserPoints] = useState(Object);
   const uuid = useSelector((state: AppState) => state.uuid);
+  const gameId = useSelector((state: AppState) => state.gameId);
 
   useEffect(() => {
-    getUserPoints(parseInt(userId))
+    getUserPoints(parseInt(userId), gameId)
   })
 
-  const getUserPoints = async (uid: number) => {
+  const getUserPoints = async (uid: number, gameId: number) => {
     try {
         const response = await axios.get(`${url}/points`, {
             params: 
             {
                 userId: uid,
+                gameId: gameId
             },
         });
 
