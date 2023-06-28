@@ -237,17 +237,22 @@
 
 .selected {
   margin: 5px;
-  background-color: #6d68ff;
+  background-color: #8A2BE2;
   height: auto;
   width: auto;
   text-decoration: none;
   color: white;
   padding: 10px;
-  font-size: 18px;
+  font-size: 24px;
+  font-weight: bold;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   display: inline-block;
+}
+
+body {
+  background-color: #ededed;
 }
 
 .unselected {
@@ -257,12 +262,40 @@
   height: auto;
   width: auto;
   color: white;
-  padding: 10px;
+  width: 100%;
+  height: 100%;
+  padding: 10px 10px;
   font-size: 18px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   display: inline-block;
+}
+
+.category-list-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.selected-category-container {
+  display: grid;
+  place-items: center;
+}
+
+.back-button {
+  margin: 3px;
+  text-align: center;
+  background-color: #A352EB;
+  height: auto;
+  width: auto;
+  color: white;
+  padding: 10px;
+  font-size: 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 button[disabled] {
@@ -287,6 +320,7 @@ button[disabled] {
 .invite-button {
   height: 30px;
   margin-left: 10px;
+  margin-top: 5px;
   background-color: #8A2BE2;
   color: white;
   font-size: 20px;
@@ -355,7 +389,7 @@ button[disabled] {
 
 .menu-username {
   display: inline-block;
-  color: #8A2BE2; /* complementary color */
+  color: #6d68ff; /* complementary color */
   text-shadow: 2px 2px 2px #000; /* add a text shadow */
   stroke: black; /* add a stroke */
   padding-left: 10px;
@@ -364,6 +398,14 @@ button[disabled] {
   font-weight: bold;
   -webkit-text-stroke: 1px black;
   text-stroke: 1px black;
+}
+
+.username {
+  color: #8A2BE2; /* complementary color */
+  stroke: black; /* add a stroke */
+  padding-left: 10px;
+  text-align: center;
+  font-size: 28px;
 }
 
 .menu-li-button {
@@ -381,6 +423,8 @@ button[disabled] {
   cursor: pointer;
 }
 
+
+
 .ready-button {
   background-color: #6A5ACD;
   text-decoration: none;
@@ -392,7 +436,6 @@ button[disabled] {
   border-radius: 5px;
   cursor: pointer;
 }
-  
 .button-link {
   text-decoration: none;
   color: white;
@@ -523,7 +566,10 @@ input {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100px; /* Adjust the height as needed */
+  margin-bottom: 10px;
+  margin-top: 10px;
+  padding-right: 5px; 
+  border-radius: 5px;
 }
 
 .user-icon {
@@ -567,9 +613,7 @@ input {
   text-stroke: 1px black;
 }
 
-body {
-  background-color: #ededed; /* set the background color to a light gray */
-}
+
 
 .stats-page {
   display: flex;
@@ -677,8 +721,28 @@ body {
 
 .lobby-header {
   color: #BA55D3; /* complementary color */
+  width: auto;
+  /* background-color: #F2F2F2; */
+  padding: 5px 10px;
+  border-radius: 5px;
   stroke: black; /* add a stroke */
   text-align: center;
+  justify-content: center;
+  justify-items: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 28px;
+}
+
+.lobby-userlist {
+  color: #000000; /* complementary color */
+  width: auto;
+  /* background-color: #F2F2F2; */
+  padding: 5px;
+  border-radius: 5px;
+  stroke: black; /* add a stroke */
+  text-align: center;
+  align-content: center;
+  justify-content: center;
   font-family: 'Roboto', sans-serif;
   font-size: 28px;
 }
@@ -693,7 +757,7 @@ body {
 
 .lobby-genre {
   display: inline-block;
-  color: #6d68ff; /* complementary color */
+  color: #744FE0; /* complementary color */
   text-shadow: 1px 1px 1px #000; /* add a text shadow */
   stroke: black; /* add a stroke */
   text-align: center;
@@ -706,7 +770,7 @@ body {
 .lobby-column {
   text-align: center;
   border-radius: 5px 5px 0 0;
-  width: 100%;
+  width: auto;
   float: left;
   box-sizing: border-box;
 }
@@ -734,7 +798,7 @@ body {
   color: white;
   margin: 5px;
   padding: 10px;
-  font-size: 24px;
+  font-size: 28px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -748,6 +812,21 @@ body {
   float: left;
   box-sizing: border-box;
   padding: 8px;
+}
+
+
+.genre-header {
+  color: #BA55D3; /* complementary color */
+  width: auto;
+  /* background-color: #F2F2F2; */
+  padding: 5px 10px;
+  border-radius: 5px;
+  stroke: black; /* add a stroke */
+  text-align: center;
+  justify-content: center;
+  justify-items: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 28px;
 }
 
 ul {

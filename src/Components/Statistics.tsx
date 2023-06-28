@@ -6,6 +6,8 @@ import { useSelector } from "react-redux";
 import { AppState } from "../store";
 import { useNavigate } from "react-router-dom";
 
+  //TODO add dynamic background tailored to selected category
+
 interface StatisticsProps {
   uuid: string
   user: string;

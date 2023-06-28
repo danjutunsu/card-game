@@ -192,6 +192,27 @@ const Lobby = () => {
   const [allUsersReady, setAllUsersReady] = useState(false);
   const gameInProgress = useSelector((state: AppState) => state.gameInProgress);
   
+  // const body = document.querySelector('body');
+
+  // function changeBodyBackgroundImage(imagePath: string) {
+  //   document.body.style.backgroundImage = `linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, .5),rgba(0, 0, 0, .5), rgba(0, 0, 0, 1)), url(${imagePath})`;
+  //   document.body.style.backgroundSize = '100% 100vh, cover';
+  //   document.body.style.backgroundRepeat = 'no-repeat, no-repeat';
+  // }
+  
+  // // Call the function with the desired image path
+  // const imagePath = `../${selectedGenre.replaceAll(" ", "_")}.jpg`;
+  
+  // useEffect(() => {
+  //   if (selectedGenre === '') {
+  //     changeBodyBackgroundImage(`../main.jpg`);
+  //   } else {
+  //     changeBodyBackgroundImage(imagePath);
+  //     console.log(`genre is ${selectedGenre}`);
+  //   }
+  // }, [selectedGenre]);
+  
+
   useEffect(() => {
     if (playerTurn === 2 && player2Turn === 2) {
 
@@ -410,7 +431,7 @@ const Lobby = () => {
 
         fetchUsers(uuid)
       } else {
-        // Status button clicked
+        // cancel button clicked
         socket.send(JSON.stringify({
           type: 'user_rejected',
           payload: {
@@ -590,7 +611,7 @@ const Lobby = () => {
             }));
             dispatch({ type: 'SET_GAMEINPROGRESS', payload: true });
             localStorage.setItem('gameInProgress', 'true');
-            // console.log(`GameStatus: ${gameInProgress}`)
+            console.log(`GameStatus: ${gameInProgress}`)
             navigate('/card')
         } else {
             // navigate('/waiting')
@@ -925,10 +946,10 @@ const Lobby = () => {
 
   function CategoryList() {  
     return (
-      <>
-        {selectedCategory === '' ? (
-          <>
-            <h2 className="lobby-header lobby-stroke">Categories:</h2>
+      <div className="category-list-container">
+      {selectedCategory === '' ? (
+        <>
+            {/* <h2 className="lobby-header">Categories:</h2> */}
             <div className="genre-grid">
               {categories.map((category) => (
                 <div
@@ -946,12 +967,12 @@ const Lobby = () => {
             </div>
           </>
         ) : (
-          <div className="lobby-column">
-            <h2 className="lobby-header lobby-stroke">{selectedCategory}:</h2>
-            <button className="unselected" onClick={() => {setSelectedCategory('')}}>⬅ BACK</button>
-          </div>
+           <div className="selected-category-container">
+          {/* <h2 className="lobby-header">{selectedCategory}:</h2> */}
+          <button className="back-button" onClick={() => {setSelectedCategory('')}}>⬅ BACK</button>
+        </div>
         )}
-      </>
+      </div>
     );
   }
 
@@ -994,9 +1015,10 @@ const Lobby = () => {
       {Array.isArray(genres) &&
         genres.map((genre) =>
           genre.category.replaceAll('_', ' ') === selectedCategory.toString() ? (
+            <div className="category-list-container">
             <div
               key={genre.id} // Add the key prop with a unique identifier
-              className={`genre-item ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
+              className={`selected-category-container ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
               onClick={() => {
                 // if (gameStatus === 0) {
                 console.log(`SELECTED ${genre.genre}`);
@@ -1017,6 +1039,7 @@ const Lobby = () => {
             >
               {genre.genre.replaceAll('_', ' ')}
             </div>
+            </div>
           ) : null
         )}
       </div>
@@ -1030,7 +1053,7 @@ const Lobby = () => {
     const sortedUsers = users.sort((a, b) => a.username.localeCompare(b.username));
   
     return (
-      <ul>
+      <ul className="lobby-userlist">
         {Array.isArray(sortedUsers) &&
           sortedUsers.map((user) => (
             <li key={user.user_id} className="lobby-row" style={{ listStyle: 'none' }}>
@@ -1044,7 +1067,7 @@ const Lobby = () => {
     );
   }
   
-  
+  //TODO add dynamic background tailored to selected category
 
   return (
     <div className="lobby-container">
@@ -1055,19 +1078,20 @@ const Lobby = () => {
         <button disabled={users.length >=2} id="leave" className="invite-button" onClick={() => handleInviteUser(inviteeUsername)}>Invite User</button>
       </div>
       ) : null}
-      <h3 className="lobby-header lobby-stroke">Users In Lobby:</h3>
+      {/* <h3 className="lobby-header">Users In Lobby:</h3> */}
       <UserList users={users} handleReady={handleReady} handleStatusUpdate={handleUserStatusUpdate}/>
       <button className="ready-button" onClick={() => handleReady(userId)}>Ready?</button>
       {genre !== '' ? (      
-      <div><h1 className="lobby-header lobby-stroke">Genre is set to <span className="lobby-genre">{selectedGenre}</span></h1></div>
+      <div><h1 className="genre-header">Genre is set to <span className="lobby-genre">{selectedGenre}</span></h1></div>
       ) : <></>}
-      {playerTurn === 2 && player2Turn !== 2 ? <div><h1 className="lobby-waiting lobby-stroke">Waiting on {username} to finish</h1></div> : <></>}
+      {playerTurn === 2 && player2Turn !== 2 ? <div><h1 className="lobby-waiting">Waiting on {username} to finish</h1></div> : <></>}
       {userId.toString() === player1.toString() || users.length === 1 ? (
       <><CategoryList /><GenreList /></>
       ) : (
         <></>
       )}
-      <button disabled={!allUsersReady || users.length < 2} className="start-button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
+      <button   disabled={!allUsersReady || users.length < 2 || !gameInProgress}
+ className="start-button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
     </div>
   );
 };
