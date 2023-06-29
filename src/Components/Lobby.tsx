@@ -1099,7 +1099,7 @@ const Lobby = () => {
       ) : (
         <></>
       )}
-      <button   disabled={!allUsersReady || users.length < 2 || !gameInProgress}
+      <button disabled={!allUsersReady || users.length < 2}
  className="start-button" onClick={() => handleStartGame(allUsersReady, userId, users[0].user_id, users[1].user_id)}>Start Game</button>
     </div>
   );

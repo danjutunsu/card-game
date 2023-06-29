@@ -104,7 +104,7 @@ const MyComponent = (props: StatisticsProps) => {
           const foundAnswer = answers.find((answer) => answer.question_id === entry.id);
           return (
             <li key={entry.id} className="stats-text" style={{ listStyle: "none" }}>
-              <div className="stats-question">{entry.id} {entry.question}</div>
+              <div className="stats-question">{entry.question}</div>
               {guesses[entry.id - 1] && foundAnswer && (
                 <>
                   <div className={entry.options[foundAnswer.answer] === entry.options[guesses[entry.id - 1].guess] ? "stats-answer-correct" : "stats-answer-incorrect"}>
