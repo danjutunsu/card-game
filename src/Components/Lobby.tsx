@@ -30,6 +30,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
   const randomId = uuidv4();
   const [username, setUserName] = useState('')
   const userId = useSelector((state: AppState) => state.userId);
+  const userId2 = useSelector((state: AppState) => state.userId2);
   const [users, setUsers] = useState<User[]>([]);
 
   const toggleMenu = () => {
@@ -99,8 +100,38 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
       navigate(`/lobby/${randomId}`)
       
       fetchUsers(params.lobbyId);
+      props.socket.send(JSON.stringify({
+        type: 'refresh',
+        payload: {
+          user1: userId,
+          user2: userId2
+        }
+      }));
+      props.socket.send(JSON.stringify({
+        type: 'refresh',
+        payload: {
+          user1: userId2,
+          user2: userId
+        }
+      }));
     } catch (error) {
       console.error(error);
+      fetchUsers(params.lobbyId);
+      props.socket.send(JSON.stringify({
+        type: 'refresh',
+        payload: {
+          user1: userId,
+          user2: userId2
+        }
+      }));
+      
+      props.socket.send(JSON.stringify({
+        type: 'refresh',
+        payload: {
+          user1: userId2,
+          user2: userId
+        }
+      }));
     }
   };
 
@@ -192,6 +223,16 @@ const Lobby = () => {
   const [allUsersReady, setAllUsersReady] = useState(false);
   const gameInProgress = useSelector((state: AppState) => state.gameInProgress);
   
+  const refresh = () => {
+    socket.send(JSON.stringify({
+      type: 'refresh',
+      payload: {
+        user1: userId,
+        user2: userId2
+      }
+    }));
+  }
+
   // const body = document.querySelector('body');
 
   // function changeBodyBackgroundImage(imagePath: string) {
@@ -425,6 +466,13 @@ const Lobby = () => {
           payload: {
             user1: userId,
             user2: data.invitee.sender
+          }
+        }));
+        socket.send(JSON.stringify({
+          type: 'refresh',
+          payload: {
+            user1: userId2,
+            user2: userId
           }
         }));
         console.log(`FETCHING invitee`)
