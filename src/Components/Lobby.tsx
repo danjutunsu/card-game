@@ -773,7 +773,14 @@ const Lobby = () => {
   }, [lobbyId])
 
   const handleReady = async (id: string) => {
+    console.log(`CLICKED`)
     // console.log(`TOKEN: ${token}`)
+    if (status === 'Ready' || status === 'In Progress') {
+      // User is now ready
+      setStatus('Idle');
+    } else {
+      setStatus('Ready')
+    }
     
     // console.log(process.env.JWT_SECRET)
     try {
@@ -788,7 +795,7 @@ const Lobby = () => {
       const updatedUser = response.data; // Get updated user object with new status
       if (updatedUser.status === 'Ready' || updatedUser.status === 'In Progress') {
         // User is now ready
-        setStatus('Idle');
+        // setStatus('Idle');
 
         // console.log(`user ready or in progress`)
         try {
@@ -818,7 +825,7 @@ const Lobby = () => {
           console.error(error);
         }
       } else {
-        setStatus('Ready'); 
+        // setStatus('Ready'); 
         
         // console.log(`user`)
         socket.onopen = () => {
