@@ -1014,14 +1014,16 @@ const Lobby = () => {
     <div>
       {Array.isArray(genres) &&
         genres.map((genre) =>
-          genre.category.replaceAll('_', ' ') === selectedCategory.toString() ? (
+          genre.category.replaceAll('_', ' ') === selectedCategory.replaceAll('_', ' ') ? (
             <div className="category-list-container">
             <div
               key={genre.id} // Add the key prop with a unique identifier
-              className={`selected-category-container ${selectedGenre === genre.genre ? 'selected' : 'unselected'}`}
+              className={`selected-category-container ${selectedGenre.replaceAll('_', ' ') === genre.genre.replaceAll('_', ' ') ? 'selected' : 'unselected'}`}
               onClick={() => {
                 // if (gameStatus === 0) {
-                console.log(`SELECTED ${genre.genre}`);
+                  console.log(`SELECTED ${genre.genre}`);
+                  console.log(`SELECTEDGENRE ${selectedGenre}`);
+                
                 handleGenreClick(genre.id.toString(), genre.genre);
                 setSelectedGenre(genre.genre.replaceAll('_', ' '));
                 socket.onopen = () => {

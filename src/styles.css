@@ -151,6 +151,10 @@
   }
 }
 
+body {
+  background-color: #ededed;
+}
+
 .genre-grid {
   display: grid;
   max-width: 90%;
@@ -237,13 +241,15 @@
 
 .selected {
   margin: 5px;
-  background-color: #8A2BE2;
+  background-color: #EB52D6;
   height: auto;
   width: auto;
   text-decoration: none;
   color: white;
   padding: 10px;
   font-size: 24px;
+  width: 100%;
+  height: 100%;
   font-weight: bold;
   border: none;
   border-radius: 5px;
@@ -251,20 +257,16 @@
   display: inline-block;
 }
 
-body {
-  background-color: #ededed;
-}
-
 .unselected {
   margin: 3px;
-  text-align: center;
   background-color: #8A2BE2;
+  text-align: center;
   height: auto;
   width: auto;
   color: white;
   width: 100%;
   height: 100%;
-  padding: 10px 10px;
+  padding: 5px 5px;
   font-size: 18px;
   border: none;
   border-radius: 5px;
@@ -403,6 +405,7 @@ button[disabled] {
 .username {
   color: #8A2BE2; /* complementary color */
   stroke: black; /* add a stroke */
+  margin-top: 5px;
   padding-left: 10px;
   text-align: center;
   font-size: 28px;
