@@ -903,7 +903,7 @@ const Lobby = () => {
               },
             }));
           }
-          // socket.onopen = () => {
+          socket.onopen = () => {
               socket.send(JSON.stringify({
                 type: 'refresh',
                 payload: {
@@ -911,8 +911,7 @@ const Lobby = () => {
                   user2: userId2,
                 },
               }));
-            
-          // }
+          }
   
           // const response = await axios.get(`${url}/lobby`);
           // Process the response data as needed
