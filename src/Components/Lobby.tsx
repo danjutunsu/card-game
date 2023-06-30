@@ -1001,7 +1001,7 @@ const Lobby = () => {
         console.log(`USERNAME RESPONSE: ${response.data}`)
         
         // Invite sent
-        // socket.onopen = () => {
+        socket.onopen = () => {
           socket.send(JSON.stringify({
             type: 'invitee',
             payload: {
@@ -1010,7 +1010,7 @@ const Lobby = () => {
               sender: userId
             }
           }));
-        // }
+        }
         // navigate('/')
       } catch (error) {
         console.error(error);
