@@ -122,7 +122,6 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
     } catch (error) {
       console.error(error);
       fetchUsers(params.lobbyId);
-      props.socket.onopen = () => {
       props.socket.send(JSON.stringify({
         type: 'refresh',
         payload: {
@@ -130,8 +129,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
           user2: userId2
         }
       }));
-    }
-    props.socket.onopen = () => {
+      
       props.socket.send(JSON.stringify({
         type: 'refresh',
         payload: {
@@ -140,7 +138,6 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
         }
       }));
     }
-  }
   };
 
   const handleLogout = async (userId: string) => {
@@ -862,6 +859,7 @@ const Lobby = () => {
 
   useEffect(() => {
     getGenre(userId, userId2)
+    console.log(`changed`)
     fetchUsers(lobbyId)
     socket.onopen = () => {
       socket.send(JSON.stringify({
@@ -903,7 +901,7 @@ const Lobby = () => {
               },
             }));
           }
-          socket.onopen = () => {
+          // socket.onopen = () => {
               socket.send(JSON.stringify({
                 type: 'refresh',
                 payload: {
@@ -911,7 +909,8 @@ const Lobby = () => {
                   user2: userId2,
                 },
               }));
-          }
+            
+          // }
   
           // const response = await axios.get(`${url}/lobby`);
           // Process the response data as needed
