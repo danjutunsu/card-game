@@ -38,7 +38,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
   };
 
   useEffect(() => {
-    // fetchUsers(lobbyId);
+    fetchUsers(lobbyId);
     getUname(userId)
   }, [0])
 
@@ -549,7 +549,7 @@ const Lobby = () => {
       // console.log(`REFRESH`)
       console.log(`FETCHING refresh`)
 
-      fetchUsers(params.lobbyId);
+      // fetchUsers(params.lobbyId);
     }
   });
 
@@ -851,10 +851,20 @@ const Lobby = () => {
           // console.log(`false: ${status}`)
         }
     })
+    
   }, [users])
 
   useEffect(() => {
     getTurn(gameId)
+    socket.onopen = () => {
+    socket.send(JSON.stringify({
+      type: 'refresh',
+      payload: {
+        user1: userId,
+        user2: userId2
+      }
+    }));
+  }
   }, [users])
 
   useEffect(() => {
@@ -870,6 +880,7 @@ const Lobby = () => {
       }
       }));
     }
+    console.log(`fetching users from ${lobbyId}`)
   }, [lobbyId])
 
   const handleReady = async (id: string) => {
@@ -892,7 +903,7 @@ const Lobby = () => {
 
         // console.log(`user ready or in progress`)
         try {
-          socket.onopen = () => {
+          // socket.onopen = () => {
             socket.send(JSON.stringify({
               type: 'user_status_update',
               payload: {
@@ -900,7 +911,7 @@ const Lobby = () => {
                 status: 'Ready',
               },
             }));
-          }
+          // }
           // socket.onopen = () => {
               socket.send(JSON.stringify({
                 type: 'refresh',
@@ -921,7 +932,7 @@ const Lobby = () => {
         setStatus('Ready'); 
         
         // console.log(`user`)
-        socket.onopen = () => {
+        // socket.onopen = () => {
           // User is now idle
           socket.send(JSON.stringify({
             type: 'user_status_update',
@@ -930,7 +941,7 @@ const Lobby = () => {
               status: 'Idle',
             },
           }));
-        }
+        // }
         // socket.onopen = () => {
           socket.send(JSON.stringify({
             type: 'refresh',
