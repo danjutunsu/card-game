@@ -477,7 +477,7 @@ const Lobby = () => {
           }
         }));
       }
-      fetchUsers(lobbyId);
+      // fetchUsers(lobbyId);
     } else if (data.end_game) {
       dispatch({ type: 'SET_GAMEINPROGRESS', payload: false });
       // localStorage.setItem('gameInProgress', 'false');
@@ -857,7 +857,7 @@ const Lobby = () => {
     // console.log(`GETTING TURN WITH GAMEID: ${gameId}`)
     getGameStatus();
     // console.log(`Game Status: ${gameStatus}`)
-    fetchUsers(lobbyId)
+    // fetchUsers(lobbyId)
   }, [status]); 
 
   useEffect(() => {
@@ -985,8 +985,8 @@ const Lobby = () => {
               user2: userId2,
             },
           }));
-          fetchUsers(uuid);
         }
+        // fetchUsers(uuid);
 
         // const allReady = users.every(user => user.status === 'Ready' || user.status === 'In Progress');
         // setAllUsersReady(allReady); // Update flag based on current state of users
