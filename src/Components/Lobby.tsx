@@ -30,6 +30,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
   const randomId = uuidv4();
   const [username, setUserName] = useState('')
   const userId = useSelector((state: AppState) => state.userId);
+  const userId2 = useSelector((state: AppState) => state.userId2);
   const [users, setUsers] = useState<User[]>([]);
 
   const toggleMenu = () => {
@@ -37,7 +38,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
   };
 
   useEffect(() => {
-    fetchUsers(lobbyId);
+    // fetchUsers(lobbyId);
     getUname(userId)
   }, [0])
 
@@ -97,14 +98,58 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
           uuid: uuid
       });
       navigate(`/lobby/${randomId}`)
-      
-      fetchUsers(params.lobbyId);
+      console.log(`random id: ${randomId}`)
+      props.socket.send(JSON.stringify({
+        type: 'refresh',
+        payload: {
+          user1: userId,
+          user2: userId2
+        }
+      }));
+      props.socket.send(JSON.stringify({
+        type: 'refresh',
+        payload: {
+          user1: userId2,
+          user2: userId
+        }
+      }));
     } catch (error) {
       console.error(error);
+      fetchUsers(params.lobbyId);
+      props.socket.send(JSON.stringify({
+        type: 'refresh',
+        payload: {
+          user1: userId,
+          user2: userId2
+        }
+      }));
+      
+      props.socket.send(JSON.stringify({
+        type: 'refresh',
+        payload: {
+          user1: userId2,
+          user2: userId
+        }
+      }));
     }
   };
 
   const handleLogout = async (userId: string) => {
+    
+    props.socket.send(JSON.stringify({
+      type: 'refresh',
+      payload: {
+        user1: userId,
+        user2: userId2
+      }
+    }));
+    props.socket.send(JSON.stringify({
+      type: 'refresh',
+      payload: {
+        user1: userId2,
+        user2: userId
+      }
+    }));
     try {
       const message = { payload: 'logout' };
       props.socket.onopen = () => {
@@ -114,8 +159,38 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
       fetchUsers(params.lobbyId);
 
       navigate('/')
+      
+      props.socket.send(JSON.stringify({
+        type: 'refresh',
+        payload: {
+          user1: userId,
+          user2: userId2
+        }
+      }));
+      props.socket.send(JSON.stringify({
+        type: 'refresh',
+        payload: {
+          user1: userId2,
+          user2: userId
+        }
+      }));
     } catch (error) {
       console.error(error);
+      
+      props.socket.send(JSON.stringify({
+        type: 'refresh',
+        payload: {
+          user1: userId,
+          user2: userId2
+        }
+      }));
+      props.socket.send(JSON.stringify({
+        type: 'refresh',
+        payload: {
+          user1: userId2,
+          user2: userId
+        }
+      }));
     }
   };
 
@@ -192,6 +267,16 @@ const Lobby = () => {
   const [allUsersReady, setAllUsersReady] = useState(false);
   const gameInProgress = useSelector((state: AppState) => state.gameInProgress);
   
+  const refresh = () => {
+    socket.send(JSON.stringify({
+      type: 'refresh',
+      payload: {
+        user1: userId,
+        user2: userId2
+      }
+    }));
+  }
+
   // const body = document.querySelector('body');
 
   // function changeBodyBackgroundImage(imagePath: string) {
@@ -424,7 +509,14 @@ const Lobby = () => {
           type: 'refresh',
           payload: {
             user1: userId,
-            user2: data.invitee.sender
+            user2: userId2
+          }
+        }));
+        socket.send(JSON.stringify({
+          type: 'refresh',
+          payload: {
+            user1: userId2,
+            user2: userId
           }
         }));
         console.log(`FETCHING invitee`)
@@ -436,7 +528,7 @@ const Lobby = () => {
           type: 'user_rejected',
           payload: {
             reject: userId,
-            request: data.invitee.sender
+            request: userId2
           }
         }));
       }
@@ -451,7 +543,7 @@ const Lobby = () => {
       // console.log(`REFRESH`)
       console.log(`FETCHING refresh`)
 
-      fetchUsers(uuid);
+      fetchUsers(params.lobbyId);
     }
   });
 
@@ -761,6 +853,8 @@ const Lobby = () => {
 
   useEffect(() => {
     getGenre(userId, userId2)
+    console.log(`changed`)
+    fetchUsers(lobbyId)
     socket.onopen = () => {
       socket.send(JSON.stringify({
       type: 'refresh',
