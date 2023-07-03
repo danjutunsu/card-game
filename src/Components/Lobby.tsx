@@ -38,7 +38,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
   };
 
   useEffect(() => {
-    // fetchUsers(lobbyId);
+    fetchUsers(lobbyId);
     getUname(userId)
   }, [0])
 
@@ -92,13 +92,16 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
   const handleLeaveGame = async (userId: string, uuid: string | undefined) => {
     try {
       const message = { payload: 'leave' };
+      props.socket.onopen = async () => {
       props.socket.send(JSON.stringify(message));
       await axios.put(`${url}/lobby/leave`, {
           userId: userId,
           uuid: uuid
       });
+      }
       navigate(`/lobby/${randomId}`)
       console.log(`random id: ${randomId}`)
+      props.socket.onopen = () => {
       props.socket.send(JSON.stringify({
         type: 'refresh',
         payload: {
@@ -106,6 +109,8 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
           user2: userId2
         }
       }));
+    }
+    props.socket.onopen = () => {
       props.socket.send(JSON.stringify({
         type: 'refresh',
         payload: {
@@ -113,6 +118,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
           user2: userId
         }
       }));
+    }
     } catch (error) {
       console.error(error);
       fetchUsers(params.lobbyId);
@@ -849,6 +855,15 @@ const Lobby = () => {
 
   useEffect(() => {
     getTurn(gameId)
+    socket.onopen = () => {
+    socket.send(JSON.stringify({
+      type: 'refresh',
+      payload: {
+        user1: userId,
+        user2: userId2
+      }
+    }));
+  }
   }, [users])
 
   useEffect(() => {
@@ -864,6 +879,7 @@ const Lobby = () => {
       }
       }));
     }
+    console.log(`fetching users from ${lobbyId}`)
   }, [lobbyId])
 
   const handleReady = async (id: string) => {
@@ -895,7 +911,7 @@ const Lobby = () => {
               },
             }));
           }
-          // socket.onopen = () => {
+          socket.onopen = () => {
               socket.send(JSON.stringify({
                 type: 'refresh',
                 payload: {
@@ -903,8 +919,7 @@ const Lobby = () => {
                   user2: userId2,
                 },
               }));
-            
-          // }
+          }
   
           // const response = await axios.get(`${url}/lobby`);
           // Process the response data as needed
@@ -915,8 +930,8 @@ const Lobby = () => {
         setStatus('Ready'); 
         
         // console.log(`user`)
+        // User is now idle
         socket.onopen = () => {
-          // User is now idle
           socket.send(JSON.stringify({
             type: 'user_status_update',
             payload: {
@@ -925,7 +940,7 @@ const Lobby = () => {
             },
           }));
         }
-        // socket.onopen = () => {
+        socket.onopen = () => {
           socket.send(JSON.stringify({
             type: 'refresh',
             payload: {
@@ -934,8 +949,8 @@ const Lobby = () => {
             },
           }));
           fetchUsers(uuid);
-   
-        // }
+        }
+
         // const allReady = users.every(user => user.status === 'Ready' || user.status === 'In Progress');
         // setAllUsersReady(allReady); // Update flag based on current state of users
       }
@@ -984,7 +999,7 @@ const Lobby = () => {
         console.log(`USERNAME RESPONSE: ${response.data}`)
         
         // Invite sent
-        // socket.onopen = () => {
+        socket.onopen = () => {
           socket.send(JSON.stringify({
             type: 'invitee',
             payload: {
@@ -993,7 +1008,7 @@ const Lobby = () => {
               sender: userId
             }
           }));
-        // }
+        }
         // navigate('/')
       } catch (error) {
         console.error(error);
@@ -1071,73 +1086,70 @@ const Lobby = () => {
   }
 
   function GenreList() {
-    const [selectedGenres, setSelectedGenres] = useState<{[key: string]: boolean}>({});
-
+    const [selectedGenres, setSelectedGenres] = useState<{ [key: string]: boolean }>({});
+  
     const handleGenreClick = async (genreId: string, genre: string) => {
-      // if (gameStatus === 0) {
-      console.log(`SETTING GENRE IN METHOD`)
-      setSelectedGenres(({}))
       setSelectedGenres((prevState) => ({
         ...prevState,
         [genreId]: !prevState[genreId],
       }));
-        try {
-          const response = await axios.put(`${url}/games/genre`, {
-            player1: userId,
-            player2: userId2,
-            genre: genre
-          });
-        } catch (err) {
-          console.log(err)
-          console.log(`Error updating the genre`)
-        }
-        console.log(`SETTING GENRE IN WS`)
-        // socket.onopen = () => {
-          socket.send(JSON.stringify({
-            type: 'set_genre',
-            payload: {
-              type: "set_genre",
-              uuid: uuid,
-              genre: genre
-            }
-        }));
+  
+      try {
+        const response = await axios.put(`${url}/games/genre`, {
+          player1: userId,
+          player2: userId2,
+          genre: genre,
+        });
+      } catch (err) {
+        console.log(err);
+        console.log('Error updating the genre');
       }
-  // }
-  // }
-  return (
-    <div>
-      {Array.isArray(genres) &&
-        genres.map((genre) =>
-          genre.category.replaceAll('_', ' ') === selectedCategory.replaceAll('_', ' ') ? (
-            <div className="category-list-container">
-            <div
-              key={genre.id} // Add the key prop with a unique identifier
-              className={`selected-category-container ${selectedGenre.replaceAll('_', ' ') === genre.genre.replaceAll('_', ' ') ? 'selected' : 'unselected'}`}
-              onClick={() => {
-                // if (gameStatus === 0) {
-                  console.log(`SELECTED ${genre.genre}`);
-                  console.log(`SELECTEDGENRE ${selectedGenre}`);
-                
-                handleGenreClick(genre.id.toString(), genre.genre);
-                setSelectedGenre(genre.genre.replaceAll('_', ' '));
-                socket.onopen = () => {
-                  console.log(`SETTING GENRE IN WS`)
-                  const message = {
-                    payload: {
-                      type: 'set_genre',
-                      genre: genre,
-                    },
-                  };
-                  socket.send(JSON.stringify(message));
-                }
-              // }
-              }}
-            >
-              {genre.genre.replaceAll('_', ' ')}
-            </div>
-            </div>
-          ) : null
-        )}
+  
+      socket.onopen = () => {
+        const message = {
+          type: 'set_genre',
+          payload: {
+            type: 'set_genre',
+            uuid: uuid,
+            genre: genre,
+          },
+        };
+        socket.send(JSON.stringify(message));
+      };
+    };
+  
+    return (
+      <div>
+        {Array.isArray(genres) &&
+          genres.map((genre) =>
+            genre.category.replaceAll('_', ' ') === selectedCategory.replaceAll('_', ' ') ? (
+              <div className="category-list-container" key={genre.id}>
+                <div
+                  className={`selected-category-container ${
+                    selectedGenre.replaceAll('_', ' ') === genre.genre.replaceAll('_', ' ') ? 'selected' : 'unselected'
+                  }`}
+                  onClick={() => {
+                    // console.log(`SELECTED ${genre.genre}`);
+                    // console.log(`SELECTEDGENRE ${selectedGenre}`);
+                    handleGenreClick(genre.id.toString(), genre.genre);
+                    setSelectedGenre(genre.genre.replaceAll('_', ' '));
+                    socket.onopen = () => {
+                      // console.log('SETTING GENRE IN WS');
+                      const message = {
+                        payload: {
+                          type: 'set_genre',
+                          genre: genre,
+                        },
+                      };
+                      socket.send(JSON.stringify(message));
+                    };
+                  }}
+                >
+                  {genre.genre.replaceAll('_', ' ')}
+                </div>
+              </div>
+            ) : null
+          )}
       </div>
     );
   }
