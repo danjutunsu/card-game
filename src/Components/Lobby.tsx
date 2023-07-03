@@ -491,13 +491,15 @@ const Lobby = () => {
       dispatch({ type: 'SET_GENRE', payload: data.genreToSet.genre });
       localStorage.setItem('genre', genre);
       setGenreDB(userId, userId2, data.genreToSet.genre)
-      socket.send(JSON.stringify({
-        type: 'refresh',
-        payload: {
-          user1: userId,
-          user2: userId2
-        }
-      }));
+      socket.onopen = () => {
+        socket.send(JSON.stringify({
+          type: 'refresh',
+          payload: {
+            user1: userId,
+            user2: userId2
+          }
+        }));
+      }
     } else if (data.invite) {
       setInvited(true)
       console.log(`FETCHING data.invite`)
@@ -521,32 +523,38 @@ const Lobby = () => {
       if (result) {
         navigate(`/lobby/${data.invitee.lobbyId}`)
         // Status button clicked
-        socket.send(JSON.stringify({
-          type: 'refresh',
-          payload: {
-            user1: userId,
-            user2: userId2
-          }
-        }));
-        socket.send(JSON.stringify({
-          type: 'refresh',
-          payload: {
-            user1: userId2,
-            user2: userId
-          }
-        }));
+        socket.onopen = () => {
+          socket.send(JSON.stringify({
+            type: 'refresh',
+            payload: {
+              user1: userId,
+              user2: userId2
+            }
+          }));
+        }
+        socket.onopen = () => {
+          socket.send(JSON.stringify({
+            type: 'refresh',
+            payload: {
+              user1: userId2,
+              user2: userId
+            }
+          }));
+        }
         console.log(`FETCHING invitee`)
 
         fetchUsers(uuid)
       } else {
         // cancel button clicked
-        socket.send(JSON.stringify({
-          type: 'user_rejected',
-          payload: {
-            reject: userId,
-            request: userId2
-          }
-        }));
+        socket.onopen = () => {
+          socket.send(JSON.stringify({
+            type: 'user_rejected',
+            payload: {
+              reject: userId,
+              request: userId2
+            }
+          }));
+        }
       }
     } else if (data.user_rejected) {
       // const { sender, recipient } = data.invite;
@@ -703,20 +711,24 @@ const Lobby = () => {
             // handleUserStatusUpdate(userId.toString(), "In Progress")
             // Status button clicked
             inProgress(userId)
-            socket.send(JSON.stringify({
-              type: 'user_status_update',
-              payload: {
-                userId: userId,
-                status: "In Progress"
-              }
-            }));
-            socket.send(JSON.stringify({
-            type: 'refresh',
-            payload: {
-              user1: userId,
-              user2: userId2
+            socket.onopen = () => {
+              socket.send(JSON.stringify({
+                type: 'user_status_update',
+                payload: {
+                  userId: userId,
+                  status: "In Progress"
+                }
+              }));
             }
-            }));
+            socket.onopen = () => {
+              socket.send(JSON.stringify({
+              type: 'refresh',
+              payload: {
+                user1: userId,
+                user2: userId2
+              }
+              }));
+            }
             dispatch({ type: 'SET_GAMEINPROGRESS', payload: true });
             localStorage.setItem('gameInProgress', 'true');
             console.log(`GameStatus: ${gameInProgress}`)
