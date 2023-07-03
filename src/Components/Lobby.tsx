@@ -467,6 +467,16 @@ const Lobby = () => {
       const { userId, status} = data.user_status_update;
       handleUserStatusUpdate(data.user_status_update.userId, data.user_status_update.status);
       console.log(`FETCHING user_status_update`)
+      
+      socket.onopen = () => {
+        socket.send(JSON.stringify({
+          type: 'refresh',
+          payload: {
+            user1: userId,
+            user2: userId2
+          }
+        }));
+      }
       fetchUsers(lobbyId);
     } else if (data.end_game) {
       dispatch({ type: 'SET_GAMEINPROGRESS', payload: false });
