@@ -1087,73 +1087,70 @@ const Lobby = () => {
   }
 
   function GenreList() {
-    const [selectedGenres, setSelectedGenres] = useState<{[key: string]: boolean}>({});
-
+    const [selectedGenres, setSelectedGenres] = useState<{ [key: string]: boolean }>({});
+  
     const handleGenreClick = async (genreId: string, genre: string) => {
-      // if (gameStatus === 0) {
-      console.log(`SETTING GENRE IN METHOD`)
-      setSelectedGenres(({}))
       setSelectedGenres((prevState) => ({
         ...prevState,
         [genreId]: !prevState[genreId],
       }));
-        try {
-          const response = await axios.put(`${url}/games/genre`, {
-            player1: userId,
-            player2: userId2,
-            genre: genre
-          });
-        } catch (err) {
-          console.log(err)
-          console.log(`Error updating the genre`)
-        }
-        console.log(`SETTING GENRE IN WS`)
-        socket.onopen = () => {
-          socket.send(JSON.stringify({
-            type: 'set_genre',
-            payload: {
-              type: "set_genre",
-              uuid: uuid,
-              genre: genre
-            }
-        }));
+  
+      try {
+        const response = await axios.put(`${url}/games/genre`, {
+          player1: userId,
+          player2: userId2,
+          genre: genre,
+        });
+      } catch (err) {
+        console.log(err);
+        console.log('Error updating the genre');
       }
-  }
-  // }
-  return (
-    <div>
-      {Array.isArray(genres) &&
-        genres.map((genre) =>
-          genre.category.replaceAll('_', ' ') === selectedCategory.replaceAll('_', ' ') ? (
-            <div className="category-list-container">
-            <div
-              key={genre.id} // Add the key prop with a unique identifier
-              className={`selected-category-container ${selectedGenre.replaceAll('_', ' ') === genre.genre.replaceAll('_', ' ') ? 'selected' : 'unselected'}`}
-              onClick={() => {
-                // if (gameStatus === 0) {
-                  console.log(`SELECTED ${genre.genre}`);
-                  console.log(`SELECTEDGENRE ${selectedGenre}`);
-                
-                handleGenreClick(genre.id.toString(), genre.genre);
-                setSelectedGenre(genre.genre.replaceAll('_', ' '));
-                socket.onopen = () => {
-                  console.log(`SETTING GENRE IN WS`)
-                  const message = {
-                    payload: {
-                      type: 'set_genre',
-                      genre: genre,
-                    },
-                  };
-                  socket.send(JSON.stringify(message));
-                }
-              // }
-              }}
-            >
-              {genre.genre.replaceAll('_', ' ')}
-            </div>
-            </div>
-          ) : null
-        )}
+  
+      socket.onopen = () => {
+        const message = {
+          type: 'set_genre',
+          payload: {
+            type: 'set_genre',
+            uuid: uuid,
+            genre: genre,
+          },
+        };
+        socket.send(JSON.stringify(message));
+      };
+    };
+  
+    return (
+      <div>
+        {Array.isArray(genres) &&
+          genres.map((genre) =>
+            genre.category.replaceAll('_', ' ') === selectedCategory.replaceAll('_', ' ') ? (
+              <div className="category-list-container" key={genre.id}>
+                <div
+                  className={`selected-category-container ${
+                    selectedGenre.replaceAll('_', ' ') === genre.genre.replaceAll('_', ' ') ? 'selected' : 'unselected'
+                  }`}
+                  onClick={() => {
+                    // console.log(`SELECTED ${genre.genre}`);
+                    // console.log(`SELECTEDGENRE ${selectedGenre}`);
+                    handleGenreClick(genre.id.toString(), genre.genre);
+                    setSelectedGenre(genre.genre.replaceAll('_', ' '));
+                    socket.onopen = () => {
+                      // console.log('SETTING GENRE IN WS');
+                      const message = {
+                        payload: {
+                          type: 'set_genre',
+                          genre: genre,
+                        },
+                      };
+                      socket.send(JSON.stringify(message));
+                    };
+                  }}
+                >
+                  {genre.genre.replaceAll('_', ' ')}
+                </div>
+              </div>
+            ) : null
+          )}
       </div>
     );
   }
