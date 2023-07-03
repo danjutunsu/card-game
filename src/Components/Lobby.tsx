@@ -549,7 +549,7 @@ const Lobby = () => {
       // console.log(`REFRESH`)
       console.log(`FETCHING refresh`)
 
-      // fetchUsers(params.lobbyId);
+      fetchUsers(params.lobbyId);
     }
   });
 
@@ -856,15 +856,15 @@ const Lobby = () => {
 
   useEffect(() => {
     getTurn(gameId)
-    socket.onopen = () => {
-    socket.send(JSON.stringify({
-      type: 'refresh',
-      payload: {
-        user1: userId,
-        user2: userId2
-      }
-    }));
-  }
+  //   socket.onopen = () => {
+  //   socket.send(JSON.stringify({
+  //     type: 'refresh',
+  //     payload: {
+  //       user1: userId,
+  //       user2: userId2
+  //     }
+  //   }));
+  // }
   }, [users])
 
   useEffect(() => {
