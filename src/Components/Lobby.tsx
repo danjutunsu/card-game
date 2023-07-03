@@ -886,6 +886,13 @@ const Lobby = () => {
         user2: userId2
       }
     }));
+    socket.send(JSON.stringify({
+      type: 'refresh',
+      payload: {
+        user1: userId2,
+        user2: userId
+      }
+    }));
   }
   }, [users])
 
@@ -899,6 +906,13 @@ const Lobby = () => {
       payload: {
         user1: userId,
         user2: userId2
+      }
+      }));
+      socket.send(JSON.stringify({
+      type: 'refresh',
+      payload: {
+        user1: userId2,
+        user2: userId
       }
       }));
     }
