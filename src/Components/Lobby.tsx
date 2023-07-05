@@ -857,7 +857,7 @@ const Lobby = () => {
 
         // console.log(`user ready or in progress`)
         try {
-          // socket.onopen = () => {
+          socket.onopen = () => {
               socket.send(JSON.stringify({
                 type: 'refresh',
                 payload: {
@@ -865,8 +865,8 @@ const Lobby = () => {
                   user2: userId2,
                 },
               }));
-          // }
-          // socket.onopen = () => {
+          }
+          socket.onopen = () => {
             socket.send(JSON.stringify({
               type: 'user_status_update',
               payload: {
@@ -874,7 +874,7 @@ const Lobby = () => {
                 status: 'Idle',
               },
             }));
-          // }
+          }
           // const response = await axios.get(`${url}/lobby`);
           // Process the response data as needed
         } catch (error) {
@@ -885,7 +885,7 @@ const Lobby = () => {
         
         // console.log(`user`)
         // User is now idle
-        // socket.onopen = () => {
+        socket.onopen = () => {
           socket.send(JSON.stringify({
             type: 'user_status_update',
             payload: {
@@ -893,8 +893,8 @@ const Lobby = () => {
               status: 'Ready',
             },
           }));
-        // }
-        // socket.onopen = () => {
+        }
+        socket.onopen = () => {
           socket.send(JSON.stringify({
             type: 'refresh',
             payload: {
@@ -903,7 +903,7 @@ const Lobby = () => {
             },
           }));
           fetchUsers(uuid);
-        // }
+        }
 
         // const allReady = users.every(user => user.status === 'Ready' || user.status === 'In Progress');
         // setAllUsersReady(allReady); // Update flag based on current state of users
