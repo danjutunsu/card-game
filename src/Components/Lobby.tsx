@@ -110,15 +110,6 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
         }
       }));
     }
-    props.socket.onopen = () => {
-      props.socket.send(JSON.stringify({
-        type: 'refresh',
-        payload: {
-          user1: userId2,
-          user2: userId
-        }
-      }));
-    }
     } catch (error) {
       console.error(error);
       fetchUsers(params.lobbyId);
@@ -127,14 +118,6 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
         payload: {
           user1: userId,
           user2: userId2
-        }
-      }));
-      
-      props.socket.send(JSON.stringify({
-        type: 'refresh',
-        payload: {
-          user1: userId2,
-          user2: userId
         }
       }));
     }
@@ -147,13 +130,6 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
       payload: {
         user1: userId,
         user2: userId2
-      }
-    }));
-    props.socket.send(JSON.stringify({
-      type: 'refresh',
-      payload: {
-        user1: userId2,
-        user2: userId
       }
     }));
     try {
@@ -173,13 +149,6 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
           user2: userId2
         }
       }));
-      props.socket.send(JSON.stringify({
-        type: 'refresh',
-        payload: {
-          user1: userId2,
-          user2: userId
-        }
-      }));
     } catch (error) {
       console.error(error);
       
@@ -188,13 +157,6 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
         payload: {
           user1: userId,
           user2: userId2
-        }
-      }));
-      props.socket.send(JSON.stringify({
-        type: 'refresh',
-        payload: {
-          user1: userId2,
-          user2: userId
         }
       }));
     }
@@ -516,13 +478,6 @@ const Lobby = () => {
           payload: {
             user1: userId,
             user2: userId2
-          }
-        }));
-        socket.send(JSON.stringify({
-          type: 'refresh',
-          payload: {
-            user1: userId2,
-            user2: userId
           }
         }));
         console.log(`FETCHING invitee`)
@@ -856,13 +811,13 @@ const Lobby = () => {
   useEffect(() => {
     getTurn(gameId)
     socket.onopen = () => {
-    socket.send(JSON.stringify({
-      type: 'refresh',
-      payload: {
-        user1: userId,
-        user2: userId2
-      }
-    }));
+      socket.send(JSON.stringify({
+        type: 'refresh',
+        payload: {
+          user1: userId,
+          user2: userId2
+        }
+      }));
   }
   }, [users])
 
@@ -902,15 +857,6 @@ const Lobby = () => {
 
         // console.log(`user ready or in progress`)
         try {
-          socket.onopen = () => {
-            socket.send(JSON.stringify({
-              type: 'user_status_update',
-              payload: {
-                userId: userId,
-                status: 'Ready',
-              },
-            }));
-          }
           socket.onopen = () => {
               socket.send(JSON.stringify({
                 type: 'refresh',
