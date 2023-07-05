@@ -810,15 +810,15 @@ const Lobby = () => {
 
   useEffect(() => {
     getTurn(gameId)
-    socket.onopen = () => {
-      socket.send(JSON.stringify({
-        type: 'refresh',
-        payload: {
-          user1: userId,
-          user2: userId2
-        }
-      }));
-  }
+  //   socket.onopen = () => {
+  //     socket.send(JSON.stringify({
+  //       type: 'refresh',
+  //       payload: {
+  //         user1: userId,
+  //         user2: userId2
+  //       }
+  //     }));
+  // }
   }, [users])
 
   useEffect(() => {
