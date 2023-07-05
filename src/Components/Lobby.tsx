@@ -92,16 +92,16 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
   const handleLeaveGame = async (userId: string, uuid: string | undefined) => {
     try {
       const message = { payload: 'leave' };
-      props.socket.onopen = async () => {
+      // props.socket.onopen = async () => {
       props.socket.send(JSON.stringify(message));
       await axios.put(`${url}/lobby/leave`, {
           userId: userId,
           uuid: uuid
       });
-      }
+      // }
       navigate(`/lobby/${randomId}`)
       console.log(`random id: ${randomId}`)
-      props.socket.onopen = () => {
+      // props.socket.onopen = () => {
       props.socket.send(JSON.stringify({
         type: 'refresh',
         payload: {
@@ -109,7 +109,7 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
           user2: userId2
         }
       }));
-    }
+    // }
     } catch (error) {
       console.error(error);
       fetchUsers(params.lobbyId);
@@ -134,9 +134,9 @@ const MenuButton = (props: { lobbyId: string | undefined, userId: string, socket
     }));
     try {
       const message = { payload: 'logout' };
-      props.socket.onopen = () => {
+      // props.socket.onopen = () => {
         props.socket.send(JSON.stringify(message));
-      }
+      // }
       await axios.delete(`${url}/lobby?userId=${userId}`);
       fetchUsers(params.lobbyId);
 
@@ -404,7 +404,7 @@ const Lobby = () => {
   const socket = new WebSocket(socketUrl);
 
   useEffect(() => {
-    socket.onopen = () => { 
+    // socket.onopen = () => { 
       socket.send(JSON.stringify({
         type: 'refresh',
         payload: {
@@ -412,7 +412,7 @@ const Lobby = () => {
           user2: userId2
         }
       }));
-    }
+    // }
   }, [0])
 
   // // Listen for messages
@@ -810,7 +810,7 @@ const Lobby = () => {
 
   useEffect(() => {
     getTurn(gameId)
-    socket.onopen = () => {
+    // socket.onopen = () => {
       socket.send(JSON.stringify({
         type: 'refresh',
         payload: {
@@ -818,14 +818,14 @@ const Lobby = () => {
           user2: userId2
         }
       }));
-  }
+  // }
   }, [users])
 
   useEffect(() => {
     getGenre(userId, userId2)
     console.log(`changed`)
     fetchUsers(lobbyId)
-    socket.onopen = () => {
+    // socket.onopen = () => {
       socket.send(JSON.stringify({
       type: 'refresh',
       payload: {
@@ -833,7 +833,7 @@ const Lobby = () => {
         user2: userId2
       }
       }));
-    }
+    // }
     console.log(`fetching users from ${lobbyId}`)
   }, [lobbyId])
 
@@ -973,9 +973,9 @@ const Lobby = () => {
   const handleEnd = async () => {
     try {
       const message = { payload: 'end' };
-      socket.onopen = () => {
+      // socket.onopen = () => {
         socket.send(JSON.stringify(message));
-      }
+      // }
       await axios.put(`${url}/games/status/reset`, {
         player1: userId,
         player2: userId2
@@ -996,7 +996,7 @@ const Lobby = () => {
 
   useEffect(() => {
     console.log(`REFRESHED CATEGORY`)
-    socket.onopen = () => { 
+    // socket.onopen = () => { 
       socket.send(JSON.stringify({
         type: 'refresh',
         payload: {
@@ -1004,7 +1004,7 @@ const Lobby = () => {
           user2: userId2
         }
       }));
-    }
+    // }
   }, [selectedCategory])
 
   function CategoryList() {  
@@ -1059,7 +1059,7 @@ const Lobby = () => {
         console.log('Error updating the genre');
       }
   
-      socket.onopen = () => {
+      // socket.onopen = () => {
         const message = {
           type: 'set_genre',
           payload: {
@@ -1069,7 +1069,7 @@ const Lobby = () => {
           },
         };
         socket.send(JSON.stringify(message));
-      };
+      // };
     };
   
     return (
@@ -1087,7 +1087,7 @@ const Lobby = () => {
                     // console.log(`SELECTEDGENRE ${selectedGenre}`);
                     handleGenreClick(genre.id.toString(), genre.genre);
                     setSelectedGenre(genre.genre.replaceAll('_', ' '));
-                    socket.onopen = () => {
+                    // socket.onopen = () => {
                       // console.log('SETTING GENRE IN WS');
                       const message = {
                         payload: {
@@ -1096,7 +1096,7 @@ const Lobby = () => {
                         },
                       };
                       socket.send(JSON.stringify(message));
-                    };
+                    // };
                   }}
                 >
                   {genre.genre.replaceAll('_', ' ')}
