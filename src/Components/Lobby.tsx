@@ -797,6 +797,8 @@ const Lobby = () => {
     if (users.length > 1) {
       getGameID(userId, userId2);
     }
+    getTurn(gameId)
+
     getU2(userId2)
     users.forEach(element => {
       if (element.user_id === userId && element.status === "In Progress") {
@@ -808,18 +810,17 @@ const Lobby = () => {
     })
   }, [users])
 
-  useEffect(() => {
-    getTurn(gameId)
-  //   socket.onopen = () => {
-  //     socket.send(JSON.stringify({
-  //       type: 'refresh',
-  //       payload: {
-  //         user1: userId,
-  //         user2: userId2
-  //       }
-  //     }));
-  // }
-  }, [users])
+  // useEffect(() => {
+  // //   socket.onopen = () => {
+  // //     socket.send(JSON.stringify({
+  // //       type: 'refresh',
+  // //       payload: {
+  // //         user1: userId,
+  // //         user2: userId2
+  // //       }
+  // //     }));
+  // // }
+  // }, [users])
 
   useEffect(() => {
     getGenre(userId, userId2)
