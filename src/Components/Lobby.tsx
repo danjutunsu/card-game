@@ -504,7 +504,7 @@ const Lobby = () => {
       // console.log(`REFRESH`)
       console.log(`FETCHING refresh`)
 
-      // fetchUsers(params.lobbyId);
+      fetchUsers(params.lobbyId);
     }
   });
 
