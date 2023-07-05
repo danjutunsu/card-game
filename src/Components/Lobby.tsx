@@ -404,7 +404,7 @@ const Lobby = () => {
   const socket = new WebSocket(socketUrl);
 
   useEffect(() => {
-    // socket.onopen = () => { 
+    socket.onopen = () => { 
       socket.send(JSON.stringify({
         type: 'refresh',
         payload: {
@@ -412,7 +412,7 @@ const Lobby = () => {
           user2: userId2
         }
       }));
-    // }
+    }
   }, [0])
 
   // // Listen for messages
@@ -810,7 +810,7 @@ const Lobby = () => {
 
   useEffect(() => {
     getTurn(gameId)
-    // socket.onopen = () => {
+    socket.onopen = () => {
       socket.send(JSON.stringify({
         type: 'refresh',
         payload: {
@@ -818,14 +818,14 @@ const Lobby = () => {
           user2: userId2
         }
       }));
-  // }
+  }
   }, [users])
 
   useEffect(() => {
     getGenre(userId, userId2)
     console.log(`changed`)
     fetchUsers(lobbyId)
-    // socket.onopen = () => {
+    socket.onopen = () => {
       socket.send(JSON.stringify({
       type: 'refresh',
       payload: {
@@ -833,7 +833,7 @@ const Lobby = () => {
         user2: userId2
       }
       }));
-    // }
+    }
     console.log(`fetching users from ${lobbyId}`)
   }, [lobbyId])
 
@@ -996,7 +996,7 @@ const Lobby = () => {
 
   useEffect(() => {
     console.log(`REFRESHED CATEGORY`)
-    // socket.onopen = () => { 
+    socket.onopen = () => { 
       socket.send(JSON.stringify({
         type: 'refresh',
         payload: {
@@ -1004,7 +1004,7 @@ const Lobby = () => {
           user2: userId2
         }
       }));
-    // }
+    }
   }, [selectedCategory])
 
   function CategoryList() {  
