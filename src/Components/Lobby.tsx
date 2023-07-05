@@ -866,7 +866,15 @@ const Lobby = () => {
                 },
               }));
           }
-  
+          socket.onopen = () => {
+            socket.send(JSON.stringify({
+              type: 'user_status_update',
+              payload: {
+                userId: userId,
+                status: 'Idle',
+              },
+            }));
+          }
           // const response = await axios.get(`${url}/lobby`);
           // Process the response data as needed
         } catch (error) {
@@ -882,7 +890,7 @@ const Lobby = () => {
             type: 'user_status_update',
             payload: {
               userId: userId,
-              status: 'Idle',
+              status: 'Ready',
             },
           }));
         }
