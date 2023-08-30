@@ -974,9 +974,9 @@ const Lobby = () => {
   const handleEnd = async () => {
     try {
       const message = { payload: 'end' };
-      // socket.onopen = () => {
+      socket.onopen = () => {
         socket.send(JSON.stringify(message));
-      // }
+      }
       await axios.put(`${url}/games/status/reset`, {
         player1: userId,
         player2: userId2
